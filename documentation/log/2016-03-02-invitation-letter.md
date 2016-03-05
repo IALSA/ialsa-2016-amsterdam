@@ -28,6 +28,7 @@ Data format:
 
 Here are two example of the require data format (with x a covariate)
 
+```
   id state   age   x
    3     1   65     19
    3     1   67     19
@@ -35,9 +36,9 @@ Here are two example of the require data format (with x a covariate)
    3     1   74     19
    3     2   75     19
    3     3   77.3   19
-
+```
 and 
-
+```
    id state  age    x
     4     1     0       1
     4     2     1       1
@@ -46,7 +47,7 @@ and
     4     1    5.7     1
     4     1    7.7     1
     4    -2    9.7     1
-
+```
 The -2 in the last example denotes a right-censored state. For the fitting of models it is essential that consecutive records for one individual do not contain the same age. Age can be in years, but also in months. Please review the materials on the ELECT web site: [http://www.ucl.ac.uk/~ucakadl/indexELECT.html](http://www.ucl.ac.uk/~ucakadl/indexELECT.html) to prepare for and gain further understanding of the multistate model and data requirements. 
 
 Other practical information regarding dates and venue:
