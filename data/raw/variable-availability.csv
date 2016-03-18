@@ -1,0 +1,7 @@
+,HRS,ELSA,MAP,LASA,OCTO-Twin,OBAS,MIDUS,notes
+present on ILASA drive,n/a,no,yes,yes,yes,yes,yes,
+in Maelstrom database,no,no search,no search,yes,yes,yes,yes,
+ADL,,,,yes,yes,yes,yes,"https://www.maelstrom-research.org/mica/search#!type=variables&query={""networks"":{""terms"":{""networkId"":{""values"":[""ialsa""],""op"":""or""}}},""studies"":{""terms"":{""studyIds"":{""values"":[""obas"",""lasa"",""octo-twin"",""midus""],""op"":""or""}}},""variables"":{""matches"":""ADL""}}&with-facets=false"
+MMSE,,,yes,yes,no,yes,no,
+self-rated health,,,,yes,yes,yes,yes,https://www.maelstrom-research.org/mica/search#!type=variables&query=%7B%22studies%22%3A%7B%22terms%22%3A%7B%22studyIds%22%3A%7B%22values%22%3A%5B%22lasa%22%2C%22obas%22%2C%22octo-twin%22%2C%22midus%22%5D%2C%22op%22%3A%22and%22%7D%7D%7D%2C%22variables%22%3A%7B%22matches%22%3A%22HEALTH%22%2C%22terms%22%3A%7B%22attributes-Mlstr_area__Health_status_functional_limitations-und%22%3A%7B%22values%22%3A%5B%22Perc_health%22%5D%2C%22op%22%3A%22and%22%7D%7D%7D%7D&with-facets=false&size=100
+dementia,,,yes,,yes,yes,,https://www.maelstrom-research.org/mica/search#!type=studies&query=%7B%22studies%22%3A%7B%22terms%22%3A%7B%22studyIds%22%3A%7B%22values%22%3A%5B%22lasa%22%2C%22obas%22%2C%22octo-twin%22%2C%22midus%22%5D%2C%22op%22%3A%22and%22%7D%7D%7D%2C%22variables%22%3A%7B%22matches%22%3A%22dementia%22%7D%7D&with-facets=false
