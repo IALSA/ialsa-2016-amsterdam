@@ -26,7 +26,6 @@ The objectives of this workshop are:
 *  WLS  
 *  MAP  
 *  OCTO-Twin  
-*  
 
 #### Outcomes
 * ADL/IADL
@@ -49,5 +48,8 @@ The objectives of this workshop are:
 * chronic conditions (comorbidity index)
 
 
+#### Resources 
 
 The workshop lectures will be delivered by Dr. Ardo van den Hout (UCL, Lecturer at the Department of Statistics), developer of the R package ELECT that estimates these models. Participants are encouraged to review at the [ELECT web site](http://www.ucl.ac.uk/~ucakadl/indexELECT.html ) to prepare for this workshop. 
+
+Here are some example operationalizations: http://www.ncbi.nlm.nih.gov/pmc/articles/PMC2966893/  and  http://www.ncbi.nlm.nih.gov/pubmed/25150976. For example, the BRFSS question used to assess health status was "Would you say that in general your health is excellent, very good, good, fair, or poor?" For this study, participant responses of "fair or poor" were categorized as "unhealthy" and "excellent, very good, or good" as "healthy."
