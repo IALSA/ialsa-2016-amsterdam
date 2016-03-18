@@ -2,7 +2,7 @@
 Multi-study and multivariate evaluation of healthy life expectancy (HLE): An IALSA workshop on multistate modeling using R 
 
 
-[edit me](https://github.com/IALSA/ialsa-2016-groningen/edit/master/README.md)
+[edit me](https://github.com/IALSA/ialsa-2016-amsterdam/edit/master/README.md)
 
 
 #### Documentation
