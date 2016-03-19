@@ -18,13 +18,13 @@ The objectives of this workshop are:
 * 2. Evaluate utility of multistate model for making individual predictions of future transitions and confidence in making individual predictions.   
 
 #### Candidate Studies
-| |temporal design| (proposed) driver|notes|   
+| | driver|state| reports |    
 |---|---|---|---|   
 |ELSA| | | |    
-|HRS| |C.Brown | |    
-|LASA| |R.Graham |pre-processed, choose variables to assemble |    
-|MAP| |A.Koval |ready for analysis |    
-|OBAS| |R.Vendittelli |in process |   
+|HRS| C.Brown | | |  |    
+|LASA| R.Graham |pre-processed, choose variables to assemble |  |    
+|MAP| A.Koval |ready for analysis |[review variables](/reports/review-variables/map/review-variables-map.md)  |      
+|OBAS| R.Vendittelli |in process |   |  
 |OCTO-Twin| | | |  
 
 #### Focal Outcomes
