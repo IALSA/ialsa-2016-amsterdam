@@ -41,7 +41,7 @@ The objectives of this workshop are:
 |---|---|---|---|---|---|---|
 |age at baseline   |   |   |   | age_bl  |   |   |
 |sex  |   |   |   | msex  |   |   |
-|education   |   |   | educ  |   |   |   |
+|education   |   |   |   |educ   |   |   |
 |SES/SEP   |   |   |   |   |   |   |
 
 #### Minor Covariates
@@ -49,16 +49,11 @@ The objectives of this workshop are:
 |---|---|---|---|---|---|---|
 |BMI   |   |   |   |  bmi |   |   |
 | sedentary behavior (phys activity)  |   |   |   | phys5itemsum  |   |   |
-| tobacco use     |   |   |   |q3smo_bl   |   |   |
-| tobacco use     |   |   |   |q4smo_bl   |   |   |
-| tobacco use     |   |   |   |smoke_bl   |   |   |
-| tobacco use     |   |   |   |smoking   |   |   |
-| alcohol use    |   |   |   |  alcohol_g |   |   |
-| alcohol use    |   |   |   |  ldai_bl |   |   |
+| tobacco use     |   |   |   |q3smo_bl,q4smo_bl ,smoke_bl ,smoking     |   |   |
+| alcohol use    |   |   |   |  alcohol_g,  ldai_bl|   |   |
 | diabetes|   |   |   | dm_cum  |   |   |
 | hypertension|   |   |   | hypertension_cum  |   |   |
-| stroke|   |   |   | stroke_cum  |   |   |
-| stroke|   |   |   | r_stroke  |   |   |
+| stroke|   |   |   | stroke_cum, r_stroke  |   |   |
 | chronic conditions (comorbidity index)|   |   |   |   |   |   |
 
 
