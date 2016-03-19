@@ -17,7 +17,8 @@ The objectives of this workshop are:
 * 1. Evaluate sensitivity of using alternative variables/definitions of HLE and Cognitive Impairment/Dementia-Free HLE and replication across studies.  
 * 2. Evaluate utility of multistate model for making individual predictions of future transitions and confidence in making individual predictions.   
 
-|study|temporal design| (proposed) driver|notes|   
+#### Candidate Studies
+| |temporal design| (proposed) driver|notes|   
 |---|---|---|---|   
 |ELSA| | | |    
 |HRS| |C.Brown | |    
@@ -26,8 +27,8 @@ The objectives of this workshop are:
 |OBAS| |R.Vendittelli |in process |   
 |OCTO-Twin| | | |  
 
-
-|outcome / study | ELSA | HRS | LASA | MAP | OBAS | OCTO |
+#### Focal Outcomes
+|  | ELSA | HRS | LASA | MAP | OBAS | OCTO |
 |---|---|---|---|---|---|---|
 |* ADL/IADL   |   |   |   |   |   |   |
 |MMSE < 24   |   |   |   |   |   |   |
@@ -35,15 +36,16 @@ The objectives of this workshop are:
 |diagnosis of dementia   |   |   |   |   |   |   |
 |other cognitive variables   |   |   |   |   |   |   |
 
-|maj covariate / study | ELSA | HRS | LASA | MAP | OBAS | OCTO |
+#### Major Covariates
+| | ELSA | HRS | LASA | MAP | OBAS | OCTO |
 |---|---|---|---|---|---|---|
 |age at baseline   |   |   |   |   |   |   |
 |sex  |   |   |   |   |   |   |
 |education   |   |   |   |   |   |   |
 |SES/SEP   |   |   |   |   |   |   |
 
-
-|min covariate / study | ELSA | HRS | LASA | MAP | OBAS | OCTO |
+#### Minor Covariates
+| | ELSA | HRS | LASA | MAP | OBAS | OCTO |
 |---|---|---|---|---|---|---|
 |BMI   |   |   |   |   |   |   |
 | sedentary behavior (phys activity)  |   |   |   |   |   |   |
