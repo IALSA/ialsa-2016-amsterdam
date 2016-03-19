@@ -49,7 +49,7 @@ The objectives of this workshop are:
 |---|---|---|---|---|---|---|
 |BMI   |   |   |   |  bmi |   |   |
 | sedentary behavior (phys activity)  |   |   |   | phys5itemsum  |   |   |
-| tobacco use     |   |   |   |q3smo_bl,q4smo_bl ,smoke_bl ,smoking     |   |   |
+| tobacco use     |   |   |   |q3smo_bl, q4smo_bl, smoke_bl, \\n smoking     |   |   |
 | alcohol use    |   |   |   |  alcohol_g,  ldai_bl|   |   |
 | diabetes|   |   |   | dm_cum  |   |   |
 | hypertension|   |   |   | hypertension_cum  |   |   |
