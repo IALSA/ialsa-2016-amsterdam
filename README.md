@@ -17,36 +17,10 @@ The objectives of this workshop are:
 * 1. Evaluate sensitivity of using alternative variables/definitions of HLE and Cognitive Impairment/Dementia-Free HLE and replication across studies.  
 * 2. Evaluate utility of multistate model for making individual predictions of future transitions and confidence in making individual predictions.   
 
-
-#### Candidate Studies
-*  HRS   
-*  ELSA  
-*  CHAP  
-*  LASA  
-*  WLS  
-*  MAP  
-*  OCTO-Twin  
-
-#### Outcomes
-* ADL/IADL
-* MMSE < 24
-* self-rated health
-* diagnosis of dementia
-* other cognitive variables (decisions about thresholds and alternative models required) 
-
-#### Covariates
-* age at baseline
-* sex
-* education
-* SES/SEP 
-
-#### Additional covariates
-* BMI  
-* sedentary behavior (phys activity)  
-* smoking (various)  
-* alcohol use (various)   
-* chronic conditions (comorbidity index)
-
+|Candidate \n Studies|Focal \n Outcomes | Major \n Covariates |Minor \n covariates |
+|---|---|---|---|
+|   |   |   |   |
+|   |   |   |   |
 
 #### Resources 
 
