@@ -15,6 +15,8 @@ devtools.zip
 /data_unshared/*
 /data-unshared/*
 
+/data/unshared/raw/MSM - Gothenburg, Oct 2015/*
+
 # Unnecessary files for knitr reports
 
 # Dataset Exceptions
