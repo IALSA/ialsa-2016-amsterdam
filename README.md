@@ -17,10 +17,17 @@ The objectives of this workshop are:
 * 1. Evaluate sensitivity of using alternative variables/definitions of HLE and Cognitive Impairment/Dementia-Free HLE and replication across studies.  
 * 2. Evaluate utility of multistate model for making individual predictions of future transitions and confidence in making individual predictions.   
 
-|Candidate \n Studies|Focal \n Outcomes | Major \n Covariates |Minor \n covariates |
-|---|---|---|---|
-|   |   |   |   |
-|   |   |   |   |
+|study|temporal|driver|notes|   
+|---|---|---|---|   
+|HRS| |C.Brown | |    
+|ELSA| | | |    
+|OBAS| |R.Vendittelli |in process |   
+|LASA| |R.Graham |pre-processed, choose variables to assemble |    
+|MAP| |A.Koval |ready for analysis |    
+|OCTO-Twin| | | |    
+
+
+
 
 #### Resources 
 
