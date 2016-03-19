@@ -30,27 +30,35 @@ The objectives of this workshop are:
 #### Focal Outcomes
 |  | ELSA | HRS | LASA | MAP | OBAS | OCTO |
 |---|---|---|---|---|---|---|
-|* ADL/IADL   |   |   |   |   |   |   |
-|MMSE < 24   |   |   |   |   |   |   |
+| ADL/IADL   |   |   |   | iadlsum  |   |   |
+|MMSE < 24   |   |   |   |cts_mmse30   |   |   |
 |self-rated health   |   |   |   |   |   |   |
-|diagnosis of dementia   |   |   |   |   |   |   |
+|diagnosis of dementia   |   |   |   |dementia   |   |   |
 |other cognitive variables   |   |   |   |   |   |   |
 
 #### Major Covariates
 | | ELSA | HRS | LASA | MAP | OBAS | OCTO |
 |---|---|---|---|---|---|---|
-|age at baseline   |   |   |   |   |   |   |
-|sex  |   |   |   |   |   |   |
-|education   |   |   |   |   |   |   |
+|age at baseline   |   |   |   | age_bl  |   |   |
+|sex  |   |   |   | msex  |   |   |
+|education   |   |   | educ  |   |   |   |
 |SES/SEP   |   |   |   |   |   |   |
 
 #### Minor Covariates
 | | ELSA | HRS | LASA | MAP | OBAS | OCTO |
 |---|---|---|---|---|---|---|
-|BMI   |   |   |   |   |   |   |
-| sedentary behavior (phys activity)  |   |   |   |   |   |   |
-| smoking (various)    |   |   |   |   |   |   |
-| alcohol use (various)   |   |   |   |   |   |   |
+|BMI   |   |   |   |  bmi |   |   |
+| sedentary behavior (phys activity)  |   |   |   | phys5itemsum  |   |   |
+| tobacco use     |   |   |   |q3smo_bl   |   |   |
+| tobacco use     |   |   |   |q4smo_bl   |   |   |
+| tobacco use     |   |   |   |smoke_bl   |   |   |
+| tobacco use     |   |   |   |smoking   |   |   |
+| alcohol use    |   |   |   |  alcohol_g |   |   |
+| alcohol use    |   |   |   |  ldai_bl |   |   |
+| diabetes|   |   |   | dm_cum  |   |   |
+| hypertension|   |   |   | hypertension_cum  |   |   |
+| stroke|   |   |   | stroke_cum  |   |   |
+| stroke|   |   |   | r_stroke  |   |   |
 | chronic conditions (comorbidity index)|   |   |   |   |   |   |
 
 
