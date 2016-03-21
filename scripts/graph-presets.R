@@ -9,7 +9,7 @@
 # library(extrafont) 
 # extrafont::font_import()
 # extrafont::fonts() #This just lists the available fonts for you to read; similar to extrafont::fonttable()
-
+library("ggplot2") # graphing
 requireNamespace("extrafont", quietly=T)
 requireNamespace("grid", quietly=T)
 requireNamespace("ggplot2", quietly=T)
@@ -21,17 +21,17 @@ requireNamespace("RColorBrewer", quietly=T)
 #########################################################
 # Documentation for modifiable theme elements can be found at http://docs.ggplot2.org/current/theme.html
 baseSize <- 10
-main_theme <- theme_bw() +
-  theme(axis.text = element_text(colour="gray40")) +
-  theme(axis.title = element_text(colour="gray40")) +
-  theme(panel.border = element_rect(colour="gray80")) +
-  theme(axis.ticks.length = grid::unit(0, "cm"))
+main_theme <- ggplot2::theme_bw() +
+  ggplot2::theme(axis.text = element_text(colour="gray40")) +
+  ggplot2::theme(axis.title = element_text(colour="gray40")) +
+  ggplot2::theme(panel.border = element_rect(colour="gray80")) +
+  ggplot2::theme(axis.ticks.length = grid::unit(0, "cm"))
   # theme(axis.ticks = element_line(colour="gray80"))
 
 NoGridOrYLabelsTheme <- main_theme  + 
-  theme(axis.ticks.y = element_blank()) +
-  theme(panel.grid = element_blank()) +
-  theme(plot.margin=grid::unit(c(.1,.2,.2,0), "lines"))
+  ggplot2::theme(axis.ticks.y = element_blank()) +
+  ggplot2::theme(panel.grid = element_blank()) +
+  ggplot2::theme(plot.margin=grid::unit(c(.1,.2,.2,0), "lines"))
 
 #########################################################
 ### Define palettes for variable sets, so they're consistent across graphs & chapters
@@ -43,22 +43,22 @@ transformColor <- function( palette ) {
 #   return( dichromat(palette, "tritan") )
 # Also see The Color Oracle application (http://colororacle.org/)
 }
-
-PalettePregancyDelivery <- transformColor(adjustcolor(brewer.pal(3, "Accent"), alpha.f=1)[1:2])
-PalettePregancyDeliveryBad <- transformColor( c("#FF0000CC", "#00FFFFCC")) #Translucent red & cyan
-
-PalettePregancyGroup <- transformColor(adjustcolor(brewer.pal(3, "Dark2"), alpha.f=1)[1:2])
-PalettePregancyGroupLight <- adjustcolor(PalettePregancyGroup, alpha.f=.2)
-PalettePregancyGroupBad <- transformColor(adjustcolor(c("blue", "maroon"), alpha.f=.7))
-
-PaletteObesityState <- transformColor(adjustcolor(brewer.pal(5, "Set1"))[c(1,2)])
-PaletteObesityState <- transformColor(adjustcolor(brewer.pal(5, "Dark2"))[c(2,3)])
-
-PaletteWorldDeathsRestricted <- transformColor(c("#497862", "#A54891")) #Hand-picked
-PaletteWorldDeathsRestrictedFaint <- transformColor(adjustcolor(PaletteWorldDeathsRestricted, alpha.f=.2))
-
-PaletteControlPsqiLight <- transformColor(c("#1A7F7C", "#1595B2")) #From http://colrd.com/palette/22521/; http://colrd.com/palette/18981/
-PaletteControlPsqiDark <- transformColor(c("#215f5c", "#225a88")) #From http://colrd.com/palette/22521/; http://colrd.com/palette/18981/
+# 
+# PalettePregancyDelivery <- transformColor(adjustcolor(RColorBrewer::brewer.pal(3, "Accent"), alpha.f=1)[1:2])
+# PalettePregancyDeliveryBad <- transformColor( c("#FF0000CC", "#00FFFFCC")) #Translucent red & cyan
+# 
+# PalettePregancyGroup <- transformColor(adjustcolor(RColorBrewer::brewer.pal(3, "Dark2"), alpha.f=1)[1:2])
+# PalettePregancyGroupLight <- adjustcolor(PalettePregancyGroup, alpha.f=.2)
+# PalettePregancyGroupBad <- transformColor(adjustcolor(c("blue", "maroon"), alpha.f=.7))
+# 
+# PaletteObesityState <- transformColor(adjustcolor(RColorBrewer::brewer.pal(5, "Set1"))[c(1,2)])
+# PaletteObesityState <- transformColor(adjustcolor(RColorBrewer::brewer.pal(5, "Dark2"))[c(2,3)])
+# 
+# PaletteWorldDeathsRestricted <- transformColor(c("#497862", "#A54891")) #Hand-picked
+# PaletteWorldDeathsRestrictedFaint <- transformColor(adjustcolor(PaletteWorldDeathsRestricted, alpha.f=.2))
+# 
+# PaletteControlPsqiLight <- transformColor(c("#1A7F7C", "#1595B2")) #From http://colrd.com/palette/22521/; http://colrd.com/palette/18981/
+# PaletteControlPsqiDark <- transformColor(c("#215f5c", "#225a88")) #From http://colrd.com/palette/22521/; http://colrd.com/palette/18981/
 #
 
 #Use the same palette as the crit graphs in Chapters 10-12.
@@ -66,13 +66,13 @@ PaletteControlPsqiDark <- transformColor(c("#215f5c", "#225a88")) #From http://c
 #  * Blue corresponds to the observed values
 #  * Red corresponds to a 5% alpha
 #  * Orange corresponds to a 1% alpha
-bluish <- "#1d00b2" #"http://colrd.com/color/0xff1d00b2/;  Others I tried: #230ca2" #"#000066" #"#0868ac" ##5698c4"
-greenish <- "#097168" #http://colrd.com/palette/22444/
-PaletteCritical <- c("#544A8C", "#ce2b18", "#F37615", bluish, greenish, "gray60") #Adapted from http://colrd.com/palette/17511/ (I made the purple lighter, the orange darker, and added the blue.)
-PaletteCriticalLight <- adjustcolor(PaletteCritical, alpha.f=.5)
-rm(bluish, greenish)
-# palettePregancy <- RColorBrewer::brewer.pal(n=4, name="Set2")[3:4]
-# PaletteObesityState <-  adjustcolor(brewer.pal(4, "Set2"))[3:4]
+# bluish <- "#1d00b2" #"http://colrd.com/color/0xff1d00b2/;  Others I tried: #230ca2" #"#000066" #"#0868ac" ##5698c4"
+# greenish <- "#097168" #http://colrd.com/palette/22444/
+# PaletteCritical <- c("#544A8C", "#ce2b18", "#F37615", bluish, greenish, "gray60") #Adapted from http://colrd.com/palette/17511/ (I made the purple lighter, the orange darker, and added the blue.)
+# PaletteCriticalLight <- adjustcolor(PaletteCritical, alpha.f=.5)
+# rm(bluish, greenish)
+# palettePregancy <- RColorBrewer::RColorBrewer::brewer.pal(n=4, name="Set2")[3:4]
+# PaletteObesityState <-  adjustcolor(RColorBrewer::brewer.pal(4, "Set2"))[3:4]
 # PaletteObesityStateBad <- adjustcolor(c("green", "red"), alpha.f=.7)
 
 #Named colors in R:
