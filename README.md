@@ -16,45 +16,37 @@ This is a hands-on workshop for the purpose of active data analysis on a variety
 The objectives of this workshop are: 
 * 1. Evaluate sensitivity of using alternative variables/definitions of HLE and Cognitive Impairment/Dementia-Free HLE and replication across studies.  
 * 2. Evaluate utility of multistate model for making individual predictions of future transitions and confidence in making individual predictions.   
+ 
 
 #### Candidate Studies
-| | driver|state| reports |    
-|---|---|---|---|   
-|ELSA| | | |    
-|HRS| C.Brown | | |  |    
-|LASA| R.Graham |pre-processed, choose variables to assemble |  |    
-|MAP| A.Koval |ready for analysis |[review variables](/reports/review-variables/map/review-variables-map.md)  |      
-|OBAS| R.Vendittelli |in process |   |  
-|OCTO-Twin| | | |  
+*  HRS   
+*  ELSA  
+*  CHAP  
+*  LASA  
+*  WLS  
+*  MAP  
+*  OCTO-Twin  
+*  
 
-#### Focal Outcomes
-|  | ELSA | HRS | LASA | MAP | OBAS | OCTO |
-|---|---|---|---|---|---|---|
-| ADL/IADL   |   |   |   | iadlsum  |   |   |
-|MMSE < 24   |   |   |   |cts_mmse30   |   |   |
-|self-rated health   |   |   |   |   |   |   |
-|diagnosis of dementia   |   |   |   |dementia   |   |   |
-|other cognitive variables   |   |   |   |   |   |   |
+#### Outcomes
+* ADL/IADL
+* MMSE < 24
+* self-rated health
+* diagnosis of dementia
+* other cognitive variables (decisions about thresholds and alternative models required) 
 
-#### Major Covariates
-| | ELSA | HRS | LASA | MAP | OBAS | OCTO |
-|---|---|---|---|---|---|---|
-|age at baseline   |   |   |   | age_bl  |   |   |
-|sex  |   |   |   | msex  |   |   |
-|education   |   |   |   |educ   |   |   |
-|SES/SEP   |   |   |   |   |   |   |
+#### Covariates
+* age at baseline
+* sex
+* education
+* SES/SEP 
 
-#### Minor Covariates
-| | ELSA | HRS | LASA | MAP | OBAS | OCTO |
-|---|---|---|---|---|---|---|
-|BMI   |   |   |   |  bmi |   |   |
-| sedentary behavior (phys activity)  |   |   |   | phys5itemsum  |   |   |
-| tobacco use     |   |   |   |q3smo_bl, q4smo_bl, smoke_bl, smoking     |   |   |
-| alcohol use    |   |   |   |  ldai_bl|   |   |
-| diabetes|   |   |   | dm_cum  |   |   |
-| hypertension|   |   |   | hypertension_cum  |   |   |
-| stroke|   |   |   | stroke_cum, r_stroke  |   |   |
-| chronic conditions (comorbidity index)|   |   |   |   |   |   |
+#### Additional covariates
+* BMI  
+* sedentary behavior (phys activity)  
+* smoking (various)  
+* alcohol use (various)   
+* chronic conditions (comorbidity index)
 
 
 #### Resources 
