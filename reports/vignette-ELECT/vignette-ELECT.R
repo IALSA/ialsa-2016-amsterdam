@@ -33,8 +33,41 @@ load(path_data_example_i)
 ds <- dplyr::tbl_df(data)
 
 # ---- inspect-data -------------------------------------------------------------
-ds
-ds %>% dplyr::filter(id %in% c("4","99"))
+head(ds) # top few rows
+ds %>% dplyr::filter(id %in% c("4","5")) # specific ids
+# NOTE: 
+ds %>% dplyr::summarise(unique_ids = n_distinct(id)) # subject count
+ds %>% dplyr::group_by(state) %>% dplyr::summarize(count = n()) # basic frequiencies
+# NOTE: -2 is a right censored value, indicating being alive but in an unknown living state.
+lapply(ds[, c("age","ybirth")], summary) # basic stats 
+histogram_discrete(ds,"state")
+histogram_continuous(ds, "ybirth", bin_width = 1)
+histogram_continuous(ds, "age", bin_width = 1)
+
+
+# ---- quality-check-1 ---------------------------------------------------------
+# For the fitting of the model it is essential that consecutive records for one individual do not contain the same age. 
+# This would imply that no time has passed between the two observations. 
+# For this reason rounding age to whole years is not recommended 
+
+# compose an algorythm for testing this
+
 
 # ---- tweak-data --------------------------------------------------------------
+
+
+
+# ---- section-2.2 ------------------------------------------------------------
+cat("Sample size:"); print(length(table(data$id)))
+cat("Frequencies observed state:"); print(table(data$state))
+cat("State table:"); print(msm::statetable.msm(state,id,data=data))
+
+
+
+
+
+
+
+
+
 
