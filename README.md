@@ -3,8 +3,9 @@ Multi-study and multivariate evaluation of healthy life expectancy (HLE): An IAL
 
 #### Documentation
 - [letter of invitation](./documentation/log/2016-03-02-invitation-letter.md)   
-- venue: [Amsterdam, April 14-16, 2016](/documentation/venue.md)
-- instructional and academic [resources]()
+- venue: [Amsterdam, April 14-16, 2016](./documentation/venue.md)
+- instructional and academic [resources](./documentation/resources-and-references.md)
+- overview of the [studies and variables](./documentation/studies-and-variables.md)
 
 
 #### Rational and Objective
@@ -15,7 +16,7 @@ The **objectives** of this workshop are:
 * 2. Evaluate utility of multistate model for making individual predictions of future transitions and confidence in making individual predictions.   
  
 #### Brief look   
-* **Candidate Studies** : HRS,  ELSA   ,  CHAP  ,  LASA  ,  WLS  ,  MAP  ,  OCTO-Twin     
+* **Candidate Studies** : HRS,  ELSA   , LASA  ,  WLS  ,  MAP  ,  OCTO-Twin     
 * **Outcomes** :  ADL/IADL,  MMSE < 24, self-rated health, diagnosis of dementia, other cognitive variables (decisions about thresholds and alternative models required)     
 * **Major covariates** : age at baseline,  sex , education, SES/SEP   
 * **Minor covariates** : BMI, sedentary behavior (physical activity) , smoking (various),  alcohol use (various),  chronic conditions (comorbidity index)   
