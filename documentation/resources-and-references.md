@@ -6,3 +6,6 @@
 - Jackson, C. (2007). [Multi-state modelling with R: the msm package](https://cran.r-project.org/web/packages/msm/vignettes/msm-manual.pdf). Cambridge, UK.
 
 
+#### Academic Papers
+- Anstey, K. J., Kingston, A., Kiely, K. M., Luszcz, M. A., Mitchell, P., & Jagger, C. (2014). [The influence of smoking, sedentary lifestyle and obesity on cognitive impairment-free life expectancy](http://www.ncbi.nlm.nih.gov/pubmed/25150976). International journal of epidemiology, dyu170.   
+- Lièvre, A., Alley, D., & Crimmins, E. M. (2008). [Educational differentials in life expectancy with cognitive impairment among the elderly in the United States](http://www.ncbi.nlm.nih.gov/pmc/articles/PMC2966893/). Journal of Aging and Health, 20(4), 456-477.  
