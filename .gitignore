@@ -42,3 +42,4 @@ cache/
 Thumbs.db
 # Folder config file
 Desktop.ini
+*.sav
