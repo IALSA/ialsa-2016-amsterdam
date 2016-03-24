@@ -12,14 +12,14 @@ base::source("http://www.ucl.ac.uk/~ucakadl/ELECT.r") # load  ELECT functions
 # ---- load-packages -----------------------------------------------------------
 # Attach these packages so their functions don't need to be qualified: http://r-pkgs.had.co.nz/namespace.html#search-path
 library(magrittr) # enables piping : %>% 
-
+library("msm") # multistate modeling (cannot be declared silently)
 # Verify these packages are available on the machine, but their functions need to be qualified: http://r-pkgs.had.co.nz/namespace.html#search-path
 requireNamespace("ggplot2") # graphing
 requireNamespace("tidyr") # data manipulation
 requireNamespace("dplyr") # Avoid attaching dplyr, b/c its function names conflict with a lot of packages (esp base, stats, and plyr).
 requireNamespace("testit")# For asserting conditions meet expected patterns.
 # requireNamespace("car") # For it's `recode()` function.
-requireNamespace("msm") # multistate modeling
+
 requireNamespace("flexsurv") # parameteric survival and multi-state
 requireNamespace("mstate") # multistate modeling
 requireNamespace("foreign") # data input
