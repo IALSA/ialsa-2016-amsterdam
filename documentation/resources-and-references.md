@@ -14,3 +14,6 @@
 #### Studies
 - Steen, B., & Djurfeldt, H. (1992). [The gerontological and geriatric population studies in Gothenburg, Sweden](http://www.ncbi.nlm.nih.gov/pubmed/8337910). Zeitschrift fur gerontologie, 26(3), 163-169. [H-70](http://www.ialsa.org/study/gerontological-and-geriatric-population-studies-g%C3%B6teborg-sweden-h-70)
 - Deary, I. J., Gow, A. J., Pattie, A., & Starr, J. M. (2011). [Cohort profile: the Lothian Birth Cohorts of 1921 and 1936](http://ije.oxfordjournals.org/content/early/2011/12/13/ije.dyr197.full). International journal of epidemiology, dyr197.   
+
+
+- [A Semi-Markov model for interval-censored data](http://www.stochastics.gr/meetings/alpha/talks/kapetanakis.pdf)
