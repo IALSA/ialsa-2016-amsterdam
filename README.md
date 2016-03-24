@@ -16,7 +16,7 @@ The **objectives** of this workshop are:
 * 2. Evaluate utility of multistate model for making individual predictions of future transitions and confidence in making individual predictions.   
  
 #### Brief look   
-* **Candidate Studies** : HRS,  ELSA   , LASA  ,  WLS  ,  MAP  ,  OCTO-Twin     
+* **Candidate Studies** : HRS,  ELSA   , LASA  ,  WLS  ,  MAP  ,  OCTO-Twin, H-70, LBSC       
 * **Outcomes** :  ADL/IADL,  MMSE < 24, self-rated health, diagnosis of dementia, other cognitive variables (decisions about thresholds and alternative models required)     
 * **Major covariates** : age at baseline,  sex , education, SES/SEP   
 * **Minor covariates** : BMI, sedentary behavior (physical activity) , smoking (various),  alcohol use (various),  chronic conditions (comorbidity index)   
