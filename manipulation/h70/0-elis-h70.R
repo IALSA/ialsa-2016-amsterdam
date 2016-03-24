@@ -33,7 +33,102 @@ head(ds)
 names_labels(ds)
 
 # ---- tweak-data --------------------------------------------------------------
+nrow(ds)
+ds$aaa2000 <- rnorm(n = nrow(ds),mean = 34, sd = 3.5)
+ds$aaa2005 <- rnorm(n = nrow(ds),mean = 21, sd = 3.5)
+ds$aaa2009 <- rnorm(n = nrow(ds),mean = 13, sd = 3.5)
+
+ds$bbb2000 <- rnorm(n = nrow(ds),mean = 8, sd = .7)
+ds$bbb2005 <- rnorm(n = nrow(ds),mean = 5, sd = .7)
+ds$bbb2009 <- rnorm(n = nrow(ds),mean = 3, sd = .73)
+
+
+attr(ds$aaa2000, "label") <- "Simulated measure A in 2000"
+attr(ds$aaa2005, "label") <- "Simulated measure A in 2005"
+attr(ds$aaa2009, "label") <- "Simulated measure A in 2009"
+
+attr(ds$bbb2000, "label") <- "Simulated measure B in 2000"
+attr(ds$bbb2005, "label") <- "Simulated measure B in 2005"
+attr(ds$bbb2009, "label") <- "Simulated measure B in 2009"
+
+names_labels(ds)
 length(unique(ds$lopnr))
 table(ds$sex)
 table(ds$far)
 summary(ds$avl)
+
+# ---- declare-types-of-variables --------------------------
+
+time_invariant <- c("lopnr", "sex", "far", "avldat", "avlnum", "avlage")
+(time_variant <- setdiff(names(ds), time_invariant))
+
+# ---- wide-to-long-for-time -------------------------------
+
+#  melt with respect to the index type
+ds_long <- data.table::melt(data =ds, id.vars = time_invariant,  measure.vars = time_variant)
+
+regex1 <- "^intage|aaa|bbb"
+regex2 <- "2000|2005|2009$"
+ds_long <- ds_long %>%
+  dplyr::arrange_(.dots=time_invariant) %>%
+  dplyr::mutate(
+    year = variable, 
+    year = sub(pattern = regex1, x=variable, replacement = ""),
+    variable =  sub(pattern = regex2, x=variable, replacement = ""  )
+  )
+head(ds_long, 20)
+
+# ---- inspect-for-duplicates ------------------------------
+# dput(colnames(ds_long))
+ds_distinct <- ds_long %>%
+  dplyr::distinct()
+
+
+ds_no_duplicates <- ds_long %>%
+  dplyr::group_by(
+    lopnr, sex, far, avldat, avlnum, avlage, variable, year
+  ) %>%  #Lacks "value"
+  dplyr::summarize(
+    # value  = dplyr::first(value, na.rm=T)
+    value  = mean(value, na.rm=T)
+  ) %>%
+  dplyr::ungroup()
+
+
+coefficient_of_variation <- function(x)( sd(x)/mean(x) )
+
+ds_find_duplicates <- ds_long %>%
+  dplyr::distinct() %>% 
+  dplyr::group_by(
+    lopnr, sex, far, avldat, avlnum, avlage, variable, year
+  ) %>%  #Lacks "value"
+  dplyr::filter(!is.na(value)) %>% # !!Careful that you don't remove legit NAs (esp, in nonduplicated rows).
+  dplyr::summarize(
+    count      = n(),
+    values     = paste(value, collapse=";"),
+    value_cv   = coefficient_of_variation(value)
+  ) %>%
+  dplyr::ungroup() %>%
+  dplyr::filter(1<count) %>%
+  dplyr::filter(.001 < value_cv) 
+
+testit::assert("No meaningful duplicate rows should exist.", nrow(ds_find_duplicates)==0L)
+
+# ---- long-to-wide-time -------------------------------
+
+ds_wide <- ds_no_duplicates %>%
+  tidyr::spread(key=variable, value=value) %>%
+  dplyr::mutate(
+    sex = factor(sex)
+  ) %>%
+  dplyr::arrange_(.dots = time_invariant)
+names_labels(as.data.frame(ds_wide))
+head(ds_wide)
+
+# compare to the vignette dataset
+path_data_example_i <- "./data/shared/raw/dataExample1.RData"
+load(path_data_example_i)
+head(data)
+
+
+
