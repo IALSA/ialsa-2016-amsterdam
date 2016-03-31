@@ -1,4 +1,6 @@
-# knitr::stitch_rmd(script="./reports/review-variables/map/review-variables-map.R", output="./reports/review-variables/map/stitched-output/review-variable-map.md")
+# the purpose of this script is to create a data object (dto) which will hold all data and metadata from each candidate study of the exercise
+# run the line below to stitch a basic html output. For elaborated report, run the corresponding .Rmd file
+# knitr::stitch_rmd(script="./manipulation/0-ellis-island.R", output="./manipulation/stitched-output/0-ellis-island.md")
 #These first few lines run only when the file is run in RStudio, !!NOT when an Rmd/Rnw file calls it!!
 rm(list=ls(all=TRUE))  #Clear the variables from previous runs.
 cat("\f") # clear console 
@@ -7,17 +9,14 @@ cat("\f") # clear console
 # Call `base::source()` on any repo file that defines functions needed below.  Ideally, no real operations are performed.
 source("./scripts/common-functions.R") # used in multiple reports
 source("./scripts/graph-presets.R") # fonts, colors, themes 
-
 # ---- load-packages -----------------------------------------------------------
 # Attach these packages so their functions don't need to be qualified: http://r-pkgs.had.co.nz/namespace.html#search-path
-library(magrittr) # enables piping : %>% 
-
+library(magrittr) #Pipes
 # Verify these packages are available on the machine, but their functions need to be qualified: http://r-pkgs.had.co.nz/namespace.html#search-path
-requireNamespace("ggplot2") # graphing
-requireNamespace("tidyr") # data manipulation
-requireNamespace("dplyr") # Avoid attaching dplyr, b/c its function names conflict with a lot of packages (esp base, stats, and plyr).
-requireNamespace("testit")# For asserting conditions meet expected patterns.
-# requireNamespace("car") # For it's `recode()` function.
+requireNamespace("ggplot2")
+requireNamespace("tidyr")
+requireNamespace("dplyr") #Avoid attaching dplyr, b/c its function names conflict with a lot of packages (esp base, stats, and plyr).
+requireNamespace("testit") #For asserting conditions meet expected patterns.
 
 # ---- declare-globals ---------------------------------------------------------
 data_path_input  <- "../MAP/data-unshared/derived/ds0.rds"
@@ -30,7 +29,14 @@ nl$X <- NULL # remove automatic variable
 dplyr::tbl_df(nl)
 
 
-# ---- assemble-data-object ----------------------------------------------------
+# ---- dto-1 ---------------------------------------------------------
+#
+# There will be a total of (2) elements in (dto)
+dto <- list() # creates empty list object to populate with script to follow 
+#
+
+# ---- assemble-data-object-dto-1 ----------------------------------------------------
+dto <- list() # creates empty list object to populate with script to follow 
 # create a data object that will be used for subsequent analyses
 # select variables you will need for modeling
 ds <- ds0 %>%
@@ -71,6 +77,8 @@ ds <- ds0 %>%
   "rosbscl" # 	Rosow-Breslau scale
 ) 
 ds %>% dplyr::glimpse()
+dto[["unitData"]] <- ds
+
 # ---- inspect-data -------------------------------------------------------------
 # basic demographic variables
 length(unique(ds$id)) # there are this many of them
@@ -83,74 +91,41 @@ t <- table(ds[,"fu_year"], ds[,"died"]); t[t==0]<-".";t
 # histogram_continuous(ds, variable_name = "age_at_visit", bin_width = 1)
 
 
-
 # ---- tweak-data --------------------------------------------------------------
-# if died==1, all subsequent focal_outcome==DEAD.
-set.seed(1)
-ids <- sample(unique(ds$id),3)
-d <- ds0 %>% 
-  dplyr::filter(id %in% ids) %>%
-  dplyr::select_("id","fu_year","age_death","age_at_visit", "dementia") %>%
-  dplyr::mutate(
-    age_death = as.numeric(age_death)
-  )
-d 
-# d$id <- substring(d$id,1,1)
-# write.csv(d,"./data/shared/musti-state-dementia.csv")  
 
-# ---- ms_dementia -------------------------------------------------------------
-ds_alive <- d %>% 
-  dplyr::rename(
-    dementia_now=dementia, 
-    fu_point = fu_year) %>% 
-  dplyr::group_by(id) %>% 
-  dplyr::mutate(
-    dead_now = FALSE,
-    dementia_now   = as.logical(dementia_now),
-    dementia_ever  = any(dementia_now)
-  ) %>% 
-  dplyr::ungroup()
-ds_alive
-# str(ds_alive )
-ds_dead <- ds_alive %>% 
-  dplyr::filter(!is.na(age_death)) %>% 
-  dplyr::group_by(id) %>% 
-  dplyr::arrange(fu_point) %>% 
-  dplyr::summarize(
-    dead_now = TRUE,
-    fu_point       = max(fu_point) + 1L,
-    age_death      = max(age_death),
-    age_at_visit   = NA_real_,
-    dementia_last  = dplyr::last(dementia_now),
-    dementia_now   = ifelse(dementia_last, TRUE, NA),
-    dementia_ever  = any(dementia_now)
-  ) %>% 
-  dplyr::ungroup() %>% 
-  dplyr::select(-dementia_last)
-ds_dead
-# str(ds_dead)
-ds <- ds_alive %>%
-  dplyr::union(ds_dead) %>%
-  dplyr::arrange(id, fu_point)
-ds
+# ---- collect-meta-data -----------------------------------------
+# prepare metadata to be added to the dto
+# we begin by extracting the names and (hopefuly their) labels of variables from each dataset
+# and combine them in a single rectanguar object, long/stacked with respect to study names
+save_csv <- names_labels(ds)
+write.csv(save_csv,"./data/shared/derived/meta-raw-map.csv",row.names = T)
 
-ds <- ds %>%
-  dplyr::mutate(
-    state = ifelse( (!dead_now & !dementia_now),1,
-                    ifelse(!dead_now & dementia_now, 2, 
-                           ifelse(dead_now,3, NA)))
-  ) 
-ds
-ds$state <- ordered(ds$state, levels = c(1,2,3),
-                    labels = c("Healthy","Sick","Dead"))
-str(ds)
+# ----- import-meta-data-dead-dto-2 -----------------------------------------
+# after the final version of the data files used in the excerside have been obtained
+# we made a dead copy of `./data/shared/derived/meta-raw-live.csv` and named it `./data/shared/meta-data-map.csv`
+# decisions on variables' renaming and classification is encoded in this map
+# reproduce ellis-island script every time you make changes to `meta-data-map.csv`
+dsm <- read.csv("./data/meta/meta-data-map.csv")
+dsm["X"] <- NULL # remove native counter variable, not needed
+
+# attach metadata object as the 4th element of the dto
+dto[["metaData"]] <- dsm
 
 
+# ---- save-to-disk ------------------------------------------------------------
 
-# ---- sample-composition -------------------------------------------------------
-#################################
-#     Who are these people?     #
-################################
+# Save as a compress, binary R dataset.  It's no longer readable with a text editor, but it saves metadata (eg, factor information).
+saveRDS(dto, file="./data/unshared/derived/dto.rds", compress="xz")
+
+# ---- object-verification ------------------------------------------------
+# the production of the dto object is now complete
+# we verify its structure and content:
+dto <- readRDS("./data/unshared/derived/dto.rds")
+names(dto)
+# 1st element - unit(person) level data
+dplyr::tbl_df(dto[["unitData"]])
+# 2nd element - meta data, info about variables
+dto[["metaData"]]
 
 
 
