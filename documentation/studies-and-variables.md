@@ -7,7 +7,7 @@
 |HRS| C.Brown | | |  |    
 |LASA| R.Graham |pre-processed, choose variables to assemble |  |  
 |LBCS| I.Cukic | | | 
-|MAP| A.Koval |ready for analysis |[review variables](/reports/review-variables/map/review-variables-map.md)  |      
+|MAP| A.Koval |ready for analysis |[review variables](./manipulation/map/stitched-output/0-ellis-island-map.md)  |      
 |OBAS| R.Vendittelli |in process |   |  
 |OCTO-Twin| | | |  
 
