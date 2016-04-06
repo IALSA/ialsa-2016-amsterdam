@@ -1,6 +1,6 @@
 # the purpose of this script is to create a data object (dto) which will hold all data and metadata from each candidate study of the exercise
 # run the line below to stitch a basic html output. For elaborated report, run the corresponding .Rmd file
-# knitr::stitch_rmd(script="./manipulation/0-ellis-island.R", output="./manipulation/stitched-output/0-ellis-island.md")
+# knitr::stitch_rmd(script="./manipulation/map/0-ellis-island-map.R", output="./manipulation/map/stitched-output/0-ellis-island-map.md")
 #These first few lines run only when the file is run in RStudio, !!NOT when an Rmd/Rnw file calls it!!
 rm(list=ls(all=TRUE))  #Clear the variables from previous runs.
 cat("\f") # clear console 
@@ -98,19 +98,33 @@ t <- table(ds[,"fu_year"], ds[,"died"]); t[t==0]<-".";t
 # we begin by extracting the names and (hopefuly their) labels of variables from each dataset
 # and combine them in a single rectanguar object, long/stacked with respect to study names
 save_csv <- names_labels(ds)
-write.csv(save_csv,"./data/shared/derived/meta-raw-map.csv",row.names = T)
+write.csv(save_csv,"./data/meta/map/names-labels-live.csv",row.names = T)
 
 # ----- import-meta-data-dead-dto-2 -----------------------------------------
 # after the final version of the data files used in the excerside have been obtained
 # we made a dead copy of `./data/shared/derived/meta-raw-live.csv` and named it `./data/shared/meta-data-map.csv`
 # decisions on variables' renaming and classification is encoded in this map
 # reproduce ellis-island script every time you make changes to `meta-data-map.csv`
-dsm <- read.csv("./data/meta/meta-data-map.csv")
+dsm <- read.csv("./data/meta/map/meta-data-map.csv")
 dsm["X"] <- NULL # remove native counter variable, not needed
 
 # attach metadata object as the 4th element of the dto
 dto[["metaData"]] <- dsm
 
+# ----- view-metadata-1 ---------------------------------------------
+meta_data <- dto[["metaData"]] %>%
+  dplyr::filter(type %in% c('substance')) %>%
+  # dplyr::select(name, name_new, type, label, construct) %>%
+  dplyr::arrange(name)
+knitr::kable(meta_data)
+
+# ----- apply-meta-data-1 -------------------------------------
+# rename variables
+
+d_rules <- dto[["metaData"]] %>%
+  dplyr::filter(name %in% names(ds)) %>% 
+  dplyr::select(name, name_new ) # leave only collumn, which values you wish to append
+names(ds) <- d_rules[,"name_new"]
 
 # ---- save-to-disk ------------------------------------------------------------
 

@@ -1,0 +1,150 @@
+---
+title: "MAP: initial variable review"
+output:
+  html_document:
+    css: ~/GitHub/ialsa-2016-amsterdam/libs/css/sidebar.css
+    keep_md: yes
+    toc: yes
+---
+
+<!-- These two chunks should be added in the beginning of every .Rmd that you want to source an .R script -->
+<!--  The 1st mandatory chunck  -->
+<!--  Set the working directory to the repository's base directory -->
+```{r, echo=F, message=F} 
+#Don't combine this call with any other chunk 
+# cat("Working directory: ", getwd()) # check where you are
+  library(knitr)
+# Rmd is in "./reports/reportA/reportA.Rmd", but now the root is "./"
+  knitr::opts_knit$set(root.dir='../../../') 
+```
+
+<!--  The 2nd mandatory chunck  -->
+<!-- Set the report-wide options, and point to the external code file. -->
+```{r set_options, echo=F}
+# set options shared by all chunks
+opts_chunk$set(
+  results='show', 
+  message = TRUE,
+  comment = NA, 
+  tidy = FALSE,
+  fig.height = 4, 
+  fig.width = 5.5, 
+  out.width = "550px",
+  fig.path = 'figure_rmd/',     
+  dev = "png",
+  dpi = 400
+  # fig.path = 'figure_pdf/',     
+  # dev = "pdf"#,
+  # dev.args=list(pdf = list(colormodel = 'cmyk'))
+)
+echoChunks <- FALSE
+options(width=120) #So the output is 50% wider than the default.
+# connect to the file with the underlying R script  
+read_chunk("./reports/review-variables/map/review-variables-map.R") 
+```
+
+
+
+<!-- Load 'sourced' R files.  Suppress the output when loading packages. --> 
+```{r load-packages, echo=echoChunks, message=FALSE}
+```
+
+
+<!-- Load the sources.  Suppress the output when loading sources. --> 
+```{r load-sources, echo=echoChunks, message=FALSE}
+```
+
+
+<!-- Load any Global functions and variables declared in the R file.  Suppress the output. --> 
+```{r declare-globals, echo=echoChunks, results='show', message=FALSE}
+```
+
+<!-- Declare any global functions specific to a Rmd output.  Suppress the output. --> 
+```{r, echo=echoChunks, message=FALSE}
+#Put code in here.  It doesn't call a chunk in the codebehind file.
+```
+
+# (I) Exposition
+
+> This report is a record of interaction with a data transfer object (dto) produced by `./manipulation/map/0-ellis-island.R`. 
+
+The next section recaps this script, exposes the architecture of the DTO, and demonstrates the language of interacting with it.   
+
+## (I.A) Ellis Island
+
+> All data land on Ellis Island.
+
+The script `0-ellis-island.R` is the first script in the analytic workflow. It accomplished the following: 
+
+- (1) Reads in raw data file
+- (2) Extract, combines, and exports metadata (specifically, variable names and labels, if provided) into `./data/meta/map/names-labels-live.csv`, which is updated every time Ellis Island script is executed.   
+- (3) Augments raw metadata with instructions for renaming and classifying variables. The instructions are provided as manually entered values in `./data/meta/map/meta-data-map.csv`. They are used by automatic scripts in later manipulation and analysis.  
+- (4) Combines unit and meta data into a single DTO to serve as a starting point to all subsequent analyses.   
+
+
+<!-- Load the datasets.   -->
+```{r load-data, echo=echoChunks, results='show', message=FALSE}
+```
+
+### Meta
+```{r meta-table, echo=TRUE, results='show', message=FALSE}
+```
+
+
+<!-- Inspect the datasets.   -->
+```{r inspect-data, echo=echoChunks, results='show', message=FALSE}
+```
+
+<!-- Tweak the datasets.   -->
+```{r tweak-data, echo=echoChunks, results='show', message=FALSE}
+```
+
+
+
+<!-- Basic table view.   -->
+```{r basic-table, echo=TRUE, results='show', message=FALSE}
+```
+
+<!-- Basic graph view.   -->
+```{r basic-graph, echo=TRUE, results='show', message=FALSE}
+```
+
+# (II) Development
+
+Details  were requested about the following items (including the availability of treatment for each) :
+
+1. (N at baseline)
+2. Number of waves
+3. Cognitive outcomes
+4. Dementia diagnosis
+5. Education
+6. Social class
+7. BMI (self reported/ measured?)
+8. Smoking  habits
+9. Alcohol consumption
+10. Social engagement
+11. Physical activitiy
+12. APOE status
+13. Physical capability measures ( ex: grip strength)
+14. Social engagement
+15. Cardiovascular disease
+16. Hypertension
+17. Stroke
+18. Diabetes
+
+### General comments
+
+- for **all variables** conditions, please state whether  they are 
+  - self reported or diagnosed 
+  - time variant or invariant (study entry only) 
+  - treatment or management of the conditions is available
+  - provide levels and labels for items with categorical responses 
+  - specific description of measurement encoding 
+
+### Specific comments
+
+* education: years or degree? if years, please add mean and st.dev.  
+* alcohol consumption: self reported? is it coded as units per week?  
+* smoking: self reported ? how was it coded? cigarettes per week? or ever vs never? or current, never, ex-smoker?  
+* social engagement: this is a tough cookie! some studies collect info about participation in clubs, visits from relatives, etc  
+* dementia diagnosis: plase state how and who performed the diagnosis.  
