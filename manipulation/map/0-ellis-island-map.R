@@ -20,7 +20,7 @@ requireNamespace("testit") #For asserting conditions meet expected patterns.
 
 # ---- declare-globals ---------------------------------------------------------
 data_path_input  <- "../MAP/data-unshared/derived/ds0.rds"
-metadata_path_input <- "../MAP/data-phi-free/raw/nl_augmented.csv" # input file with your manual classification
+metadata_path_input <- "./data/meta/map/meta-data-map.csv" # input file with your manual classification
 
 # ---- load-data ---------------------------------------------------------------
 ds0 <- readRDS(data_path_input)
@@ -58,6 +58,7 @@ ds <- ds0 %>%
   "died", # Indicator of death  
   "age_at_visit", #Age at cycle - fractional
   #
+  "cogn_global", # Global cognitive score 
   "iadlsum", # Instrumental activities of daily liviing
   "cts_mmse30", # MMSE - 2014
   "cts_catflu", # Category fluency - 2014

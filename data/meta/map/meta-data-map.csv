@@ -38,34 +38,34 @@ perceivedstress,Perceived stress,psychological,perceivedstress,,,,,
 rejection,Negative social exchange - rejection-MAP,psychological,rejection,,,,,
 unsympathetic,Negative social exchange-unsymapathetic-MAP,psychological,unsympathetic,,,,,
 dcfdx,Clinical dx summary,clinical,dcfdx,cognition,FALSE,TRUE,category,TRUE
-dementia,Dementia diagnosis,cognitive,dementia,dementia,FALSE,TRUE,category,TRUE
+dementia,Dementia diagnosis,cognitive,dementia,dementia,FALSE,TRUE,"0, 1",TRUE
 r_stroke,Clinical stroke dx,clinical,r_stroke,stroke,FALSE,TRUE,category,TRUE
-cogn_ep,Calculated domain score-episodic memory,cognitive,cogn_ep,,,,,
-cogn_global,Global cognitive score,cognitive,cogn_global,,,,,
-cogn_po,Calculated domain score - perceptual orientation,cognitive,cogn_po,,,,,
-cogn_ps,Calculated domain score - perceptual speed,cognitive,cogn_ps,,,,,
-cogn_se,Calculated domain score - semantic memory,cognitive,cogn_se,,,,,
-cogn_wo,Calculated domain score - working memory,cognitive,cogn_wo,,,,,
-cts_bname,Boston naming - 2014,cognitive,cts_bname,,,,,
-cts_catflu,Category fluency - 2014,cognitive,catfluency,,,,,
-cts_db,Digits backwards - 2014,cognitive,cts_db,,,,,
-cts_delay,Logical memory IIa - 2014,cognitive,cts_delay,,,,,
-cts_df,Digits forwards - 2014,cognitive,cts_df,,,,,
-cts_doperf,Digit ordering - 2014,cognitive,cts_doperf,,,,,
-cts_ebdr,East Boston story - delayed recall - 2014,cognitive,cts_ebdr,,,,,
-cts_ebmt,East Boston story - immediate - 2014,cognitive,cts_ebmt,,,,,
-cts_idea,Complex ideas - 2014,cognitive,cts_idea,,,,,
-cts_lopair,Line orientation - 2014,cognitive,cts_lopair,,,,,
-cts_mmse30,MMSE - 2014,cognitive,mmse,,,,,
-cts_nccrtd,Number comparison - 2014,cognitive,cts_nccrtd,,,,,
-cts_pmat,Progressive Matrices - 2014,cognitive,cts_pmat,,,,,
-cts_read_nart,Reading test-NART-2014,cognitive,cts_read_nart,,,,,
-cts_read_wrat,Reading test - WRAT - 2014,cognitive,cts_read_wrat,,,,,
-cts_sdmt,Symbol digit modalitities - 2014,cognitive,cts_sdmt,,,,,
-cts_story,Logical memory Ia - immediate - 2014,cognitive,cts_story,,,,,
-cts_wli,Word list I- immediate- 2014,cognitive,cts_wli,,,,,
-cts_wlii,Word list II - delayed - 2014,cognitive,cts_wlii,,,,,
-cts_wliii,Word list III - recognition - 2014,cognitive,cts_wliii,,,,,
+cogn_ep,Calculated domain score-episodic memory,cognitive,cogn_ep,episodic memory,FALSE,TRUE,composite,TRUE
+cogn_global,Global cognitive score,cognitive,cogn_global,global,FALSE,TRUE,composite,TRUE
+cogn_po,Calculated domain score - perceptual orientation,cognitive,cogn_po,perceptual orientation,FALSE,TRUE,composite,TRUE
+cogn_ps,Calculated domain score - perceptual speed,cognitive,cogn_ps,perceptual speed,FALSE,TRUE,composite,TRUE
+cogn_se,Calculated domain score - semantic memory,cognitive,cogn_se,semantic memory,FALSE,TRUE,composite,TRUE
+cogn_wo,Calculated domain score - working memory,cognitive,cogn_wo,working memory,FALSE,TRUE,composite,TRUE
+cts_bname,Boston naming - 2014,cognitive,cts_bname,semantic memory,FALSE,TRUE,0 to 15,
+cts_catflu,Category fluency - 2014,cognitive,catfluency,semantic memory,FALSE,TRUE,0 to 75,
+cts_db,Digits backwards - 2014,cognitive,cts_db,working memory,FALSE,TRUE,0 to 12,
+cts_delay,Logical memory IIa - 2014,cognitive,cts_delay,episodic memory,FALSE,TRUE,0 to 25,
+cts_df,Digits forwards - 2014,cognitive,cts_df,working memory,FALSE,TRUE,0 to 12,
+cts_doperf,Digit ordering - 2014,cognitive,cts_doperf,working memory,FALSE,TRUE,0 to 14,
+cts_ebdr,East Boston story - delayed recall - 2014,cognitive,cts_ebdr,episodic memory,FALSE,TRUE,0 to 12,
+cts_ebmt,East Boston story - immediate - 2014,cognitive,cts_ebmt,episodic memory,FALSE,TRUE,0 to 12,
+cts_idea,Complex ideas - 2014,cognitive,cts_idea,verbal comprehension,FALSE,TRUE,0 to 8,
+cts_lopair,Line orientation - 2014,cognitive,cts_lopair,perceptual orientation,FALSE,TRUE,0 to 15,
+cts_mmse30,MMSE - 2014,cognitive,mmse,dementia,TRUE,TRUE,0 to 30,TRUE
+cts_nccrtd,Number comparison - 2014,cognitive,cts_nccrtd,perceptual speed,FALSE,TRUE,0 to 48,
+cts_pmat,Progressive Matrices - 2014,cognitive,cts_pmat,perceptual orientation,FALSE,TRUE,0 to 16,
+cts_read_nart,Reading test-NART-2014,cognitive,cts_read_nart,semantic memory,FALSE,TRUE,0 to 10,
+cts_read_wrat,Reading test - WRAT - 2014,cognitive,cts_read_wrat,semantic memory,FALSE,TRUE,0 to 15,
+cts_sdmt,Symbol digit modalitities - 2014,cognitive,cts_sdmt,perceptual speed,FALSE,TRUE,0 to 110,
+cts_story,Logical memory Ia - immediate - 2014,cognitive,cts_story,episodic memory,FALSE,TRUE,0 to 25,
+cts_wli,Word list I- immediate- 2014,cognitive,cts_wli,episodic memory,FALSE,TRUE,0 to 30,
+cts_wlii,Word list II - delayed - 2014,cognitive,cts_wlii,episodic memory,FALSE,TRUE,0 to 10,
+cts_wliii,Word list III - recognition - 2014,cognitive,cts_wliii,episodic memory,FALSE,TRUE,o to 10,
 age_at_visit,Age at cycle - fractional,demographic,age_at_visit,,,,,
 iadlsum,Instrumental activities of daily liviing,physical,iadlsum,physact,TRUE,TRUE,scale,TRUE
 katzsum,Katz measure of disability,physical,katzsum,physcap,TRUE,TRUE,scale,TRUE

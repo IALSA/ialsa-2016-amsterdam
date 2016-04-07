@@ -252,11 +252,8 @@ write.csv(save_csv,"./data/meta/map/names-labels-live.csv",row.names = T)
 # we made a dead copy of `./data/shared/derived/meta-raw-live.csv` and named it `./data/shared/meta-data-map.csv`
 # decisions on variables' renaming and classification is encoded in this map
 # reproduce ellis-island script every time you make changes to `meta-data-map.csv`
-dsm <- read.csv("./data/meta/map/meta-data-map.csv")
-dsm["X"] <- NULL # remove native counter variable, not needed
-
-# attach metadata object as the 4th element of the dto
-dto[["metaData"]] <- dsm
+dto[["metaData"]] <- read.csv("./data/meta/map/meta-data-map.csv")
+dto[["metaData"]]["X"] <- NULL # remove native counter variable, not needed
 ```
 
 ```r
@@ -271,7 +268,7 @@ knitr::kable(meta_data)
 
 |name      |label                                   |type      |name_new  |construct |self_reported |longitudinal |unit             |include |
 |:---------|:---------------------------------------|:---------|:---------|:---------|:-------------|:------------|:----------------|:-------|
-|alcohol_g |Grams of alcohol per day                |substance |alcohol_g |alcohol   |NA            |NA           |                 |NA      |
+|alcohol_g |Grams of alcohol per day                |substance |alcohol_g |alcohol   |TRUE          |FALSE        |grams            |TRUE    |
 |ldai_bl   |Lifetime daily alcohol intake -baseline |substance |alco_life |alcohol   |TRUE          |FALSE        |drinks / day     |TRUE    |
 |q3smo_bl  |Smoking quantity-baseline               |substance |q3smo_bl  |smoking   |TRUE          |FALSE        |cigarettes / day |TRUE    |
 |q4smo_bl  |Smoking duration-baseline               |substance |q4smo_bl  |smoking   |TRUE          |FALSE        |years            |TRUE    |
@@ -565,234 +562,234 @@ dto[["metaData"]]
 ## 111                                          Vascular disease risk factors
 ## 112                                                       Gait Speed - MAP
 ## 113                                                     Extremity strength
-##              type              name_new    construct self_reported
-## 1          design                    id           id         FALSE
-## 2          design                 study                         NA
-## 3          design           scaled_to.x                         NA
-## 4     personality         agreeableness                         NA
-## 5     personality     conscientiousness                         NA
-## 6     personality          extraversion                         NA
-## 7     personality          neo_altruism                         NA
-## 8     personality neo_conscientiousness                         NA
-## 9     personality             neo_trust                         NA
-## 10    personality              openness                         NA
-## 11    personality       anxiety_10items                         NA
-## 12    personality        neuroticism_12                         NA
-## 13    personality         neuroticism_6                         NA
-## 14    demographic                age_bl          age         FALSE
-## 15    demographic             age_death          age         FALSE
-## 16    demographic                  died          age         FALSE
-## 17    demographic                  educ    education          TRUE
-## 18    demographic                  msex          sex         FALSE
-## 19    demographic                  race         race          TRUE
-## 20    demographic               spanish         race          TRUE
-## 21       clinical         apoe_genotype         apoe         FALSE
-## 22      substance             alco_life      alcohol          TRUE
-## 23      substance              q3smo_bl      smoking          TRUE
-## 24      substance              q4smo_bl      smoking          TRUE
-## 25      substance              smoke_bl      smoking          TRUE
-## 26      substance               smoking      smoking          TRUE
-## 27         design               fu_year         time         FALSE
-## 28         design           scaled_to.y                         NA
-## 29  psychological               cesdsum                         NA
-## 30  psychological              r_depres                         NA
-## 31  psychological             intrusion                         NA
-## 32  psychological         neglifeevents                         NA
-## 33  psychological        negsocexchange                         NA
-## 34  psychological                nohelp                         NA
-## 35  psychological                 panas                         NA
-## 36  psychological       perceivedstress                         NA
-## 37  psychological             rejection                         NA
-## 38  psychological         unsympathetic                         NA
-## 39       clinical                 dcfdx    cognition         FALSE
-## 40      cognitive              dementia     dementia         FALSE
-## 41       clinical              r_stroke       stroke         FALSE
-## 42      cognitive               cogn_ep                         NA
-## 43      cognitive           cogn_global                         NA
-## 44      cognitive               cogn_po                         NA
-## 45      cognitive               cogn_ps                         NA
-## 46      cognitive               cogn_se                         NA
-## 47      cognitive               cogn_wo                         NA
-## 48      cognitive             cts_bname                         NA
-## 49      cognitive            catfluency                         NA
-## 50      cognitive                cts_db                         NA
-## 51      cognitive             cts_delay                         NA
-## 52      cognitive                cts_df                         NA
-## 53      cognitive            cts_doperf                         NA
-## 54      cognitive              cts_ebdr                         NA
-## 55      cognitive              cts_ebmt                         NA
-## 56      cognitive              cts_idea                         NA
-## 57      cognitive            cts_lopair                         NA
-## 58      cognitive                  mmse                         NA
-## 59      cognitive            cts_nccrtd                         NA
-## 60      cognitive              cts_pmat                         NA
-## 61      cognitive         cts_read_nart                         NA
-## 62      cognitive         cts_read_wrat                         NA
-## 63      cognitive              cts_sdmt                         NA
-## 64      cognitive             cts_story                         NA
-## 65      cognitive               cts_wli                         NA
-## 66      cognitive              cts_wlii                         NA
-## 67      cognitive             cts_wliii                         NA
-## 68    demographic          age_at_visit                         NA
-## 69       physical               iadlsum      physact          TRUE
-## 70       physical               katzsum      physcap          TRUE
-## 71       physical               rosbscl      physcap          TRUE
-## 72       physical               rosbsum      physcap          TRUE
-## 73       physical                vision      physcap         FALSE
-## 74       physical             visionlog      physcap         FALSE
-## 75       physical                   fev      physcap         FALSE
-## 76       physical                   mep      physcap         FALSE
-## 77       physical                   mip      physcap         FALSE
-## 78       physical                   pvc      physcap         FALSE
-## 79       clinical                   bun                         NA
-## 80       clinical                    ca                         NA
-## 81       clinical               chlstrl                         NA
-## 82       clinical                    cl                         NA
-## 83       clinical                   co2                         NA
-## 84       clinical                   crn                         NA
-## 85       clinical               fasting                         NA
-## 86       clinical               glucose                         NA
-## 87       clinical                 hba1c                         NA
-## 88       clinical            hdlchlstrl                         NA
-## 89       clinical              hdlratio                         NA
-## 90       clinical                     k                         NA
-## 91       clinical            ldlchlstrl                         NA
-## 92       clinical                    na                         NA
-## 93      substance             alcohol_g      alcohol            NA
-## 94       physical                   bmi     physique         FALSE
-## 95       physical                   htm     physique         FALSE
-## 96       physical          phys5itemsum      physact          TRUE
-## 97       physical                  wtkg     physique         FALSE
-## 98       clinical                  bp11 hypertension         FALSE
-## 99       clinical                   bp2 hypertension         FALSE
-## 100      clinical                   bp3 hypertension          TRUE
-## 101      clinical                  bp31 hypertension         FALSE
-## 102      clinical      hypertension_cum hypertension          TRUE
-## 103      clinical                dm_cum     diabetes          TRUE
-## 104      clinical           thyroid_cum                         NA
-## 105      clinical               chf_cum       cardio          TRUE
-## 106      clinical      claudication_cum                         NA
-## 107      clinical             heart_cum                         NA
-## 108      clinical            stroke_cum       stroke         FALSE
-## 109      clinical         vasc_3dis_sum                         NA
-## 110      clinical         vasc_4dis_sum                         NA
-## 111      clinical        vasc_risks_sum                         NA
-## 112      physical            gait_speed      physcap         FALSE
-## 113      physical               gripavg      physcap         FALSE
-##     longitudinal             unit include
-## 1          FALSE           person    TRUE
-## 2             NA                       NA
-## 3             NA                       NA
-## 4             NA                       NA
-## 5             NA                       NA
-## 6             NA                       NA
-## 7             NA                       NA
-## 8             NA                       NA
-## 9             NA                       NA
-## 10            NA                       NA
-## 11            NA                       NA
-## 12            NA                       NA
-## 13            NA                       NA
-## 14         FALSE             year    TRUE
-## 15         FALSE             year    TRUE
-## 16         FALSE         category    TRUE
-## 17         FALSE            years    TRUE
-## 18         FALSE         category    TRUE
-## 19         FALSE         category    TRUE
-## 20         FALSE         category    TRUE
-## 21         FALSE            scale    TRUE
-## 22         FALSE     drinks / day    TRUE
-## 23         FALSE cigarettes / day    TRUE
-## 24         FALSE            years    TRUE
-## 25         FALSE         category    TRUE
-## 26         FALSE         category    TRUE
-## 27          TRUE       time point    TRUE
-## 28            NA                       NA
-## 29            NA                       NA
-## 30            NA                       NA
-## 31            NA                       NA
-## 32            NA                       NA
-## 33            NA                       NA
-## 34            NA                       NA
-## 35            NA                       NA
-## 36            NA                       NA
-## 37            NA                       NA
-## 38            NA                       NA
-## 39          TRUE         category    TRUE
-## 40          TRUE         category    TRUE
-## 41          TRUE         category    TRUE
-## 42            NA                       NA
-## 43            NA                       NA
-## 44            NA                       NA
-## 45            NA                       NA
-## 46            NA                       NA
-## 47            NA                       NA
-## 48            NA                       NA
-## 49            NA                       NA
-## 50            NA                       NA
-## 51            NA                       NA
-## 52            NA                       NA
-## 53            NA                       NA
-## 54            NA                       NA
-## 55            NA                       NA
-## 56            NA                       NA
-## 57            NA                       NA
-## 58            NA                       NA
-## 59            NA                       NA
-## 60            NA                       NA
-## 61            NA                       NA
-## 62            NA                       NA
-## 63            NA                       NA
-## 64            NA                       NA
-## 65            NA                       NA
-## 66            NA                       NA
-## 67            NA                       NA
-## 68            NA                       NA
-## 69          TRUE            scale    TRUE
-## 70          TRUE            scale    TRUE
-## 71          TRUE            scale    TRUE
-## 72          TRUE            scale    TRUE
-## 73          TRUE            scale    TRUE
-## 74          TRUE            scale    TRUE
-## 75          TRUE           liters    TRUE
-## 76          TRUE           cm H20    TRUE
-## 77          TRUE           cm H20    TRUE
-## 78          TRUE           liters    TRUE
-## 79            NA                       NA
-## 80            NA                       NA
-## 81            NA                       NA
-## 82            NA                       NA
-## 83            NA                       NA
-## 84            NA                       NA
-## 85            NA                       NA
-## 86            NA                       NA
-## 87            NA                       NA
-## 88            NA                       NA
-## 89            NA                       NA
-## 90            NA                       NA
-## 91            NA                       NA
-## 92            NA                       NA
-## 93            NA                       NA
-## 94          TRUE           kg/msq    TRUE
-## 95          TRUE           meters    TRUE
-## 96            NA                       NA
-## 97          TRUE            kilos    TRUE
-## 98          TRUE                       NA
-## 99          TRUE                       NA
-## 100         TRUE                       NA
-## 101         TRUE                       NA
-## 102         TRUE                       NA
-## 103         TRUE                       NA
-## 104           NA                       NA
-## 105         TRUE         category    TRUE
-## 106           NA                       NA
-## 107           NA                       NA
-## 108         TRUE         category    TRUE
-## 109           NA                       NA
-## 110           NA                       NA
-## 111           NA                       NA
-## 112         TRUE          min/sec    TRUE
-## 113         TRUE              lbs    TRUE
+##              type              name_new              construct
+## 1          design                    id                     id
+## 2          design                 study                       
+## 3          design           scaled_to.x                       
+## 4     personality         agreeableness                       
+## 5     personality     conscientiousness                       
+## 6     personality          extraversion                       
+## 7     personality          neo_altruism                       
+## 8     personality neo_conscientiousness                       
+## 9     personality             neo_trust                       
+## 10    personality              openness                       
+## 11    personality       anxiety_10items                       
+## 12    personality        neuroticism_12                       
+## 13    personality         neuroticism_6                       
+## 14    demographic                age_bl                    age
+## 15    demographic             age_death                    age
+## 16    demographic                  died                    age
+## 17    demographic                  educ              education
+## 18    demographic                  msex                    sex
+## 19    demographic                  race                   race
+## 20    demographic               spanish                   race
+## 21       clinical         apoe_genotype                   apoe
+## 22      substance             alco_life                alcohol
+## 23      substance              q3smo_bl                smoking
+## 24      substance              q4smo_bl                smoking
+## 25      substance              smoke_bl                smoking
+## 26      substance               smoking                smoking
+## 27         design               fu_year                   time
+## 28         design           scaled_to.y                       
+## 29  psychological               cesdsum                       
+## 30  psychological              r_depres                       
+## 31  psychological             intrusion                       
+## 32  psychological         neglifeevents                       
+## 33  psychological        negsocexchange                       
+## 34  psychological                nohelp                       
+## 35  psychological                 panas                       
+## 36  psychological       perceivedstress                       
+## 37  psychological             rejection                       
+## 38  psychological         unsympathetic                       
+## 39       clinical                 dcfdx              cognition
+## 40      cognitive              dementia               dementia
+## 41       clinical              r_stroke                 stroke
+## 42      cognitive               cogn_ep        episodic memory
+## 43      cognitive           cogn_global                 global
+## 44      cognitive               cogn_po perceptual orientation
+## 45      cognitive               cogn_ps       perceptual speed
+## 46      cognitive               cogn_se        semantic memory
+## 47      cognitive               cogn_wo         working memory
+## 48      cognitive             cts_bname        semantic memory
+## 49      cognitive            catfluency        semantic memory
+## 50      cognitive                cts_db         working memory
+## 51      cognitive             cts_delay        episodic memory
+## 52      cognitive                cts_df         working memory
+## 53      cognitive            cts_doperf         working memory
+## 54      cognitive              cts_ebdr        episodic memory
+## 55      cognitive              cts_ebmt        episodic memory
+## 56      cognitive              cts_idea   verbal comprehension
+## 57      cognitive            cts_lopair perceptual orientation
+## 58      cognitive                  mmse               dementia
+## 59      cognitive            cts_nccrtd       perceptual speed
+## 60      cognitive              cts_pmat perceptual orientation
+## 61      cognitive         cts_read_nart        semantic memory
+## 62      cognitive         cts_read_wrat        semantic memory
+## 63      cognitive              cts_sdmt       perceptual speed
+## 64      cognitive             cts_story        episodic memory
+## 65      cognitive               cts_wli        episodic memory
+## 66      cognitive              cts_wlii        episodic memory
+## 67      cognitive             cts_wliii        episodic memory
+## 68    demographic          age_at_visit                       
+## 69       physical               iadlsum                physact
+## 70       physical               katzsum                physcap
+## 71       physical               rosbscl                physcap
+## 72       physical               rosbsum                physcap
+## 73       physical                vision                physcap
+## 74       physical             visionlog                physcap
+## 75       physical                   fev                physcap
+## 76       physical                   mep                physcap
+## 77       physical                   mip                physcap
+## 78       physical                   pvc                physcap
+## 79       clinical                   bun                       
+## 80       clinical                    ca                       
+## 81       clinical               chlstrl                       
+## 82       clinical                    cl                       
+## 83       clinical                   co2                       
+## 84       clinical                   crn                       
+## 85       clinical               fasting                       
+## 86       clinical               glucose                       
+## 87       clinical                 hba1c                       
+## 88       clinical            hdlchlstrl                       
+## 89       clinical              hdlratio                       
+## 90       clinical                     k                       
+## 91       clinical            ldlchlstrl                       
+## 92       clinical                    na                       
+## 93      substance             alcohol_g                alcohol
+## 94       physical                   bmi               physique
+## 95       physical                   htm               physique
+## 96       physical          phys5itemsum                physact
+## 97       physical                  wtkg               physique
+## 98       clinical                  bp11           hypertension
+## 99       clinical                   bp2           hypertension
+## 100      clinical                   bp3           hypertension
+## 101      clinical                  bp31           hypertension
+## 102      clinical      hypertension_cum           hypertension
+## 103      clinical                dm_cum               diabetes
+## 104      clinical           thyroid_cum                       
+## 105      clinical               chf_cum                 cardio
+## 106      clinical      claudication_cum                       
+## 107      clinical             heart_cum                       
+## 108      clinical            stroke_cum                 stroke
+## 109      clinical         vasc_3dis_sum                       
+## 110      clinical         vasc_4dis_sum                       
+## 111      clinical        vasc_risks_sum                       
+## 112      physical            gait_speed                physcap
+## 113      physical               gripavg                physcap
+##     self_reported longitudinal             unit include
+## 1           FALSE        FALSE           person    TRUE
+## 2              NA           NA                       NA
+## 3              NA           NA                       NA
+## 4              NA           NA                       NA
+## 5              NA           NA                       NA
+## 6              NA           NA                       NA
+## 7              NA           NA                       NA
+## 8              NA           NA                       NA
+## 9              NA           NA                       NA
+## 10             NA           NA                       NA
+## 11             NA           NA                       NA
+## 12             NA           NA                       NA
+## 13             NA           NA                       NA
+## 14          FALSE        FALSE             year    TRUE
+## 15          FALSE        FALSE             year    TRUE
+## 16          FALSE        FALSE         category    TRUE
+## 17           TRUE        FALSE            years    TRUE
+## 18          FALSE        FALSE         category    TRUE
+## 19           TRUE        FALSE         category    TRUE
+## 20           TRUE        FALSE         category    TRUE
+## 21          FALSE        FALSE            scale    TRUE
+## 22           TRUE        FALSE     drinks / day    TRUE
+## 23           TRUE        FALSE cigarettes / day    TRUE
+## 24           TRUE        FALSE            years    TRUE
+## 25           TRUE        FALSE         category    TRUE
+## 26           TRUE        FALSE         category    TRUE
+## 27          FALSE         TRUE       time point    TRUE
+## 28             NA           NA                       NA
+## 29             NA           NA                       NA
+## 30             NA           NA                       NA
+## 31             NA           NA                       NA
+## 32             NA           NA                       NA
+## 33             NA           NA                       NA
+## 34             NA           NA                       NA
+## 35             NA           NA                       NA
+## 36             NA           NA                       NA
+## 37             NA           NA                       NA
+## 38             NA           NA                       NA
+## 39          FALSE         TRUE         category    TRUE
+## 40          FALSE         TRUE             0, 1    TRUE
+## 41          FALSE         TRUE         category    TRUE
+## 42          FALSE         TRUE        composite    TRUE
+## 43          FALSE         TRUE        composite    TRUE
+## 44          FALSE         TRUE        composite    TRUE
+## 45          FALSE         TRUE        composite    TRUE
+## 46          FALSE         TRUE        composite    TRUE
+## 47          FALSE         TRUE        composite    TRUE
+## 48          FALSE         TRUE          0 to 15      NA
+## 49          FALSE         TRUE          0 to 75      NA
+## 50          FALSE         TRUE          0 to 12      NA
+## 51          FALSE         TRUE          0 to 25      NA
+## 52          FALSE         TRUE          0 to 12      NA
+## 53          FALSE         TRUE          0 to 14      NA
+## 54          FALSE         TRUE          0 to 12      NA
+## 55          FALSE         TRUE          0 to 12      NA
+## 56          FALSE         TRUE           0 to 8      NA
+## 57          FALSE         TRUE          0 to 15      NA
+## 58           TRUE         TRUE          0 to 30    TRUE
+## 59          FALSE         TRUE          0 to 48      NA
+## 60          FALSE         TRUE          0 to 16      NA
+## 61          FALSE         TRUE          0 to 10      NA
+## 62          FALSE         TRUE          0 to 15      NA
+## 63          FALSE         TRUE         0 to 110      NA
+## 64          FALSE         TRUE          0 to 25      NA
+## 65          FALSE         TRUE          0 to 30      NA
+## 66          FALSE         TRUE          0 to 10      NA
+## 67          FALSE         TRUE          o to 10      NA
+## 68             NA           NA                       NA
+## 69           TRUE         TRUE            scale    TRUE
+## 70           TRUE         TRUE            scale    TRUE
+## 71           TRUE         TRUE            scale    TRUE
+## 72           TRUE         TRUE            scale    TRUE
+## 73          FALSE         TRUE            scale    TRUE
+## 74          FALSE         TRUE            scale    TRUE
+## 75          FALSE         TRUE           liters    TRUE
+## 76          FALSE         TRUE           cm H20    TRUE
+## 77          FALSE         TRUE           cm H20    TRUE
+## 78          FALSE         TRUE           liters    TRUE
+## 79             NA           NA                       NA
+## 80             NA           NA                       NA
+## 81             NA           NA                       NA
+## 82             NA           NA                       NA
+## 83             NA           NA                       NA
+## 84             NA           NA                       NA
+## 85             NA           NA                       NA
+## 86             NA           NA                       NA
+## 87             NA           NA                       NA
+## 88             NA           NA                       NA
+## 89             NA           NA                       NA
+## 90             NA           NA                       NA
+## 91             NA           NA                       NA
+## 92             NA           NA                       NA
+## 93           TRUE        FALSE            grams    TRUE
+## 94          FALSE         TRUE           kg/msq    TRUE
+## 95          FALSE         TRUE           meters    TRUE
+## 96           TRUE           NA                       NA
+## 97          FALSE         TRUE            kilos    TRUE
+## 98          FALSE         TRUE                       NA
+## 99          FALSE         TRUE                       NA
+## 100          TRUE         TRUE                       NA
+## 101         FALSE         TRUE                       NA
+## 102          TRUE         TRUE                       NA
+## 103          TRUE         TRUE                       NA
+## 104            NA           NA                       NA
+## 105          TRUE         TRUE         category    TRUE
+## 106            NA           NA                       NA
+## 107            NA           NA                       NA
+## 108         FALSE         TRUE         category    TRUE
+## 109            NA           NA                       NA
+## 110            NA           NA                       NA
+## 111            NA           NA                       NA
+## 112         FALSE         TRUE          min/sec    TRUE
+## 113         FALSE         TRUE              lbs    TRUE
 ```
 
 The R session information (including the OS info, R version and all
@@ -841,6 +838,6 @@ Sys.time()
 ```
 
 ```
-## [1] "2016-04-07 05:35:56 PDT"
+## [1] "2016-04-07 10:14:50 PDT"
 ```
 

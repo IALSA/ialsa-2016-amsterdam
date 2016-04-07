@@ -1,4 +1,4 @@
-# knitr::stitch_rmd(script="./___/___.R", output="./___/___/___.md")
+# knitr::stitch_rmd(script="./reports/review-variables/map/review-variables-map.R", output="./reports/review-variables/map/review-variables-map.md")
 #These first few lines run only when the file is run in RStudio, !!NOT when an Rmd/Rnw file calls it!!
 rm(list=ls(all=TRUE))  #Clear the variables from previous runs.
 cat("\f") # clear console 
@@ -66,8 +66,25 @@ ds %>%
   dplyr::group_by_("fu_year") %>%
   dplyr::summarize(sample_size=n())
 
-# ----- B-2-cognitive-capability-measures -------------------------------------------------
-dto[["metaData"]] %>% dplyr::filter(type=="cognitive")
+# ----- B-2-cognitive-1  -----------------------
+dto[["metaData"]] %>% 
+  dplyr::filter(type=="cognitive") %>% 
+  dplyr::select(-name,-type,-name_new) %>%
+  dplyr::arrange(construct, include)
+
+# ----- B-2-cognitive-2  -----------------------
+dto[["metaData"]] %>% 
+  dplyr::filter(type=="cognitive", include==TRUE) %>% 
+  dplyr::select(-type,-name_new) %>%
+  dplyr::arrange(construct, include)
+
+# ----- B-2-cognitive-3  -----------------------
+dto[["unitData"]] %>% 
+  dplyr::select(id,fu_year, cogn_global) %>% 
+  # dplyr::filter(!is.na(cogn_global)) %>% 
+  dplyr::group_by(fu_year) %>% 
+  dplyr::summarize(ave_cog = mean(cogn_global),
+                   observed =n()) 
 
 # ----- B-3-dementia-diagnosis -------------------------------------------------
 dto[["metaData"]] %>% dplyr::filter(name=="dementia")
