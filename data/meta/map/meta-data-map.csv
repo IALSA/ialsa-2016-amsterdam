@@ -41,7 +41,7 @@ dcfdx,Clinical dx summary,clinical,dcfdx,cognition,FALSE,TRUE,category,TRUE
 dementia,Dementia diagnosis,cognitive,dementia,dementia,FALSE,TRUE,"0, 1",TRUE
 r_stroke,Clinical stroke dx,clinical,r_stroke,stroke,FALSE,TRUE,category,TRUE
 cogn_ep,Calculated domain score-episodic memory,cognitive,cogn_ep,episodic memory,FALSE,TRUE,composite,TRUE
-cogn_global,Global cognitive score,cognitive,cogn_global,global,FALSE,TRUE,composite,TRUE
+cogn_global,Global cognitive score,cognitive,cogn_global,global cognition,FALSE,TRUE,composite,TRUE
 cogn_po,Calculated domain score - perceptual orientation,cognitive,cogn_po,perceptual orientation,FALSE,TRUE,composite,TRUE
 cogn_ps,Calculated domain score - perceptual speed,cognitive,cogn_ps,perceptual speed,FALSE,TRUE,composite,TRUE
 cogn_se,Calculated domain score - semantic memory,cognitive,cogn_se,semantic memory,FALSE,TRUE,composite,TRUE
