@@ -113,38 +113,41 @@ The script `0-ellis-island.R` is the first script in the analytic workflow. It a
 
 Details  were requested about the following items (including the availability of treatment for each) :
 
-1. (N at baseline)
-2. Number of waves
-3. Cognitive outcomes
-4. Dementia diagnosis
-5. Education
-6. Social class
-7. BMI (self reported/ measured?)
-8. Smoking  habits
-9. Alcohol consumption
-10. Social engagement
-11. Physical activitiy
-12. APOE status
-13. Physical capability measures ( ex: grip strength)
-14. Social engagement
-15. Cardiovascular disease
-16. Hypertension
-17. Stroke
-18. Diabetes
+1. N at each wave
+2. Cognitive capability measures
+3. Dementia diagnosis
+4. Education
+5. Social class
+6. Physique
+7. Smoking  habits
+8. Alcohol consumption
+9. Social engagement
+10. Physical activitiy
+11. APOE status
+12. Physical capability measures 
+13. Cardiovascular disease
+14. Hypertension
+15. Stroke
+16. Diabetes
 
 ### General comments
 
-- for **all variables** conditions, please state whether  they are 
+for **all variables** conditions, declare whether they are 
   - self reported or diagnosed 
   - time variant or invariant (study entry only) 
   - treatment or management of the conditions is available
   - provide levels and labels for items with categorical responses 
   - specific description of measurement encoding 
 
-### Specific comments
+## (1) N at each wave
 
-* education: years or degree? if years, please add mean and st.dev.  
-* alcohol consumption: self reported? is it coded as units per week?  
-* smoking: self reported ? how was it coded? cigarettes per week? or ever vs never? or current, never, ex-smoker?  
-* social engagement: this is a tough cookie! some studies collect info about participation in clubs, visits from relatives, etc  
-* dementia diagnosis: plase state how and who performed the diagnosis.  
+The following pattern of attrition has been observed in the data
+```{r B-1-N-at-each-wave, echo=TRUE}
+```
+
+
+## (2) Cognitive capability measures
+
+
+
+
