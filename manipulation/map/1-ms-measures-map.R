@@ -89,12 +89,12 @@ ds <- ds_alive %>%
   dplyr::union(ds_dead) %>%
   dplyr::arrange(id, fu_point)
 ds
-
+# compute the multistate variable
 ds <- ds %>%
   dplyr::mutate(
-    state = ifelse( (!dead_now & !dementia_now),1,
-                    ifelse(!dead_now & dementia_now, 2, 
-                           ifelse(dead_now,3, NA)))
+    state = ifelse(!dead_now & !dementia_now, 1,
+            ifelse(!dead_now & dementia_now, 2, 
+                           ifelse(dead_now, 3, NA)))
   ) 
 ds
 ds$state <- ordered(ds$state, levels = c(1,2,3),
