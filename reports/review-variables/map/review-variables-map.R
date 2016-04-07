@@ -54,19 +54,19 @@ dto[["metaData"]] %>%
 # ---- basic-graph --------------------------------------------------------------
 # this is how we can interact with the `dto` to call and graph data and metadata
 dto[["metaData"]] %>% 
-  dplyr::filter(type=="demo") %>% 
+  dplyr::filter(type=="demographic") %>% 
   dplyr::select(name,name_new,label)
 
 dto[["unitData"]]%>%
   histogram_continuous("age_death", bin_width=1)
 
-# ---- B-1-N-at-baseline -------------------------------------------------------
+# ---- B-1-N-at-each-wave -------------------------------------------------------
 dto[["metaData"]] %>% dplyr::filter(name=="fu_year")
 ds %>% 
   dplyr::group_by_("fu_year") %>%
-  dplyr::summarize(n=n())
+  dplyr::summarize(sample_size=n())
 
-# ----- B-2-cognitive-outcomes -------------------------------------------------
+# ----- B-2-cognitive-capability-measures -------------------------------------------------
 dto[["metaData"]] %>% dplyr::filter(type=="cognitive")
 
 # ----- B-3-dementia-diagnosis -------------------------------------------------
@@ -114,7 +114,19 @@ dto[["unitData"]] %>%
 
 # ---- B-6-smoking -----------------------------------------------------------
 dto[["metaData"]] %>% dplyr::filter(construct %in% c("smoking"))
+dto[["unitData"]] %>% 
+  dplyr::filter(!is.na(q3smo_bl)) %>% 
+  dplyr::group_by_("q3smo_bl") %>% 
+  dplyr::summarize(n=n())
+  
+dto[["unitData"]] %>% 
+  dplyr::filter(!is.na(q3smo_bl)) %>% 
+  dplyr::group_by_("fu_year") %>% 
+  dplyr::summarize(average_years_edu=mean(q3smo_bl),
+                   SD=sd(q3smo_bl),
+                   observed_n = n())
 
+table(ds$iadlsum)
 
 # ---- reproduce ---------------------------------------
 rmarkdown::render(

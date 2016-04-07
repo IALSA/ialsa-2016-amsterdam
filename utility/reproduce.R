@@ -10,7 +10,7 @@ base::rm(list=base::ls(all=TRUE))
 # Check Working Directory -------------------------------------------------
 #' Verify the working directory has been set correctly.  Much of the code assumes the working directory is the repository's root directory.
 #' In the following line, rename `RAnalysisSkeleton` to your repository.
-if( base::basename(base::getwd()) != "RAnalysisSkeleton" ) {
+if( base::basename(base::getwd()) != "ialsa-2016-amsterdam" ) {
   base::stop("The working directory should be set to the root of the package/repository.  ",
        "It's currently set to `", base::getwd(), "`.")
 }

@@ -105,11 +105,8 @@ write.csv(save_csv,"./data/meta/map/names-labels-live.csv",row.names = T)
 # we made a dead copy of `./data/shared/derived/meta-raw-live.csv` and named it `./data/shared/meta-data-map.csv`
 # decisions on variables' renaming and classification is encoded in this map
 # reproduce ellis-island script every time you make changes to `meta-data-map.csv`
-dsm <- read.csv("./data/meta/map/meta-data-map.csv")
-dsm["X"] <- NULL # remove native counter variable, not needed
-
-# attach metadata object as the 4th element of the dto
-dto[["metaData"]] <- dsm
+dto[["metaData"]] <- read.csv("./data/meta/map/meta-data-map.csv")
+dto[["metaData"]]["X"] <- NULL # remove native counter variable, not needed
 
 # ----- view-metadata-1 ---------------------------------------------
 meta_data <- dto[["metaData"]] %>%

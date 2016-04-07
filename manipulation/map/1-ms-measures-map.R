@@ -22,11 +22,6 @@ requireNamespace("testit", quietly=TRUE)
 path_input <- "./data/unshared/derived/dto.rds"
 path_output <- "data/unshared/derived/dto.rds"
 
-# ---- load_data ---------------------------------------------------------------
-ds0 <- read.csv(path_input, header = T,  stringsAsFactors=FALSE)
-# ds0 <- ds0[ds0$study_name==study,]
-
-
 # ---- load-data ---------------------------------------------------------------
 # load the product of 0-ellis-island.R,  a list object containing data and metad
 dto <- readRDS("./data/unshared/derived/dto.rds")
@@ -41,7 +36,7 @@ dto[["metaData"]]
 
 
 # ---- tweak_data --------------------------------------------------------------
-
+ds <- dto[["unitData"]]
 
 
 
@@ -49,7 +44,7 @@ dto[["metaData"]]
 # if died==1, all subsequent focal_outcome==DEAD.
 set.seed(1)
 ids <- sample(unique(ds$id),3)
-d <- ds0 %>% 
+d <- ds %>% 
   dplyr::filter(id %in% ids) %>%
   dplyr::select_("id","fu_year","age_death","age_at_visit", "dementia") %>%
   dplyr::mutate(
