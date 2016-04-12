@@ -11,7 +11,8 @@ library(magrittr) # enables piping : %>%
 # Call `base::source()` on any repo file that defines functions needed below.  Ideally, no real operations are performed.
 source("./scripts/common-functions.R") # used in multiple reports
 source("./scripts/graph-presets.R") # fonts, colors, themes 
-
+source("./scripts/general-graphs.R")
+source("./scripts/specific-graphs.R")
 # Verify these packages are available on the machine, but their functions need to be qualified: http://r-pkgs.had.co.nz/namespace.html#search-path
 requireNamespace("ggplot2") # graphing
 # requireNamespace("readr") # data input
@@ -60,31 +61,57 @@ dto[["metaData"]] %>%
 dto[["unitData"]]%>%
   histogram_continuous("age_death", bin_width=1)
 
+names(ds)
+set.seed(1)
+(ids <- sample(ds$id,100))
+d <- dto[["unitData"]] %>% dplyr::filter(id %in% ids)
+g <- basic_line(d, "cogn_global", "fu_year", "salmon", .9, .1, T)
+g
+
+raw_smooth_lines(d, "cogn_global")
+
+
+
 # ---- B-1-N-at-each-wave -------------------------------------------------------
 dto[["metaData"]] %>% dplyr::filter(name=="fu_year")
 ds %>% 
   dplyr::group_by_("fu_year") %>%
   dplyr::summarize(sample_size=n())
 
-# ----- B-2-cognitive-1  -----------------------
+# ----- B-2-cognitive-1 -----------------------
 dto[["metaData"]] %>% 
   dplyr::filter(type=="cognitive") %>% 
   dplyr::select(-name,-type,-name_new) %>%
   dplyr::arrange(construct, include)
 
-# ----- B-2-cognitive-2  -----------------------
+# ----- B-2-cognitive-2 -----------------------
 dto[["metaData"]] %>% 
   dplyr::filter(type=="cognitive", include==TRUE) %>% 
   dplyr::select(-type,-name_new) %>%
   dplyr::arrange(construct, include)
 
-# ----- B-2-cognitive-3  -----------------------
+# ----- B-2-cognitive-3 -----------------------
 dto[["unitData"]] %>% 
   dplyr::select(id,fu_year, cogn_global) %>% 
-  # dplyr::filter(!is.na(cogn_global)) %>% 
+  dplyr::filter(!is.na(cogn_global)) %>%
   dplyr::group_by(fu_year) %>% 
-  dplyr::summarize(ave_cog = mean(cogn_global),
+  dplyr::summarize(ave_cog = round(mean(cogn_global),3),
+                   sd = sprintf("%0.2f",sd(cogn_global)), 
                    observed =n()) 
+
+# ----- B-2-cognitive-4 -----------------------
+names(ds)
+set.seed(1)
+(ids <- sample(ds$id,100))
+d <- dto[["unitData"]] %>% dplyr::filter(id %in% ids)
+g <- basic_line(d, "cogn_global", "fu_year", "salmon", .9, .1, T)
+g
+
+
+
+raw_smooth_lines(d, "cogn_global")
+
+
 
 # ----- B-3-dementia-diagnosis -------------------------------------------------
 dto[["metaData"]] %>% dplyr::filter(name=="dementia")
@@ -92,12 +119,31 @@ dto[["metaData"]] %>% dplyr::filter(name=="dementia")
 dto[["unitData"]] %>% 
   dplyr::group_by_("fu_year","dementia") %>% 
   dplyr::summarize(count=n())
-dto[["unitData"]] %>% 
+ds <- dto[["unitData"]] %>% 
   dplyr::filter(!is.na(dementia)) %>% 
   dplyr::group_by_("fu_year") %>% 
   dplyr::summarize(percent_diagnosed=mean(dementia),
-                   observed_n = n())
+                   observed_n = n()) 
 
+  g <- ggplot2::ggplot(ds, aes_string(x="fu_year",y="percent_diagnosed")) 
+  g <- g + geom_line(na.rm = T)
+  g <- g + main_theme
+  g
+  
+  ds <- dto[["unitData"]] %>% 
+    dplyr::filter(!is.na(dementia)) %>% 
+    dplyr::mutate(age_cat = cut(age_at_visit,breaks = 20)) %>% 
+    dplyr::group_by_("age_cat") %>%
+    dplyr::summarize(percent_diagnosed=mean(dementia),
+                     observed_n = n())  
+  ds
+  histogram_continuous(ds, "percent_diagnosed")
+  
+  g <- ggplot2::ggplot(ds, aes_string(x="age_cat",y="percent_diagnosed")) 
+  g <- g + geom_bar(stat="identity")
+  g <- g + main_theme
+  g
+  
 
 # ---- B-4-education -----------------------------------------------------------
 dto[["metaData"]] %>% dplyr::filter(name=="educ")

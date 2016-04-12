@@ -25,14 +25,15 @@ output:
 opts_chunk$set(
   results='show', 
   message = TRUE,
+  warning = FALSE, 
   comment = NA, 
   tidy = FALSE,
   fig.height = 4, 
   fig.width = 5.5, 
-  out.width = "550px",
+  out.width = "960px",
   fig.path = 'figure_rmd/',     
   dev = "png",
-  dpi = 400
+  dpi = 100
   # fig.path = 'figure_pdf/',     
   # dev = "pdf"#,
   # dev.args=list(pdf = list(colormodel = 'cmyk'))
@@ -147,7 +148,21 @@ The following pattern of attrition has been observed in the data
 
 
 ## (2) Cognitive capability measures
+The following measures of cognitive capability are available in the present instance of MAP data:
+
+```{r B-2-cognitive-1, echo=TRUE}
+```
+Keep for modelling only composite score of cognitive domains
+
+```{r B-2-cognitive-2, echo=TRUE}
+```
 
 
+```{r B-2-cognitive-3, echo=TRUE}
+```
+
+
+```{r B-2-cognitive-4, echo=FALSE, warning=FALSE, message=FALSE, dpi=300}
+```
 
 

@@ -20,7 +20,7 @@ msex,Gender,demographic,msex,sex,FALSE,FALSE,category,TRUE
 race,Participant's race,demographic,race,race,TRUE,FALSE,category,TRUE
 spanish,Spanish/Hispanic origin,demographic,spanish,race,TRUE,FALSE,category,TRUE
 apoe_genotype,ApoE genotype,clinical,apoe_genotype,apoe,FALSE,FALSE,scale,TRUE
-ldai_bl,Lifetime daily alcohol intake -baseline,substance,alco_life,alcohol,TRUE,FALSE,drinks / day,TRUE
+ldai_bl,Lifetime daily alcohol intake -baseline,substance,alco_life,alcohol,TRUE,FALSE,drinks/day,TRUE
 q3smo_bl,Smoking quantity-baseline,substance,q3smo_bl,smoking,TRUE,FALSE,cigarettes / day,TRUE
 q4smo_bl,Smoking duration-baseline,substance,q4smo_bl,smoking,TRUE,FALSE,years,TRUE
 smoke_bl,Smoking at baseline,substance,smoke_bl,smoking,TRUE,FALSE,category,TRUE

@@ -59,10 +59,17 @@ ds <- ds0 %>%
   "age_at_visit", #Age at cycle - fractional
   #
   "cogn_global", # Global cognitive score 
-  "iadlsum", # Instrumental activities of daily liviing
+  "cogn_ep",#	Calculated domain score-episodic memory
+  "cogn_global",#	Global cognitive score
+  "cogn_po",#	Calculated domain score - perceptual orientation
+  "cogn_ps",#	Calculated domain score - perceptual speed
+  "cogn_se",#	Calculated domain score - semantic memory
+  "cogn_wo",#	Calculated domain score - working memory
   "cts_mmse30", # MMSE - 2014
-  "cts_catflu", # Category fluency - 2014
   "dementia", # Dementia diagnosis
+  
+  
+  "iadlsum", # Instrumental activities of daily liviing
   "bmi", # Body mass index
   "phys5itemsum", # Summary of self reported physical activity measure (in hours) ROS/MAP
   "q3smo_bl",  # Smoking quantity-baseline (VERIFY)
