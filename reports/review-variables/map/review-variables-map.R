@@ -37,13 +37,13 @@ ds0 <- dto[["unitData"]]
 ds <- ds0
 
 # ---- meta-table --------------------------------------------------------
-dto[["metaData"]] %>%  
-  DT::datatable(
-    class   = 'cell-border stripe',
-    caption = "This is a dynamic table of the metadata file. Edit at `./data/meta/map/meta-data-map.csv",
-    filter  = "top",
-    options = list(pageLength = 6, autoWidth = TRUE)
-  )
+# dto[["metaData"]] %>%  
+#   DT::datatable(
+#     class   = 'cell-border stripe',
+#     caption = "This is a dynamic table of the metadata file. Edit at `./data/meta/map/meta-data-map.csv",
+#     filter  = "top",
+#     options = list(pageLength = 6, autoWidth = TRUE)
+#   )
 
 
 # ---- inspect-data -------------------------------------------------------------
@@ -65,7 +65,7 @@ names(ds)
 set.seed(1)
 (ids <- sample(ds$id,100))
 d <- dto[["unitData"]] %>% dplyr::filter(id %in% ids)
-g <- basic_line(d, "cogn_global", "fu_year", "salmon", .9, .1, T)
+g <- basic_line(d, "cogn_global", "fu_year", "salmon", .9, .1, smoothing_method=T)
 g
 
 raw_smooth_lines(d, "cogn_global")

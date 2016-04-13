@@ -202,7 +202,7 @@ hr {
 
 <body>
 <p>This report was automatically generated with the R package <strong>knitr</strong>
-(version 1.12.3).</p>
+(version 1.6).</p>
 
 <pre><code class="r"># the purpose of this script is to create a data object (dto) which will hold all data and metadata from each candidate study of the exercise
 # run the line below to stitch a basic html output. For elaborated report, run the corresponding .Rmd file
@@ -215,7 +215,7 @@ cat(&quot;\f&quot;) # clear console
 
 <pre><code class="r"># Call `base::source()` on any repo file that defines functions needed below.  Ideally, no real operations are performed.
 source(&quot;./scripts/common-functions.R&quot;) # used in multiple reports
-source(&quot;./scripts/graph-presets.R&quot;) # fonts, colors, themes 
+# source(&quot;./scripts/graph-presets.R&quot;) # fonts, colors, themes 
 </code></pre>
 
 <pre><code class="r"># Attach these packages so their functions don&#39;t need to be qualified: http://r-pkgs.had.co.nz/namespace.html#search-path
@@ -223,121 +223,28 @@ library(magrittr) #Pipes
 # Verify these packages are available on the machine, but their functions need to be qualified: http://r-pkgs.had.co.nz/namespace.html#search-path
 requireNamespace(&quot;ggplot2&quot;)
 requireNamespace(&quot;tidyr&quot;)
-requireNamespace(&quot;dplyr&quot;) #Avoid attaching dplyr, b/c its function names conflict with a lot of packages (esp base, stats, and plyr).
+</code></pre>
+
+<pre><code>## Loading required namespace: tidyr
+</code></pre>
+
+<pre><code class="r">requireNamespace(&quot;dplyr&quot;) #Avoid attaching dplyr, b/c its function names conflict with a lot of packages (esp base, stats, and plyr).
 requireNamespace(&quot;testit&quot;) #For asserting conditions meet expected patterns.
 </code></pre>
 
-<pre><code class="r">data_path_input  &lt;- &quot;../MAP/data-unshared/derived/ds0.rds&quot;
-metadata_path_input &lt;- &quot;../MAP/data-phi-free/raw/nl_augmented.csv&quot; # input file with your manual classification
+<pre><code class="r">data_path_input  &lt;- &quot;./data/unshared/derived/map-ds0.rds&quot;
+# data_path_input  &lt;- &quot;../MAP/data-unshared/derived/ds0.rds&quot;
+metadata_path_input &lt;- &quot;./data/meta/map/meta-data-map.csv&quot; # input file with your manual classification
 </code></pre>
 
-<pre><code class="r">ds0 &lt;- readRDS(data_path_input)
-nl &lt;- read.csv(metadata_path_input, stringsAsFactors = F, header = T)
-nl$X &lt;- NULL # remove automatic variable
-dplyr::tbl_df(nl)
-</code></pre>
-
-<pre><code>## Source: local data frame [113 x 3]
-## 
-##                     name                     label        type
-##                    (chr)                     (chr)       (chr)
-## 1                     id                        NA      design
-## 2                  study                        NA      design
-## 3            scaled_to.x                        NA      design
-## 4          agreeableness     NEO agreeableness-ROS personality
-## 5      conscientiousness Conscientiousness-ROS/MAP personality
-## 6           extraversion  NEO extraversion-ROS/MAP personality
-## 7           neo_altruism    NEO altruism scale-MAP personality
-## 8  neo_conscientiousness NEO conscientiousness-MAP personality
-## 9              neo_trust             NEO trust-MAP personality
-## 10              openness           NEO openess-ROS personality
-## ..                   ...                       ...         ...
-</code></pre>
-
-<pre><code class="r">#
-# There will be a total of (2) elements in (dto)
-dto &lt;- list() # creates empty list object to populate with script to follow 
-#
-</code></pre>
-
-<pre><code class="r">dto &lt;- list() # creates empty list object to populate with script to follow 
-# create a data object that will be used for subsequent analyses
-# select variables you will need for modeling
-ds &lt;- ds0 %&gt;%
-  # dplyr::rename_(&quot;fu_point&quot; = &quot;fu_year&quot;) %&gt;% 
-  dplyr::select_(
-# 
-# selected_items &lt;- c(
-  &quot;id&quot;, # personal identifier
-  &quot;age_bl&quot;, # Age at baseline
-  &quot;msex&quot;, # Gender
-  &quot;race&quot;, # Participant&#39;s race
-  &quot;educ&quot;, # Years of education
-
-  # time-invariant above
-  &quot;fu_year&quot;, # Follow-up year ------------------------------------------------
-  # time-variant below
-
-  &quot;age_death&quot;, # Age at death
-  &quot;died&quot;, # Indicator of death  
-  &quot;age_at_visit&quot;, #Age at cycle - fractional
-  #
-  &quot;iadlsum&quot;, # Instrumental activities of daily liviing
-  &quot;cts_mmse30&quot;, # MMSE - 2014
-  &quot;cts_catflu&quot;, # Category fluency - 2014
-  &quot;dementia&quot;, # Dementia diagnosis
-  &quot;bmi&quot;, # Body mass index
-  &quot;phys5itemsum&quot;, # Summary of self reported physical activity measure (in hours) ROS/MAP
-  &quot;q3smo_bl&quot;,  # Smoking quantity-baseline (VERIFY)
-  &quot;q4smo_bl&quot;, # Smoking duration-baseline (VERIFY)
-  &quot;smoke_bl&quot;, # Smoking at baseline (VERIFY)
-  &quot;smoking&quot;, # Smoking (VERIFY)
-  &quot;ldai_bl&quot;, # Grams of alcohol per day
-  &quot;dm_cum&quot;, # Medical history - diabetes - cumulative
-  &quot;hypertension_cum&quot;, # Medical conditions - hypertension - cumulative
-  &quot;stroke_cum&quot;, # Clinical Diagnoses - Stroke - cumulative
-  &quot;r_stroke&quot;, #     Clinical stroke dx
-  &quot;katzsum&quot;, # Katz measure of disability
-  &quot;rosbscl&quot; #   Rosow-Breslau scale
-) 
-ds %&gt;% dplyr::glimpse()
-</code></pre>
-
-<pre><code>## Observations: 9,708
-## Variables: 26
-## $ id               (int) 9121, 9121, 9121, 9121, 9121, 33027, 33027, 2...
-## $ age_bl           (dbl) 79.96988, 79.96988, 79.96988, 79.96988, 79.96...
-## $ msex             (int) 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, ...
-## $ race             (int) 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, ...
-## $ educ             (int) 12, 12, 12, 12, 12, 14, 14, 8, 8, 8, 8, 8, 8,...
-## $ fu_year          (int) 0, 1, 2, 3, 4, 0, 1, 0, 2, 3, 4, 5, 6, 0, 1, ...
-## $ age_death        (dbl) NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N...
-## $ died             (int) 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ...
-## $ age_at_visit     (dbl) 79.96988, 81.08145, 81.61259, 82.59548, 83.62...
-## $ iadlsum          (int) 0, 0, 0, 0, 0, 5, 3, 0, 0, 0, 0, 0, 0, 1, 0, ...
-## $ cts_mmse30       (dbl) 29, 29, 30, 30, 29, 29, NA, 27, 25, 28, 28, 2...
-## $ cts_catflu       (int) 40, 43, 48, 49, 45, 20, NA, 31, 27, 26, 25, 3...
-## $ dementia         (int) 0, 0, 0, 0, NA, 0, NA, 0, 0, 0, 0, 0, 0, 0, 0...
-## $ bmi              (dbl) 26.83177, 27.61514, 26.97526, 26.40132, 35.14...
-## $ phys5itemsum     (dbl) 1.7500000, 4.0416667, 0.6250000, 0.4583333, 2...
-## $ q3smo_bl         (int) 20, 20, 20, 20, 20, NA, NA, NA, NA, NA, NA, N...
-## $ q4smo_bl         (int) 31, 31, 31, 31, 31, NA, NA, NA, NA, NA, NA, N...
-## $ smoke_bl         (int) 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ...
-## $ smoking          (int) 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ...
-## $ ldai_bl          (dbl) 0.2, 0.2, 0.2, 0.2, 0.2, 0.0, 0.0, 0.0, 0.0, ...
-## $ dm_cum           (int) 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, ...
-## $ hypertension_cum (int) 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, ...
-## $ stroke_cum       (int) NA, NA, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0...
-## $ r_stroke         (int) NA, NA, 4, 4, NA, 4, NA, 4, NA, 4, NA, NA, 4,...
-## $ katzsum          (int) 6, 0, 0, 0, 0, 1, 2, 0, 0, 0, 0, 0, 0, 0, 0, ...
-## $ rosbscl          (int) 1, 3, 3, 3, 3, 0, 0, 3, 3, 3, 3, 2, 3, 2, 3, ...
-</code></pre>
-
-<pre><code class="r">dto[[&quot;unitData&quot;]] &lt;- ds
+<pre><code class="r">unitData &lt;- readRDS(data_path_input)
+metaData &lt;- read.csv(metadata_path_input,stringsAsFactors=F,header=T)
+metaData$X &lt;- NULL # remove automatic variable
 </code></pre>
 
 <pre><code class="r"># basic demographic variables
-length(unique(ds$id)) # there are this many of them
+ds &lt;- unitData # assing alias
+length(unique(ds$id)) # there are this many of subjects
 </code></pre>
 
 <pre><code>## [1] 1696
@@ -416,115 +323,210 @@ t &lt;- table(ds[,&quot;fu_year&quot;], ds[,&quot;died&quot;]); t[t==0]&lt;-&quo
 # histogram_continuous(ds, variable_name = &quot;age_at_visit&quot;, bin_width = 1)
 </code></pre>
 
-<pre><code class="r"># prepare metadata to be added to the dto
-# we begin by extracting the names and (hopefuly their) labels of variables from each dataset
-# and combine them in a single rectanguar object, long/stacked with respect to study names
-save_csv &lt;- names_labels(ds)
-write.csv(save_csv,&quot;./data/meta/map/names-labels-live.csv&quot;,row.names = T)
+<pre><code class="r">dto &lt;- list()
+# the first element of data transfer object contains unit data
+dto[[&quot;unitData&quot;]] &lt;- unitData
+# the second element of data transfer object contains meta data
+dto[[&quot;metaData&quot;]] &lt;-  metaData
+# verify and glimpse
+dto[[&quot;unitData&quot;]] %&gt;% dplyr::glimpse()
 </code></pre>
 
-<pre><code class="r"># after the final version of the data files used in the excerside have been obtained
-# we made a dead copy of `./data/shared/derived/meta-raw-live.csv` and named it `./data/shared/meta-data-map.csv`
-# decisions on variables&#39; renaming and classification is encoded in this map
-# reproduce ellis-island script every time you make changes to `meta-data-map.csv`
-dto[[&quot;metaData&quot;]] &lt;- read.csv(&quot;./data/meta/map/meta-data-map.csv&quot;)
-dto[[&quot;metaData&quot;]][&quot;X&quot;] &lt;- NULL # remove native counter variable, not needed
+<pre><code>## Variables:
+## $ id                    (int) 9121, 9121, 9121, 9121, 9121, 33027, 330...
+## $ study                 (chr) &quot;MAP &quot;, &quot;MAP &quot;, &quot;MAP &quot;, &quot;MAP &quot;, &quot;MAP &quot;, ...
+## $ scaled_to.x           (chr) &quot;MAP &quot;, &quot;MAP &quot;, &quot;MAP &quot;, &quot;MAP &quot;, &quot;MAP &quot;, ...
+## $ agreeableness         (int) NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, ...
+## $ conscientiousness     (int) 35, 35, 35, 35, 35, NA, NA, NA, NA, NA, ...
+## $ extraversion          (int) 34, 34, 34, 34, 34, 30, 30, 32, 32, 32, ...
+## $ neo_altruism          (int) 27, 27, 27, 27, 27, NA, NA, NA, NA, NA, ...
+## $ neo_conscientiousness (int) 35, 35, 35, 35, 35, NA, NA, NA, NA, NA, ...
+## $ neo_trust             (int) 25, 25, 25, 25, 25, NA, NA, NA, NA, NA, ...
+## $ openness              (int) NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, ...
+## $ anxiety_10items       (dbl) 0, 0, 0, 0, 0, NA, NA, 0, 0, 0, 0, 0, 0,...
+## $ neuroticism_12        (int) 9, 9, 9, 9, 9, NA, NA, 16, 16, 16, 16, 1...
+## $ neuroticism_6         (int) 8, 8, 8, 8, 8, 1, 1, 14, 14, 14, 14, 14,...
+## $ age_bl                (dbl) 79.97, 79.97, 79.97, 79.97, 79.97, 81.01...
+## $ age_death             (dbl) NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, ...
+## $ died                  (int) 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0...
+## $ educ                  (int) 12, 12, 12, 12, 12, 14, 14, 8, 8, 8, 8, ...
+## $ msex                  (int) 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0...
+## $ race                  (int) 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1...
+## $ spanish               (int) 2, 2, 2, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 2...
+## $ apoe_genotype         (int) 34, 34, 34, 34, 34, 33, 33, 33, 33, 33, ...
+## $ ldai_bl               (dbl) 0.2, 0.2, 0.2, 0.2, 0.2, 0.0, 0.0, 0.0, ...
+## $ q3smo_bl              (int) 20, 20, 20, 20, 20, NA, NA, NA, NA, NA, ...
+## $ q4smo_bl              (int) 31, 31, 31, 31, 31, NA, NA, NA, NA, NA, ...
+## $ smoke_bl              (int) 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0...
+## $ smoking               (int) 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0...
+## $ fu_year               (int) 0, 1, 2, 3, 4, 0, 1, 0, 2, 3, 4, 5, 6, 0...
+## $ scaled_to.y           (chr) &quot;RMM&quot;, &quot;RMM&quot;, &quot;RMM&quot;, &quot;RMM&quot;, &quot;RMM&quot;, &quot;RMM&quot;...
+## $ cesdsum               (int) 0, 0, 0, 0, 0, 1, 2, 6, 1, 3, 1, 0, 2, 1...
+## $ r_depres              (int) 4, 4, 4, 4, NA, 4, 4, 3, 4, 4, 4, 4, 4, ...
+## $ intrusion             (dbl) NA, NA, NA, 2.000, NA, NA, NA, NA, NA, N...
+## $ neglifeevents         (int) NA, NA, NA, 4, NA, NA, NA, NA, NA, NA, N...
+## $ negsocexchange        (dbl) NA, NA, NA, 1.833, NA, NA, NA, NA, NA, N...
+## $ nohelp                (dbl) NA, NA, NA, 1.667, NA, NA, NA, NA, NA, N...
+## $ panas                 (dbl) NA, NA, NA, 1.1, NA, NA, NA, NA, NA, NA,...
+## $ perceivedstress       (dbl) NA, NA, NA, 2.5, NA, NA, NA, NA, NA, NA,...
+## $ rejection             (dbl) NA, NA, NA, 1.667, NA, NA, NA, NA, NA, N...
+## $ unsympathetic         (dbl) NA, NA, NA, 2, NA, NA, NA, NA, NA, NA, N...
+## $ dcfdx                 (int) 1, 1, 1, 1, NA, 1, NA, 1, 2, 1, 1, 1, 1,...
+## $ dementia              (int) 0, 0, 0, 0, NA, 0, NA, 0, 0, 0, 0, 0, 0,...
+## $ r_stroke              (int) NA, NA, 4, 4, NA, 4, NA, 4, NA, 4, NA, N...
+## $ cogn_ep               (dbl) 0.0733900, -0.0022709, -0.5334674, 0.211...
+## $ cogn_global           (dbl) 0.25733, 0.33753, 0.06659, 0.40477, 0.36...
+## $ cogn_po               (dbl) 0.299150, 0.893262, 0.893262, 0.885836, ...
+## $ cogn_ps               (dbl) 0.48564, 0.88321, 0.78369, 0.59650, 0.82...
+## $ cogn_se               (dbl) 0.7804552, 0.9388327, 1.2027951, 1.25558...
+## $ cogn_wo               (dbl) 0.1576990, -0.0047532, -0.3199035, -0.16...
+## $ cts_bname             (int) 15, 15, 15, 15, 15, 12, NA, 15, 15, 15, ...
+## $ cts_catflu            (int) 40, 43, 48, 49, 45, 20, NA, 31, 27, 26, ...
+## $ cts_db                (int) 6, 6, 4, 4, 4, 6, NA, 2, 4, 3, 5, 3, 4, ...
+## $ cts_delay             (int) 10, 7, 7, 10, 10, 4, NA, 14, 11, 11, 6, ...
+## $ cts_df                (int) 9, 8, 9, 9, 9, 8, NA, 6, 8, 9, 9, 10, 9,...
+## $ cts_doperf            (int) 7, 7, 6, 7, 8, 7, NA, 7, 4, 5, 5, 6, 6, ...
+## $ cts_ebdr              (int) 9, 9, 6, 8, 9, 10, NA, 8, 0, 8, 7, 10, 1...
+## $ cts_ebmt              (int) 7, 9, 6, 12, 9, 11, NA, 8, 10, 7, 9, 12,...
+## $ cts_idea              (int) 8, 8, 8, 8, 8, 8, NA, 7, 8, 8, 8, 8, 8, ...
+## $ cts_lopair            (int) 9, 14, 14, 15, 15, 5, NA, 10, 12, 8, 7, ...
+## $ cts_mmse30            (dbl) 29, 29, 30, 30, 29, 29, NA, 27, 25, 28, ...
+## $ cts_nccrtd            (int) 24, 34, 26, 27, 28, 19, NA, 16, 19, 13, ...
+## $ cts_pmat              (int) 13, 12, 12, 11, 11, 10, NA, 11, 7, 13, 1...
+## $ cts_read_nart         (int) 9, 8, 9, 8, 9, 10, NA, 5, 5, 3, 3, 3, 4,...
+## $ cts_read_wrat         (int) NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, ...
+## $ cts_sdmt              (int) 49, 43, 53, 47, 51, 39, NA, 24, 21, 30, ...
+## $ cts_story             (int) 10, 9, 7, 8, 11, 8, NA, 14, 14, 10, 9, 8...
+## $ cts_wli               (int) 19, 18, 17, 18, 16, 20, NA, 16, 13, 11, ...
+## $ cts_wlii              (int) 7, 6, 5, 6, 5, 5, NA, 5, 5, 3, 5, 5, 3, ...
+## $ cts_wliii             (int) 10, 10, 10, 10, 10, 10, NA, 10, 10, 10, ...
+## $ age_at_visit          (dbl) 79.97, 81.08, 81.61, 82.60, 83.62, 81.01...
+## $ iadlsum               (int) 0, 0, 0, 0, 0, 5, 3, 0, 0, 0, 0, 0, 0, 1...
+## $ katzsum               (int) 6, 0, 0, 0, 0, 1, 2, 0, 0, 0, 0, 0, 0, 0...
+## $ rosbscl               (int) 1, 3, 3, 3, 3, 0, 0, 3, 3, 3, 3, 2, 3, 2...
+## $ rosbsum               (int) 2, 0, 0, 0, 0, 3, 3, 0, 0, 0, 0, 1, 0, 1...
+## $ vision                (int) 1, 1, 1, 2, 2, 1, 4, 1, 2, 1, NA, 2, 7, ...
+## $ visionlog             (dbl) 0.3, 0.3, 0.3, 0.4, 0.4, 0.3, 0.7, 0.3, ...
+## $ fev                   (dbl) 1.650, 1.280, 1.655, NA, 1.525, 1.110, N...
+## $ mep                   (dbl) 39.5, 33.5, 43.0, NA, 39.0, 84.0, NA, 95...
+## $ mip                   (dbl) 32.5, 36.5, 35.0, NA, 41.5, 73.5, NA, 82...
+## $ pvc                   (dbl) 2.285, 1.285, 1.690, NA, 1.940, 1.510, N...
+## $ bun                   (int) 13, NA, 13, 13, 14, 32, 35, 14, 12, 12, ...
+## $ ca                    (dbl) 9.5, NA, 9.4, 9.4, 9.2, 9.2, 8.8, 9.7, 9...
+## $ chlstrl               (int) 235, NA, 205, 230, 210, 201, 197, 134, 1...
+## $ cl                    (int) 96, NA, 102, 93, 99, 103, 103, 102, 104,...
+## $ co2                   (int) 24, NA, 24, 25, 25, 22, 25, 23, 20, 21, ...
+## $ crn                   (dbl) 0.85, NA, 0.98, 0.89, 0.82, 1.30, 2.00, ...
+## $ fasting               (int) 2, NA, 2, 2, 2, 3, 3, 3, 2, 1, NA, 3, 1,...
+## $ glucose               (int) 92, NA, 77, 85, 92, 180, 153, 170, 203, ...
+## $ hba1c                 (dbl) 5.6, NA, 5.5, 5.5, 6.1, NA, NA, NA, 7.0,...
+## $ hdlchlstrl            (int) 79, NA, 76, 79, 69, 50, 51, 30, 37, 40, ...
+## $ hdlratio              (dbl) 3.0, NA, 2.7, 2.9, 3.0, 4.0, 3.9, 4.5, 4...
+## $ k                     (dbl) 5.0, NA, 4.2, 4.3, 4.5, 4.8, 4.6, 4.2, 4...
+## $ ldlchlstrl            (int) 133, NA, 112, 134, 119, 107, 99, NA, 48,...
+## $ na                    (int) 136, NA, 139, 130, 136, 139, 140, 139, 1...
+## $ alcohol_g             (dbl) NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, ...
+## $ bmi                   (dbl) 26.83, 27.62, 26.98, 26.40, 35.14, 32.59...
+## $ htm                   (dbl) 1.778, 1.753, 1.778, 1.778, 1.549, 1.600...
+## $ phys5itemsum          (dbl) 1.7500, 4.0417, 0.6250, 0.4583, 2.1667, ...
+## $ wtkg                  (dbl) 84.82, 84.82, 85.28, 83.46, 84.37, 83.46...
+## $ bp11                  (chr) &quot;159/090&quot;, &quot;145/090&quot;, &quot;160/095&quot;, &quot;147/09...
+## $ bp2                   (chr) &quot;159/090&quot;, &quot;150/084&quot;, &quot;160/088&quot;, &quot;149/09...
+## $ bp3                   (int) 1, 1, NA, 1, NA, 1, 1, 1, 1, 1, 1, 1, 1,...
+## $ bp31                  (chr) &quot;157/082&quot;, &quot;109/077&quot;, &quot;151/082&quot;, &quot;138/08...
+## $ hypertension_cum      (int) 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0...
+## $ dm_cum                (int) 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0...
+## $ thyroid_cum           (int) 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0...
+## $ chf_cum               (int) 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0...
+## $ claudication_cum      (int) 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0...
+## $ heart_cum             (int) 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0...
+## $ stroke_cum            (int) NA, NA, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,...
+## $ vasc_3dis_sum         (dbl) 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0...
+## $ vasc_4dis_sum         (dbl) 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0...
+## $ vasc_risks_sum        (dbl) 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0...
+## $ gait_speed            (dbl) 0.4394, NA, NA, 0.4877, 0.3483, 0.4829, ...
+## $ gripavg               (dbl) 41.00, 41.00, 35.50, NA, 25.75, 59.00, N...
+</code></pre>
+
+<pre><code class="r">dto[[&quot;metaData&quot;]] %&gt;% dplyr::glimpse()
+</code></pre>
+
+<pre><code>## Variables:
+## $ name          (chr) &quot;id&quot;, &quot;study&quot;, &quot;scaled_to.x&quot;, &quot;agreeableness&quot;, &quot;...
+## $ label         (chr) NA, NA, NA, &quot;NEO agreeableness-ROS&quot;, &quot;Conscienti...
+## $ type          (chr) &quot;design&quot;, &quot;design&quot;, &quot;design&quot;, &quot;personality&quot;, &quot;pe...
+## $ name_new      (chr) &quot;id&quot;, &quot;study&quot;, &quot;scaled_to.x&quot;, &quot;agreeableness&quot;, &quot;...
+## $ construct     (chr) &quot;id&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;...
+## $ self_reported (lgl) FALSE, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N...
+## $ longitudinal  (lgl) FALSE, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N...
+## $ unit          (chr) &quot;person&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;...
+## $ include       (lgl) TRUE, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA...
 </code></pre>
 
 <pre><code class="r">meta_data &lt;- dto[[&quot;metaData&quot;]] %&gt;%
-  dplyr::filter(type %in% c(&#39;substance&#39;)) %&gt;%
+  dplyr::filter(include == TRUE) %&gt;%
   # dplyr::select(name, name_new, type, label, construct) %&gt;%
-  dplyr::arrange(name)
+  dplyr::arrange(type, construct, name)
 knitr::kable(meta_data)
 </code></pre>
 
-<table><thead>
-<tr>
-<th align="left">name</th>
-<th align="left">label</th>
-<th align="left">type</th>
-<th align="left">name_new</th>
-<th align="left">construct</th>
-<th align="left">self_reported</th>
-<th align="left">longitudinal</th>
-<th align="left">unit</th>
-<th align="left">include</th>
-</tr>
-</thead><tbody>
-<tr>
-<td align="left">alcohol_g</td>
-<td align="left">Grams of alcohol per day</td>
-<td align="left">substance</td>
-<td align="left">alcohol_g</td>
-<td align="left">alcohol</td>
-<td align="left">TRUE</td>
-<td align="left">FALSE</td>
-<td align="left">grams</td>
-<td align="left">TRUE</td>
-</tr>
-<tr>
-<td align="left">ldai_bl</td>
-<td align="left">Lifetime daily alcohol intake -baseline</td>
-<td align="left">substance</td>
-<td align="left">alco_life</td>
-<td align="left">alcohol</td>
-<td align="left">TRUE</td>
-<td align="left">FALSE</td>
-<td align="left">drinks / day</td>
-<td align="left">TRUE</td>
-</tr>
-<tr>
-<td align="left">q3smo_bl</td>
-<td align="left">Smoking quantity-baseline</td>
-<td align="left">substance</td>
-<td align="left">q3smo_bl</td>
-<td align="left">smoking</td>
-<td align="left">TRUE</td>
-<td align="left">FALSE</td>
-<td align="left">cigarettes / day</td>
-<td align="left">TRUE</td>
-</tr>
-<tr>
-<td align="left">q4smo_bl</td>
-<td align="left">Smoking duration-baseline</td>
-<td align="left">substance</td>
-<td align="left">q4smo_bl</td>
-<td align="left">smoking</td>
-<td align="left">TRUE</td>
-<td align="left">FALSE</td>
-<td align="left">years</td>
-<td align="left">TRUE</td>
-</tr>
-<tr>
-<td align="left">smoke_bl</td>
-<td align="left">Smoking at baseline</td>
-<td align="left">substance</td>
-<td align="left">smoke_bl</td>
-<td align="left">smoking</td>
-<td align="left">TRUE</td>
-<td align="left">FALSE</td>
-<td align="left">category</td>
-<td align="left">TRUE</td>
-</tr>
-<tr>
-<td align="left">smoking</td>
-<td align="left">Smoking</td>
-<td align="left">substance</td>
-<td align="left">smoking</td>
-<td align="left">smoking</td>
-<td align="left">TRUE</td>
-<td align="left">FALSE</td>
-<td align="left">category</td>
-<td align="left">TRUE</td>
-</tr>
-</tbody></table>
+<pre><code>## 
+## 
+## |name          |label                                                      |type        |name_new      |construct              |self_reported |longitudinal |unit             |include |
+## |:-------------|:----------------------------------------------------------|:-----------|:-------------|:----------------------|:-------------|:------------|:----------------|:-------|
+## |apoe_genotype |ApoE genotype                                              |clinical    |apoe_genotype |apoe                   |FALSE         |FALSE        |scale            |TRUE    |
+## |chf_cum       |Medical Conditions - congestive heart failure -
+## cumulative |clinical    |chf_cum       |cardio                 | TRUE         | TRUE        |category         |TRUE    |
+## |dcfdx         |Clinical dx summary                                        |clinical    |dcfdx         |cognition              |FALSE         | TRUE        |category         |TRUE    |
+## |r_stroke      |Clinical stroke dx                                         |clinical    |r_stroke      |stroke                 |FALSE         | TRUE        |category         |TRUE    |
+## |stroke_cum    |Clinical Diagnoses - Stroke - cumulative                   |clinical    |stroke_cum    |stroke                 |FALSE         | TRUE        |category         |TRUE    |
+## |cts_mmse30    |MMSE - 2014                                                |cognitive   |mmse          |dementia               | TRUE         | TRUE        |0 to 30          |TRUE    |
+## |dementia      |Dementia diagnosis                                         |cognitive   |dementia      |dementia               |FALSE         | TRUE        |0, 1             |TRUE    |
+## |cogn_ep       |Calculated domain score-episodic memory                    |cognitive   |cogn_ep       |episodic memory        |FALSE         | TRUE        |composite        |TRUE    |
+## |cogn_global   |Global cognitive score                                     |cognitive   |cogn_global   |global cognition       |FALSE         | TRUE        |composite        |TRUE    |
+## |cogn_po       |Calculated domain score - perceptual orientation           |cognitive   |cogn_po       |perceptual orientation |FALSE         | TRUE        |composite        |TRUE    |
+## |cogn_ps       |Calculated domain score - perceptual speed                 |cognitive   |cogn_ps       |perceptual speed       |FALSE         | TRUE        |composite        |TRUE    |
+## |cogn_se       |Calculated domain score - semantic memory                  |cognitive   |cogn_se       |semantic memory        |FALSE         | TRUE        |composite        |TRUE    |
+## |cogn_wo       |Calculated domain score - working memory                   |cognitive   |cogn_wo       |working memory         |FALSE         | TRUE        |composite        |TRUE    |
+## |age_bl        |Age at baseline                                            |demographic |age_bl        |age                    |FALSE         |FALSE        |year             |TRUE    |
+## |age_death     |Age at death                                               |demographic |age_death     |age                    |FALSE         |FALSE        |year             |TRUE    |
+## |died          |Indicator of death                                         |demographic |died          |age                    |FALSE         |FALSE        |category         |TRUE    |
+## |educ          |Years of education                                         |demographic |educ          |education              | TRUE         |FALSE        |years            |TRUE    |
+## |race          |Participant&#39;s race                                         |demographic |race          |race                   | TRUE         |FALSE        |category         |TRUE    |
+## |spanish       |Spanish/Hispanic origin                                    |demographic |spanish       |race                   | TRUE         |FALSE        |category         |TRUE    |
+## |msex          |Gender                                                     |demographic |msex          |sex                    |FALSE         |FALSE        |category         |TRUE    |
+## |id            |NA                                                         |design      |id            |id                     |FALSE         |FALSE        |person           |TRUE    |
+## |fu_year       |Follow-up year                                             |design      |fu_year       |time                   |FALSE         | TRUE        |time point       |TRUE    |
+## |iadlsum       |Instrumental activities of daily liviing                   |physical    |iadlsum       |physact                | TRUE         | TRUE        |scale            |TRUE    |
+## |fev           |forced expiratory volume                                   |physical    |fev           |physcap                |FALSE         | TRUE        |liters           |TRUE    |
+## |gait_speed    |Gait Speed - MAP                                           |physical    |gait_speed    |physcap                |FALSE         | TRUE        |min/sec          |TRUE    |
+## |gripavg       |Extremity strength                                         |physical    |gripavg       |physcap                |FALSE         | TRUE        |lbs              |TRUE    |
+## |katzsum       |Katz measure of disability                                 |physical    |katzsum       |physcap                | TRUE         | TRUE        |scale            |TRUE    |
+## |mep           |maximal expiratory pressure                                |physical    |mep           |physcap                |FALSE         | TRUE        |cm H20           |TRUE    |
+## |mip           |maximal inspiratory pressure                               |physical    |mip           |physcap                |FALSE         | TRUE        |cm H20           |TRUE    |
+## |pvc           |pulmonary vital capacity                                   |physical    |pvc           |physcap                |FALSE         | TRUE        |liters           |TRUE    |
+## |rosbscl       |Rosow-Breslau scale                                        |physical    |rosbscl       |physcap                | TRUE         | TRUE        |scale            |TRUE    |
+## |rosbsum       |Rosow-Breslau scale                                        |physical    |rosbsum       |physcap                | TRUE         | TRUE        |scale            |TRUE    |
+## |vision        |Vision acuity                                              |physical    |vision        |physcap                |FALSE         | TRUE        |scale            |TRUE    |
+## |visionlog     |Visual acuity                                              |physical    |visionlog     |physcap                |FALSE         | TRUE        |scale            |TRUE    |
+## |bmi           |Body mass index                                            |physical    |bmi           |physique               |FALSE         | TRUE        |kg/msq           |TRUE    |
+## |htm           |Height(meters)                                             |physical    |htm           |physique               |FALSE         | TRUE        |meters           |TRUE    |
+## |wtkg          |Weight (kg)                                                |physical    |wtkg          |physique               |FALSE         | TRUE        |kilos            |TRUE    |
+## |alcohol_g     |Grams of alcohol per day                                   |substance   |alcohol_g     |alcohol                | TRUE         |FALSE        |grams            |TRUE    |
+## |ldai_bl       |Lifetime daily alcohol intake -baseline                    |substance   |alco_life     |alcohol                | TRUE         |FALSE        |drinks/day       |TRUE    |
+## |q3smo_bl      |Smoking quantity-baseline                                  |substance   |q3smo_bl      |smoking                | TRUE         |FALSE        |cigarettes / day |TRUE    |
+## |q4smo_bl      |Smoking duration-baseline                                  |substance   |q4smo_bl      |smoking                | TRUE         |FALSE        |years            |TRUE    |
+## |smoke_bl      |Smoking at baseline                                        |substance   |smoke_bl      |smoking                | TRUE         |FALSE        |category         |TRUE    |
+## |smoking       |Smoking                                                    |substance   |smoking       |smoking                | TRUE         |FALSE        |category         |TRUE    |
+</code></pre>
 
 <pre><code class="r"># rename variables
-
 d_rules &lt;- dto[[&quot;metaData&quot;]] %&gt;%
   dplyr::filter(name %in% names(ds)) %&gt;% 
   dplyr::select(name, name_new ) # leave only collumn, which values you wish to append
 names(ds) &lt;- d_rules[,&quot;name_new&quot;]
+# transfer changes to dto
+dto[[&quot;unitData&quot;]] &lt;- ds
 </code></pre>
 
 <pre><code class="r"># Save as a compress, binary R dataset.  It&#39;s no longer readable with a text editor, but it saves metadata (eg, factor information).
@@ -544,26 +546,70 @@ names(dto)
 dplyr::tbl_df(dto[[&quot;unitData&quot;]])
 </code></pre>
 
-<pre><code>## Source: local data frame [9,708 x 26]
+<pre><code>## Source: local data frame [9,708 x 113]
 ## 
-##        id   age_bl  msex  race  educ fu_year age_death  died age_at_visit
-##     (int)    (dbl) (int) (int) (int)   (int)     (dbl) (int)        (dbl)
-## 1    9121 79.96988     0     1    12       0        NA     0     79.96988
-## 2    9121 79.96988     0     1    12       1        NA     0     81.08145
-## 3    9121 79.96988     0     1    12       2        NA     0     81.61259
-## 4    9121 79.96988     0     1    12       3        NA     0     82.59548
-## 5    9121 79.96988     0     1    12       4        NA     0     83.62218
-## 6   33027 81.00753     0     1    14       0        NA     0     81.00753
-## 7   33027 81.00753     0     1    14       1        NA     0     82.13552
-## 8  204228 65.21561     1     1     8       0        NA     0     65.21561
-## 9  204228 65.21561     1     1     8       2        NA     0     68.30116
-## 10 204228 65.21561     1     1     8       3        NA     0     69.35524
-## ..    ...      ...   ...   ...   ...     ...       ...   ...          ...
-## Variables not shown: iadlsum (int), cts_mmse30 (dbl), cts_catflu (int),
-##   dementia (int), bmi (dbl), phys5itemsum (dbl), q3smo_bl (int), q4smo_bl
-##   (int), smoke_bl (int), smoking (int), ldai_bl (dbl), dm_cum (int),
-##   hypertension_cum (int), stroke_cum (int), r_stroke (int), katzsum (int),
-##   rosbscl (int)
+##        id study scaled_to.x agreeableness
+## 1    9121  MAP         MAP             NA
+## 2    9121  MAP         MAP             NA
+## 3    9121  MAP         MAP             NA
+## 4    9121  MAP         MAP             NA
+## 5    9121  MAP         MAP             NA
+## 6   33027  MAP         MAP             NA
+## 7   33027  MAP         MAP             NA
+## 8  204228  MAP         MAP             NA
+## 9  204228  MAP         MAP             NA
+## 10 204228  MAP         MAP             NA
+## ..    ...   ...         ...           ...
+## Variables not shown: conscientiousness
+##   (int), extraversion (int), neo_altruism
+##   (int), neo_conscientiousness (int),
+##   neo_trust (int), openness (int),
+##   anxiety_10items (dbl), neuroticism_12
+##   (int), neuroticism_6 (int), age_bl
+##   (dbl), age_death (dbl), died (int),
+##   educ (int), msex (int), race (int),
+##   spanish (int), apoe_genotype (int),
+##   alco_life (dbl), q3smo_bl (int),
+##   q4smo_bl (int), smoke_bl (int), smoking
+##   (int), fu_year (int), scaled_to.y
+##   (chr), cesdsum (int), r_depres (int),
+##   intrusion (dbl), neglifeevents (int),
+##   negsocexchange (dbl), nohelp (dbl),
+##   panas (dbl), perceivedstress (dbl),
+##   rejection (dbl), unsympathetic (dbl),
+##   dcfdx (int), dementia (int), r_stroke
+##   (int), cogn_ep (dbl), cogn_global
+##   (dbl), cogn_po (dbl), cogn_ps (dbl),
+##   cogn_se (dbl), cogn_wo (dbl), cts_bname
+##   (int), catfluency (int), cts_db (int),
+##   cts_delay (int), cts_df (int),
+##   cts_doperf (int), cts_ebdr (int),
+##   cts_ebmt (int), cts_idea (int),
+##   cts_lopair (int), mmse (dbl),
+##   cts_nccrtd (int), cts_pmat (int),
+##   cts_read_nart (int), cts_read_wrat
+##   (int), cts_sdmt (int), cts_story (int),
+##   cts_wli (int), cts_wlii (int),
+##   cts_wliii (int), age_at_visit (dbl),
+##   iadlsum (int), katzsum (int), rosbscl
+##   (int), rosbsum (int), vision (int),
+##   visionlog (dbl), fev (dbl), mep (dbl),
+##   mip (dbl), pvc (dbl), bun (int), ca
+##   (dbl), chlstrl (int), cl (int), co2
+##   (int), crn (dbl), fasting (int),
+##   glucose (int), hba1c (dbl), hdlchlstrl
+##   (int), hdlratio (dbl), k (dbl),
+##   ldlchlstrl (int), na (int), alcohol_g
+##   (dbl), bmi (dbl), htm (dbl),
+##   phys5itemsum (dbl), wtkg (dbl), bp11
+##   (chr), bp2 (chr), bp3 (int), bp31
+##   (chr), hypertension_cum (int), dm_cum
+##   (int), thyroid_cum (int), chf_cum
+##   (int), claudication_cum (int),
+##   heart_cum (int), stroke_cum (int),
+##   vasc_3dis_sum (dbl), vasc_4dis_sum
+##   (dbl), vasc_risks_sum (dbl), gait_speed
+##   (dbl), gripavg (dbl)
 </code></pre>
 
 <pre><code class="r"># 2nd element - meta data, info about variables
@@ -798,234 +844,348 @@ dto[[&quot;metaData&quot;]]
 ## 111                                          Vascular disease risk factors
 ## 112                                                       Gait Speed - MAP
 ## 113                                                     Extremity strength
-##              type              name_new              construct
-## 1          design                    id                     id
-## 2          design                 study                       
-## 3          design           scaled_to.x                       
-## 4     personality         agreeableness                       
-## 5     personality     conscientiousness                       
-## 6     personality          extraversion                       
-## 7     personality          neo_altruism                       
-## 8     personality neo_conscientiousness                       
-## 9     personality             neo_trust                       
-## 10    personality              openness                       
-## 11    personality       anxiety_10items                       
-## 12    personality        neuroticism_12                       
-## 13    personality         neuroticism_6                       
-## 14    demographic                age_bl                    age
-## 15    demographic             age_death                    age
-## 16    demographic                  died                    age
-## 17    demographic                  educ              education
-## 18    demographic                  msex                    sex
-## 19    demographic                  race                   race
-## 20    demographic               spanish                   race
-## 21       clinical         apoe_genotype                   apoe
-## 22      substance             alco_life                alcohol
-## 23      substance              q3smo_bl                smoking
-## 24      substance              q4smo_bl                smoking
-## 25      substance              smoke_bl                smoking
-## 26      substance               smoking                smoking
-## 27         design               fu_year                   time
-## 28         design           scaled_to.y                       
-## 29  psychological               cesdsum                       
-## 30  psychological              r_depres                       
-## 31  psychological             intrusion                       
-## 32  psychological         neglifeevents                       
-## 33  psychological        negsocexchange                       
-## 34  psychological                nohelp                       
-## 35  psychological                 panas                       
-## 36  psychological       perceivedstress                       
-## 37  psychological             rejection                       
-## 38  psychological         unsympathetic                       
-## 39       clinical                 dcfdx              cognition
-## 40      cognitive              dementia               dementia
-## 41       clinical              r_stroke                 stroke
-## 42      cognitive               cogn_ep        episodic memory
-## 43      cognitive           cogn_global                 global
-## 44      cognitive               cogn_po perceptual orientation
-## 45      cognitive               cogn_ps       perceptual speed
-## 46      cognitive               cogn_se        semantic memory
-## 47      cognitive               cogn_wo         working memory
-## 48      cognitive             cts_bname        semantic memory
-## 49      cognitive            catfluency        semantic memory
-## 50      cognitive                cts_db         working memory
-## 51      cognitive             cts_delay        episodic memory
-## 52      cognitive                cts_df         working memory
-## 53      cognitive            cts_doperf         working memory
-## 54      cognitive              cts_ebdr        episodic memory
-## 55      cognitive              cts_ebmt        episodic memory
-## 56      cognitive              cts_idea   verbal comprehension
-## 57      cognitive            cts_lopair perceptual orientation
-## 58      cognitive                  mmse               dementia
-## 59      cognitive            cts_nccrtd       perceptual speed
-## 60      cognitive              cts_pmat perceptual orientation
-## 61      cognitive         cts_read_nart        semantic memory
-## 62      cognitive         cts_read_wrat        semantic memory
-## 63      cognitive              cts_sdmt       perceptual speed
-## 64      cognitive             cts_story        episodic memory
-## 65      cognitive               cts_wli        episodic memory
-## 66      cognitive              cts_wlii        episodic memory
-## 67      cognitive             cts_wliii        episodic memory
-## 68    demographic          age_at_visit                       
-## 69       physical               iadlsum                physact
-## 70       physical               katzsum                physcap
-## 71       physical               rosbscl                physcap
-## 72       physical               rosbsum                physcap
-## 73       physical                vision                physcap
-## 74       physical             visionlog                physcap
-## 75       physical                   fev                physcap
-## 76       physical                   mep                physcap
-## 77       physical                   mip                physcap
-## 78       physical                   pvc                physcap
-## 79       clinical                   bun                       
-## 80       clinical                    ca                       
-## 81       clinical               chlstrl                       
-## 82       clinical                    cl                       
-## 83       clinical                   co2                       
-## 84       clinical                   crn                       
-## 85       clinical               fasting                       
-## 86       clinical               glucose                       
-## 87       clinical                 hba1c                       
-## 88       clinical            hdlchlstrl                       
-## 89       clinical              hdlratio                       
-## 90       clinical                     k                       
-## 91       clinical            ldlchlstrl                       
-## 92       clinical                    na                       
-## 93      substance             alcohol_g                alcohol
-## 94       physical                   bmi               physique
-## 95       physical                   htm               physique
-## 96       physical          phys5itemsum                physact
-## 97       physical                  wtkg               physique
-## 98       clinical                  bp11           hypertension
-## 99       clinical                   bp2           hypertension
-## 100      clinical                   bp3           hypertension
-## 101      clinical                  bp31           hypertension
-## 102      clinical      hypertension_cum           hypertension
-## 103      clinical                dm_cum               diabetes
-## 104      clinical           thyroid_cum                       
-## 105      clinical               chf_cum                 cardio
-## 106      clinical      claudication_cum                       
-## 107      clinical             heart_cum                       
-## 108      clinical            stroke_cum                 stroke
-## 109      clinical         vasc_3dis_sum                       
-## 110      clinical         vasc_4dis_sum                       
-## 111      clinical        vasc_risks_sum                       
-## 112      physical            gait_speed                physcap
-## 113      physical               gripavg                physcap
-##     self_reported longitudinal             unit include
-## 1           FALSE        FALSE           person    TRUE
-## 2              NA           NA                       NA
-## 3              NA           NA                       NA
-## 4              NA           NA                       NA
-## 5              NA           NA                       NA
-## 6              NA           NA                       NA
-## 7              NA           NA                       NA
-## 8              NA           NA                       NA
-## 9              NA           NA                       NA
-## 10             NA           NA                       NA
-## 11             NA           NA                       NA
-## 12             NA           NA                       NA
-## 13             NA           NA                       NA
-## 14          FALSE        FALSE             year    TRUE
-## 15          FALSE        FALSE             year    TRUE
-## 16          FALSE        FALSE         category    TRUE
-## 17           TRUE        FALSE            years    TRUE
-## 18          FALSE        FALSE         category    TRUE
-## 19           TRUE        FALSE         category    TRUE
-## 20           TRUE        FALSE         category    TRUE
-## 21          FALSE        FALSE            scale    TRUE
-## 22           TRUE        FALSE     drinks / day    TRUE
-## 23           TRUE        FALSE cigarettes / day    TRUE
-## 24           TRUE        FALSE            years    TRUE
-## 25           TRUE        FALSE         category    TRUE
-## 26           TRUE        FALSE         category    TRUE
-## 27          FALSE         TRUE       time point    TRUE
-## 28             NA           NA                       NA
-## 29             NA           NA                       NA
-## 30             NA           NA                       NA
-## 31             NA           NA                       NA
-## 32             NA           NA                       NA
-## 33             NA           NA                       NA
-## 34             NA           NA                       NA
-## 35             NA           NA                       NA
-## 36             NA           NA                       NA
-## 37             NA           NA                       NA
-## 38             NA           NA                       NA
-## 39          FALSE         TRUE         category    TRUE
-## 40          FALSE         TRUE             0, 1    TRUE
-## 41          FALSE         TRUE         category    TRUE
-## 42          FALSE         TRUE        composite    TRUE
-## 43          FALSE         TRUE        composite    TRUE
-## 44          FALSE         TRUE        composite    TRUE
-## 45          FALSE         TRUE        composite    TRUE
-## 46          FALSE         TRUE        composite    TRUE
-## 47          FALSE         TRUE        composite    TRUE
-## 48          FALSE         TRUE          0 to 15      NA
-## 49          FALSE         TRUE          0 to 75      NA
-## 50          FALSE         TRUE          0 to 12      NA
-## 51          FALSE         TRUE          0 to 25      NA
-## 52          FALSE         TRUE          0 to 12      NA
-## 53          FALSE         TRUE          0 to 14      NA
-## 54          FALSE         TRUE          0 to 12      NA
-## 55          FALSE         TRUE          0 to 12      NA
-## 56          FALSE         TRUE           0 to 8      NA
-## 57          FALSE         TRUE          0 to 15      NA
-## 58           TRUE         TRUE          0 to 30    TRUE
-## 59          FALSE         TRUE          0 to 48      NA
-## 60          FALSE         TRUE          0 to 16      NA
-## 61          FALSE         TRUE          0 to 10      NA
-## 62          FALSE         TRUE          0 to 15      NA
-## 63          FALSE         TRUE         0 to 110      NA
-## 64          FALSE         TRUE          0 to 25      NA
-## 65          FALSE         TRUE          0 to 30      NA
-## 66          FALSE         TRUE          0 to 10      NA
-## 67          FALSE         TRUE          o to 10      NA
-## 68             NA           NA                       NA
-## 69           TRUE         TRUE            scale    TRUE
-## 70           TRUE         TRUE            scale    TRUE
-## 71           TRUE         TRUE            scale    TRUE
-## 72           TRUE         TRUE            scale    TRUE
-## 73          FALSE         TRUE            scale    TRUE
-## 74          FALSE         TRUE            scale    TRUE
-## 75          FALSE         TRUE           liters    TRUE
-## 76          FALSE         TRUE           cm H20    TRUE
-## 77          FALSE         TRUE           cm H20    TRUE
-## 78          FALSE         TRUE           liters    TRUE
-## 79             NA           NA                       NA
-## 80             NA           NA                       NA
-## 81             NA           NA                       NA
-## 82             NA           NA                       NA
-## 83             NA           NA                       NA
-## 84             NA           NA                       NA
-## 85             NA           NA                       NA
-## 86             NA           NA                       NA
-## 87             NA           NA                       NA
-## 88             NA           NA                       NA
-## 89             NA           NA                       NA
-## 90             NA           NA                       NA
-## 91             NA           NA                       NA
-## 92             NA           NA                       NA
-## 93           TRUE        FALSE            grams    TRUE
-## 94          FALSE         TRUE           kg/msq    TRUE
-## 95          FALSE         TRUE           meters    TRUE
-## 96           TRUE           NA                       NA
-## 97          FALSE         TRUE            kilos    TRUE
-## 98          FALSE         TRUE                       NA
-## 99          FALSE         TRUE                       NA
-## 100          TRUE         TRUE                       NA
-## 101         FALSE         TRUE                       NA
-## 102          TRUE         TRUE                       NA
-## 103          TRUE         TRUE                       NA
-## 104            NA           NA                       NA
-## 105          TRUE         TRUE         category    TRUE
-## 106            NA           NA                       NA
-## 107            NA           NA                       NA
-## 108         FALSE         TRUE         category    TRUE
-## 109            NA           NA                       NA
-## 110            NA           NA                       NA
-## 111            NA           NA                       NA
-## 112         FALSE         TRUE          min/sec    TRUE
-## 113         FALSE         TRUE              lbs    TRUE
+##              type              name_new
+## 1          design                    id
+## 2          design                 study
+## 3          design           scaled_to.x
+## 4     personality         agreeableness
+## 5     personality     conscientiousness
+## 6     personality          extraversion
+## 7     personality          neo_altruism
+## 8     personality neo_conscientiousness
+## 9     personality             neo_trust
+## 10    personality              openness
+## 11    personality       anxiety_10items
+## 12    personality        neuroticism_12
+## 13    personality         neuroticism_6
+## 14    demographic                age_bl
+## 15    demographic             age_death
+## 16    demographic                  died
+## 17    demographic                  educ
+## 18    demographic                  msex
+## 19    demographic                  race
+## 20    demographic               spanish
+## 21       clinical         apoe_genotype
+## 22      substance             alco_life
+## 23      substance              q3smo_bl
+## 24      substance              q4smo_bl
+## 25      substance              smoke_bl
+## 26      substance               smoking
+## 27         design               fu_year
+## 28         design           scaled_to.y
+## 29  psychological               cesdsum
+## 30  psychological              r_depres
+## 31  psychological             intrusion
+## 32  psychological         neglifeevents
+## 33  psychological        negsocexchange
+## 34  psychological                nohelp
+## 35  psychological                 panas
+## 36  psychological       perceivedstress
+## 37  psychological             rejection
+## 38  psychological         unsympathetic
+## 39       clinical                 dcfdx
+## 40      cognitive              dementia
+## 41       clinical              r_stroke
+## 42      cognitive               cogn_ep
+## 43      cognitive           cogn_global
+## 44      cognitive               cogn_po
+## 45      cognitive               cogn_ps
+## 46      cognitive               cogn_se
+## 47      cognitive               cogn_wo
+## 48      cognitive             cts_bname
+## 49      cognitive            catfluency
+## 50      cognitive                cts_db
+## 51      cognitive             cts_delay
+## 52      cognitive                cts_df
+## 53      cognitive            cts_doperf
+## 54      cognitive              cts_ebdr
+## 55      cognitive              cts_ebmt
+## 56      cognitive              cts_idea
+## 57      cognitive            cts_lopair
+## 58      cognitive                  mmse
+## 59      cognitive            cts_nccrtd
+## 60      cognitive              cts_pmat
+## 61      cognitive         cts_read_nart
+## 62      cognitive         cts_read_wrat
+## 63      cognitive              cts_sdmt
+## 64      cognitive             cts_story
+## 65      cognitive               cts_wli
+## 66      cognitive              cts_wlii
+## 67      cognitive             cts_wliii
+## 68    demographic          age_at_visit
+## 69       physical               iadlsum
+## 70       physical               katzsum
+## 71       physical               rosbscl
+## 72       physical               rosbsum
+## 73       physical                vision
+## 74       physical             visionlog
+## 75       physical                   fev
+## 76       physical                   mep
+## 77       physical                   mip
+## 78       physical                   pvc
+## 79       clinical                   bun
+## 80       clinical                    ca
+## 81       clinical               chlstrl
+## 82       clinical                    cl
+## 83       clinical                   co2
+## 84       clinical                   crn
+## 85       clinical               fasting
+## 86       clinical               glucose
+## 87       clinical                 hba1c
+## 88       clinical            hdlchlstrl
+## 89       clinical              hdlratio
+## 90       clinical                     k
+## 91       clinical            ldlchlstrl
+## 92       clinical                    na
+## 93      substance             alcohol_g
+## 94       physical                   bmi
+## 95       physical                   htm
+## 96       physical          phys5itemsum
+## 97       physical                  wtkg
+## 98       clinical                  bp11
+## 99       clinical                   bp2
+## 100      clinical                   bp3
+## 101      clinical                  bp31
+## 102      clinical      hypertension_cum
+## 103      clinical                dm_cum
+## 104      clinical           thyroid_cum
+## 105      clinical               chf_cum
+## 106      clinical      claudication_cum
+## 107      clinical             heart_cum
+## 108      clinical            stroke_cum
+## 109      clinical         vasc_3dis_sum
+## 110      clinical         vasc_4dis_sum
+## 111      clinical        vasc_risks_sum
+## 112      physical            gait_speed
+## 113      physical               gripavg
+##                  construct self_reported
+## 1                       id         FALSE
+## 2                                     NA
+## 3                                     NA
+## 4                                     NA
+## 5                                     NA
+## 6                                     NA
+## 7                                     NA
+## 8                                     NA
+## 9                                     NA
+## 10                                    NA
+## 11                                    NA
+## 12                                    NA
+## 13                                    NA
+## 14                     age         FALSE
+## 15                     age         FALSE
+## 16                     age         FALSE
+## 17               education          TRUE
+## 18                     sex         FALSE
+## 19                    race          TRUE
+## 20                    race          TRUE
+## 21                    apoe         FALSE
+## 22                 alcohol          TRUE
+## 23                 smoking          TRUE
+## 24                 smoking          TRUE
+## 25                 smoking          TRUE
+## 26                 smoking          TRUE
+## 27                    time         FALSE
+## 28                                    NA
+## 29                                    NA
+## 30                                    NA
+## 31                                    NA
+## 32                                    NA
+## 33                                    NA
+## 34                                    NA
+## 35                                    NA
+## 36                                    NA
+## 37                                    NA
+## 38                                    NA
+## 39               cognition         FALSE
+## 40                dementia         FALSE
+## 41                  stroke         FALSE
+## 42         episodic memory         FALSE
+## 43        global cognition         FALSE
+## 44  perceptual orientation         FALSE
+## 45        perceptual speed         FALSE
+## 46         semantic memory         FALSE
+## 47          working memory         FALSE
+## 48         semantic memory         FALSE
+## 49         semantic memory         FALSE
+## 50          working memory         FALSE
+## 51         episodic memory         FALSE
+## 52          working memory         FALSE
+## 53          working memory         FALSE
+## 54         episodic memory         FALSE
+## 55         episodic memory         FALSE
+## 56    verbal comprehension         FALSE
+## 57  perceptual orientation         FALSE
+## 58                dementia          TRUE
+## 59        perceptual speed         FALSE
+## 60  perceptual orientation         FALSE
+## 61         semantic memory         FALSE
+## 62         semantic memory         FALSE
+## 63        perceptual speed         FALSE
+## 64         episodic memory         FALSE
+## 65         episodic memory         FALSE
+## 66         episodic memory         FALSE
+## 67         episodic memory         FALSE
+## 68                                    NA
+## 69                 physact          TRUE
+## 70                 physcap          TRUE
+## 71                 physcap          TRUE
+## 72                 physcap          TRUE
+## 73                 physcap         FALSE
+## 74                 physcap         FALSE
+## 75                 physcap         FALSE
+## 76                 physcap         FALSE
+## 77                 physcap         FALSE
+## 78                 physcap         FALSE
+## 79                                    NA
+## 80                                    NA
+## 81                                    NA
+## 82                                    NA
+## 83                                    NA
+## 84                                    NA
+## 85                                    NA
+## 86                                    NA
+## 87                                    NA
+## 88                                    NA
+## 89                                    NA
+## 90                                    NA
+## 91                                    NA
+## 92                                    NA
+## 93                 alcohol          TRUE
+## 94                physique         FALSE
+## 95                physique         FALSE
+## 96                 physact          TRUE
+## 97                physique         FALSE
+## 98            hypertension         FALSE
+## 99            hypertension         FALSE
+## 100           hypertension          TRUE
+## 101           hypertension         FALSE
+## 102           hypertension          TRUE
+## 103               diabetes          TRUE
+## 104                                   NA
+## 105                 cardio          TRUE
+## 106                                   NA
+## 107                                   NA
+## 108                 stroke         FALSE
+## 109                                   NA
+## 110                                   NA
+## 111                                   NA
+## 112                physcap         FALSE
+## 113                physcap         FALSE
+##     longitudinal             unit include
+## 1          FALSE           person    TRUE
+## 2             NA                       NA
+## 3             NA                       NA
+## 4             NA                       NA
+## 5             NA                       NA
+## 6             NA                       NA
+## 7             NA                       NA
+## 8             NA                       NA
+## 9             NA                       NA
+## 10            NA                       NA
+## 11            NA                       NA
+## 12            NA                       NA
+## 13            NA                       NA
+## 14         FALSE             year    TRUE
+## 15         FALSE             year    TRUE
+## 16         FALSE         category    TRUE
+## 17         FALSE            years    TRUE
+## 18         FALSE         category    TRUE
+## 19         FALSE         category    TRUE
+## 20         FALSE         category    TRUE
+## 21         FALSE            scale    TRUE
+## 22         FALSE       drinks/day    TRUE
+## 23         FALSE cigarettes / day    TRUE
+## 24         FALSE            years    TRUE
+## 25         FALSE         category    TRUE
+## 26         FALSE         category    TRUE
+## 27          TRUE       time point    TRUE
+## 28            NA                       NA
+## 29            NA                       NA
+## 30            NA                       NA
+## 31            NA                       NA
+## 32            NA                       NA
+## 33            NA                       NA
+## 34            NA                       NA
+## 35            NA                       NA
+## 36            NA                       NA
+## 37            NA                       NA
+## 38            NA                       NA
+## 39          TRUE         category    TRUE
+## 40          TRUE             0, 1    TRUE
+## 41          TRUE         category    TRUE
+## 42          TRUE        composite    TRUE
+## 43          TRUE        composite    TRUE
+## 44          TRUE        composite    TRUE
+## 45          TRUE        composite    TRUE
+## 46          TRUE        composite    TRUE
+## 47          TRUE        composite    TRUE
+## 48          TRUE          0 to 15      NA
+## 49          TRUE          0 to 75      NA
+## 50          TRUE          0 to 12      NA
+## 51          TRUE          0 to 25      NA
+## 52          TRUE          0 to 12      NA
+## 53          TRUE          0 to 14      NA
+## 54          TRUE          0 to 12      NA
+## 55          TRUE          0 to 12      NA
+## 56          TRUE           0 to 8      NA
+## 57          TRUE          0 to 15      NA
+## 58          TRUE          0 to 30    TRUE
+## 59          TRUE          0 to 48      NA
+## 60          TRUE          0 to 16      NA
+## 61          TRUE          0 to 10      NA
+## 62          TRUE          0 to 15      NA
+## 63          TRUE         0 to 110      NA
+## 64          TRUE          0 to 25      NA
+## 65          TRUE          0 to 30      NA
+## 66          TRUE          0 to 10      NA
+## 67          TRUE          o to 10      NA
+## 68            NA                       NA
+## 69          TRUE            scale    TRUE
+## 70          TRUE            scale    TRUE
+## 71          TRUE            scale    TRUE
+## 72          TRUE            scale    TRUE
+## 73          TRUE            scale    TRUE
+## 74          TRUE            scale    TRUE
+## 75          TRUE           liters    TRUE
+## 76          TRUE           cm H20    TRUE
+## 77          TRUE           cm H20    TRUE
+## 78          TRUE           liters    TRUE
+## 79            NA                       NA
+## 80            NA                       NA
+## 81            NA                       NA
+## 82            NA                       NA
+## 83            NA                       NA
+## 84            NA                       NA
+## 85            NA                       NA
+## 86            NA                       NA
+## 87            NA                       NA
+## 88            NA                       NA
+## 89            NA                       NA
+## 90            NA                       NA
+## 91            NA                       NA
+## 92            NA                       NA
+## 93         FALSE            grams    TRUE
+## 94          TRUE           kg/msq    TRUE
+## 95          TRUE           meters    TRUE
+## 96            NA                       NA
+## 97          TRUE            kilos    TRUE
+## 98          TRUE                       NA
+## 99          TRUE                       NA
+## 100         TRUE                       NA
+## 101         TRUE                       NA
+## 102         TRUE                       NA
+## 103         TRUE                       NA
+## 104           NA                       NA
+## 105         TRUE         category    TRUE
+## 106           NA                       NA
+## 107           NA                       NA
+## 108         TRUE         category    TRUE
+## 109           NA                       NA
+## 110           NA                       NA
+## 111           NA                       NA
+## 112         TRUE          min/sec    TRUE
+## 113         TRUE              lbs    TRUE
 </code></pre>
 
 <p>The R session information (including the OS info, R version and all
@@ -1034,42 +1194,44 @@ packages used):</p>
 <pre><code class="r">sessionInfo()
 </code></pre>
 
-<pre><code>## R version 3.2.4 Revised (2016-03-16 r70336)
+<pre><code>## R version 3.1.1 (2014-07-10)
 ## Platform: x86_64-w64-mingw32/x64 (64-bit)
-## Running under: Windows &gt;= 8 x64 (build 9200)
 ## 
 ## locale:
-## [1] LC_COLLATE=English_United States.1252 
-## [2] LC_CTYPE=English_United States.1252   
-## [3] LC_MONETARY=English_United States.1252
-## [4] LC_NUMERIC=C                          
-## [5] LC_TIME=English_United States.1252    
+## [1] LC_COLLATE=English_Canada.1252 
+## [2] LC_CTYPE=English_Canada.1252   
+## [3] LC_MONETARY=English_Canada.1252
+## [4] LC_NUMERIC=C                   
+## [5] LC_TIME=English_Canada.1252    
 ## 
 ## attached base packages:
-## [1] stats     graphics  grDevices utils     datasets  methods   base     
+## [1] stats     graphics  grDevices
+## [4] utils     datasets  methods  
+## [7] base     
 ## 
 ## other attached packages:
-## [1] ggplot2_2.1.0 magrittr_1.5 
+## [1] ggplot2_1.0.0 magrittr_1.5 
 ## 
 ## loaded via a namespace (and not attached):
-##  [1] Rcpp_0.12.4        Rttf2pt1_1.3.3     knitr_1.12.3      
-##  [4] munsell_0.4.3      testit_0.5         colorspace_1.2-6  
-##  [7] R6_2.1.2           highr_0.5.1        stringr_1.0.0     
-## [10] plyr_1.8.3         dplyr_0.4.3        tools_3.2.4       
-## [13] parallel_3.2.4     dichromat_2.0-0    DT_0.1.40         
-## [16] grid_3.2.4         gtable_0.2.0       DBI_0.3.1         
-## [19] extrafontdb_1.0    htmltools_0.3.5    lazyeval_0.1.10   
-## [22] yaml_2.1.13        assertthat_0.1     digest_0.6.9      
-## [25] formatR_1.3        RColorBrewer_1.1-2 tidyr_0.4.1       
-## [28] htmlwidgets_0.6    rsconnect_0.4.2.1  evaluate_0.8.3    
-## [31] rmarkdown_0.9.5    labeling_0.3       stringi_1.0-1     
-## [34] scales_0.4.0       extrafont_0.17     jsonlite_0.9.19
+##  [1] assertthat_0.1     colorspace_1.2-4  
+##  [3] dichromat_2.0-0    digest_0.6.4      
+##  [5] dplyr_0.2          evaluate_0.5.5    
+##  [7] extrafont_0.16     extrafontdb_1.0   
+##  [9] formatR_1.0        grid_3.1.1        
+## [11] gtable_0.1.2       knitr_1.6         
+## [13] MASS_7.3-33        munsell_0.4.2     
+## [15] parallel_3.1.1     plyr_1.8.1        
+## [17] proto_0.3-10       RColorBrewer_1.0-5
+## [19] Rcpp_0.11.2        reshape2_1.4      
+## [21] Rttf2pt1_1.3.2     scales_0.2.4      
+## [23] stringr_0.6.2      testit_0.3        
+## [25] tools_3.1.1
 </code></pre>
 
 <pre><code class="r">Sys.time()
 </code></pre>
 
-<pre><code>## [1] &quot;2016-04-07 10:14:50 PDT&quot;
+<pre><code>## [1] &quot;2016-04-13 07:51:12 PDT&quot;
 </code></pre>
 
 </body>
