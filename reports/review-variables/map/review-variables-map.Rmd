@@ -133,12 +133,12 @@ Details  were requested about the following items (including the availability of
 
 ### General comments
 
-for **all variables** conditions, declare whether they are 
-  - self reported or diagnosed 
-  - time variant or invariant (study entry only) 
-  - treatment or management of the conditions is available
-  - provide levels and labels for items with categorical responses 
-  - specific description of measurement encoding 
+for **all variables** conditions, declare whether they are   
+- self reported or diagnosed 
+- time variant or invariant (study entry only) 
+- treatment or management of the conditions is available
+- provide levels and labels for items with categorical responses 
+- specific description of measurement encoding 
 
 ## (1) N at each wave
 
@@ -157,12 +157,68 @@ Keep for modelling only composite score of cognitive domains
 ```{r B-2-cognitive-2, echo=TRUE}
 ```
 
-
+Now we observe how the crossectional distribution of age was changing across follow-up points
 ```{r B-2-cognitive-3, echo=TRUE}
 ```
 
-
+Individual graphs could be produced with the following script
 ```{r B-2-cognitive-4, echo=FALSE, warning=FALSE, message=FALSE, dpi=300}
 ```
 
 
+### Global
+Global cognitive score
+```{r B-2-cognitive-5-cogn_global, echo=FALSE, warning=FALSE, message=FALSE, dpi=300}
+```
+
+### Semantic
+ Calculated domain score - semantic memory
+```{r B-2-cognitive-5-cogn_se, echo=FALSE, warning=FALSE, message=FALSE, dpi=300}
+```
+
+
+### Episodic 
+ Calculated domain score-episodic memory
+```{r B-2-cognitive-5-cogn_ep, echo=FALSE, warning=FALSE, message=FALSE, dpi=300}
+```
+
+### Working 
+ Calculated domain score - working memory
+```{r B-2-cognitive-5-cogn_wo, echo=FALSE, warning=FALSE, message=FALSE, dpi=300}
+```
+
+
+### Perceptual 
+Calculated domain score - perceptual orientation
+```{r B-2-cognitive-5-cogn_po, echo=FALSE, warning=FALSE, message=FALSE, dpi=300}
+```
+
+### Speed
+ Calculated domain score - perceptual speed
+```{r B-2-cognitive-5-cogn_ps, echo=FALSE, warning=FALSE, message=FALSE, dpi=300}
+```
+
+### MMSE 
+Mini mental state exam 
+```{r B-2-cognitive-5-mmse, echo=FALSE, warning=FALSE, message=FALSE, dpi=300}
+```
+
+
+## (3) Dementia
+ Dementia diagnosis
+```{r B-3-dementia-diagnosis, echo=FALSE, warning=FALSE, message=FALSE, dpi=300}
+```
+
+
+## (4) Education
+
+```{r B-4-education, echo=FALSE, warning=FALSE, message=FALSE, dpi=300}
+```
+
+## (5) Social class
+No indicator of social class if found in our version of MAP data
+
+## (6) BMI
+
+```{r B-6-bmi, echo=FALSE, warning=FALSE, message=FALSE, dpi=300}
+```

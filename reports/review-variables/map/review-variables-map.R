@@ -25,7 +25,8 @@ requireNamespace("testit")# For asserting conditions meet expected patterns.
 
 # ---- load-data ---------------------------------------------------------------
 # load the product of 0-ellis-island.R,  a list object containing data and metadata
-dto <- readRDS("./data/unshared/derived/dto.rds")
+# data_path_input  <- "../MAP/data-unshared/derived/ds0.rds" # original 
+dto <- readRDS("./data/unshared/derived/dto.rds") # local copy
 # each element this list is another list:
 names(dto)
 # 3rd element - data set with unit data
@@ -37,13 +38,13 @@ ds0 <- dto[["unitData"]]
 ds <- ds0
 
 # ---- meta-table --------------------------------------------------------
-# dto[["metaData"]] %>%  
-#   DT::datatable(
-#     class   = 'cell-border stripe',
-#     caption = "This is a dynamic table of the metadata file. Edit at `./data/meta/map/meta-data-map.csv",
-#     filter  = "top",
-#     options = list(pageLength = 6, autoWidth = TRUE)
-#   )
+dto[["metaData"]] %>%  
+  DT::datatable(
+    class   = 'cell-border stripe',
+    caption = "This is a dynamic table of the metadata file. Edit at `./data/meta/map/meta-data-map.csv",
+    filter  = "top",
+    options = list(pageLength = 6, autoWidth = TRUE)
+  )
 
 
 # ---- inspect-data -------------------------------------------------------------
@@ -52,7 +53,7 @@ ds <- ds0
 
 # ---- basic-table --------------------------------------------------------------
 
-# ---- basic-graph --------------------------------------------------------------
+# ---- basic-graphs --------------------------------------------------------------
 # this is how we can interact with the `dto` to call and graph data and metadata
 dto[["metaData"]] %>% 
   dplyr::filter(type=="demographic") %>% 
@@ -61,11 +62,14 @@ dto[["metaData"]] %>%
 dto[["unitData"]]%>%
   histogram_continuous("age_death", bin_width=1)
 
-names(ds)
+dto[["unitData"]] %>%
+  histogram_discrete("msex")
+
+
 set.seed(1)
-(ids <- sample(ds$id,100))
+ids <- sample(ds$id,100)
 d <- dto[["unitData"]] %>% dplyr::filter(id %in% ids)
-g <- basic_line(d, "cogn_global", "fu_year", "salmon", .9, .1, smoothing_method=T)
+g <- basic_line(d, "cogn_global", "fu_year", "salmon", .9, .1, T)
 g
 
 raw_smooth_lines(d, "cogn_global")
@@ -81,63 +85,83 @@ ds %>%
 # ----- B-2-cognitive-1 -----------------------
 dto[["metaData"]] %>% 
   dplyr::filter(type=="cognitive") %>% 
-  dplyr::select(-name,-type,-name_new) %>%
-  dplyr::arrange(construct, include)
+  dplyr::select(-name,-type,-name_new, -include) %>%
+  dplyr::arrange(construct)
 
 # ----- B-2-cognitive-2 -----------------------
 dto[["metaData"]] %>% 
   dplyr::filter(type=="cognitive", include==TRUE) %>% 
-  dplyr::select(-type,-name_new) %>%
-  dplyr::arrange(construct, include)
+  dplyr::select(-type,-name_new, - include) %>%
+  dplyr::arrange(construct)
 
 # ----- B-2-cognitive-3 -----------------------
 dto[["unitData"]] %>% 
   dplyr::select(id,fu_year, cogn_global) %>% 
   dplyr::filter(!is.na(cogn_global)) %>%
   dplyr::group_by(fu_year) %>% 
-  dplyr::summarize(ave_cog = round(mean(cogn_global),3),
+  dplyr::summarize(average_global_cognition = round(mean(cogn_global),3),
                    sd = sprintf("%0.2f",sd(cogn_global)), 
                    observed =n()) 
 
 # ----- B-2-cognitive-4 -----------------------
-names(ds)
 set.seed(1)
-(ids <- sample(ds$id,100))
+ids <- sample(ds$id,100)
 d <- dto[["unitData"]] %>% dplyr::filter(id %in% ids)
 g <- basic_line(d, "cogn_global", "fu_year", "salmon", .9, .1, T)
 g
 
 
-
+# ----- B-2-cognitive-5-cogn_global -----------------------
 raw_smooth_lines(d, "cogn_global")
+
+# ----- B-2-cognitive-5-cogn_se -----------------------
+raw_smooth_lines(d, "cogn_se")
+
+# ----- B-2-cognitive-5-cogn_ep -----------------------
+raw_smooth_lines(d, "cogn_ep") 
+
+# ----- B-2-cognitive-5-cogn_wo -----------------------
+raw_smooth_lines(d, "cogn_wo") 
+
+# ----- B-2-cognitive-5-cogn_po -----------------------
+raw_smooth_lines(d, "cogn_po")
+
+# ----- B-2-cognitive-5-cogn_ps -----------------------
+raw_smooth_lines(d, "cogn_ps")
+
+# ----- B-2-cognitive-5-cogn_ps -----------------------
+raw_smooth_lines(d, "cogn_ps")
+
+# ----- B-2-cognitive-5-mmse -----------------------
+raw_smooth_lines(d, "mmse")
+
+
 
 
 
 # ----- B-3-dementia-diagnosis -------------------------------------------------
 dto[["metaData"]] %>% dplyr::filter(name=="dementia")
 
-dto[["unitData"]] %>% 
-  dplyr::group_by_("fu_year","dementia") %>% 
-  dplyr::summarize(count=n())
 ds <- dto[["unitData"]] %>% 
   dplyr::filter(!is.na(dementia)) %>% 
   dplyr::group_by_("fu_year") %>% 
   dplyr::summarize(percent_diagnosed=mean(dementia),
                    observed_n = n()) 
+ds
 
-  g <- ggplot2::ggplot(ds, aes_string(x="fu_year",y="percent_diagnosed")) 
-  g <- g + geom_line(na.rm = T)
-  g <- g + main_theme
-  g
+g <- ggplot2::ggplot(ds, aes_string(x="fu_year",y="percent_diagnosed")) 
+g <- g + geom_line(na.rm = T)
+g <- g + main_theme
+g
   
-  ds <- dto[["unitData"]] %>% 
-    dplyr::filter(!is.na(dementia)) %>% 
-    dplyr::mutate(age_cat = cut(age_at_visit,breaks = 20)) %>% 
-    dplyr::group_by_("age_cat") %>%
-    dplyr::summarize(percent_diagnosed=mean(dementia),
-                     observed_n = n())  
-  ds
-  histogram_continuous(ds, "percent_diagnosed")
+ds <- dto[["unitData"]] %>% 
+  dplyr::filter(!is.na(dementia)) %>% 
+  dplyr::mutate(age_cat = cut(age_at_visit,breaks = 10)) %>% 
+  dplyr::group_by_("age_cat") %>%
+  dplyr::summarize(percent_diagnosed=mean(dementia),
+                   observed_n = n())  
+ds
+
   
   g <- ggplot2::ggplot(ds, aes_string(x="age_cat",y="percent_diagnosed")) 
   g <- g + geom_bar(stat="identity")
@@ -148,12 +172,6 @@ ds <- dto[["unitData"]] %>%
 # ---- B-4-education -----------------------------------------------------------
 dto[["metaData"]] %>% dplyr::filter(name=="educ")
 # shows attrition in each education group
-t <- table(ds$educ, ds$fu_year); t[t==0]<-".";t
-# response categories
-dto[["unitData"]] %>% 
-  dplyr::group_by_("educ") %>% 
-  dplyr::summarize(count=n())
-# descriptives by follow-up year
 dto[["unitData"]] %>% 
   dplyr::filter(!is.na(educ)) %>% 
   dplyr::group_by_("fu_year") %>% 
@@ -162,30 +180,32 @@ dto[["unitData"]] %>%
                    observed_n = n())
 
 
-# ---- B-4-social-class -----------------------------------------------------------
+# ---- B-5-social-class -----------------------------------------------------------
 
-# ---- B-5-bmi -----------------------------------------------------------
+# ---- B-6-bmi -----------------------------------------------------------
 
 dto[["metaData"]] %>% dplyr::filter(name %in% c("bmi","wtkg", "htm"))
 # descriptives by follow-up year
 dto[["unitData"]] %>% 
   dplyr::filter(!is.na(bmi)) %>% 
   dplyr::group_by_("fu_year") %>% 
-  dplyr::summarize(average_years_edu=mean(bmi),
+  dplyr::summarize(average_bmi=mean(bmi),
                    SD=sd(bmi),
                    observed_n = n())
 
-# ---- B-6-smoking -----------------------------------------------------------
+# ---- B-7-smoking -----------------------------------------------------------
 dto[["metaData"]] %>% dplyr::filter(construct %in% c("smoking"))
-dto[["unitData"]] %>% 
+t <- dto[["unitData"]] %>% 
   dplyr::filter(!is.na(q3smo_bl)) %>% 
   dplyr::group_by_("q3smo_bl") %>% 
-  dplyr::summarize(n=n())
+  dplyr::summarize(n=n()) 
+t 
+t  %>% histogram_continuous("q3smo_bl")
   
 dto[["unitData"]] %>% 
   dplyr::filter(!is.na(q3smo_bl)) %>% 
   dplyr::group_by_("fu_year") %>% 
-  dplyr::summarize(average_years_edu=mean(q3smo_bl),
+  dplyr::summarize(average_smoking_quantity=mean(q3smo_bl),
                    SD=sd(q3smo_bl),
                    observed_n = n())
 
