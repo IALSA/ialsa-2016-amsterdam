@@ -11,7 +11,7 @@ library(magrittr) # enables piping : %>%
 # Call `base::source()` on any repo file that defines functions needed below.  Ideally, no real operations are performed.
 source("./scripts/common-functions.R") # used in multiple reports
 source("./scripts/graph-presets.R") # fonts, colors, themes 
-
+source("./scripts/general-graphs.R") 
 # Verify these packages are available on the machine, but their functions need to be qualified: http://r-pkgs.had.co.nz/namespace.html#search-path
 requireNamespace("ggplot2") # graphing
 # requireNamespace("readr") # data input
@@ -42,11 +42,14 @@ dplyr::tbl_df(dto[["metaData"]])
 # ---- basic-graph --------------------------------------------------------------
 # this is how we can interact with the `dto` to call and graph data and metadata
 dto[["metaData"]] %>% 
-  dplyr::filter(type=="demo") %>% 
+  dplyr::filter(type=="demographic") %>% 
   dplyr::select(name,name_new,label)
 
 dto[["unitData"]]%>%
   histogram_continuous("age_death", bin_width=1)
+
+dto[["unitData"]]%>%
+  histogram_discrete("msex")
 
 # ---- reproduce ---------------------------------------
 rmarkdown::render(input = "./sandbox/report-a.Rmd" ,

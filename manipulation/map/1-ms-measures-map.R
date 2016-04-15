@@ -1,6 +1,6 @@
 # knitr::stitch_rmd(script="./manipulation/rename-classify.R", output="./manipulation/rename-classify.md")
 #These first few lines run only when the file is run in RStudio, !!NOT when an Rmd/Rnw file calls it!!
-# rm(list=ls(all=TRUE))  #Clear the variables from previous runs.
+rm(list=ls(all=TRUE))  #Clear the variables from previous runs.
 
 # ---- load_sources ------------------------------------------------------------
 # Call `base::source()` on any repo file that defines functions needed below.  Ideally, no real operations are performed.
@@ -38,7 +38,7 @@ dto[["metaData"]]
 # ---- tweak_data --------------------------------------------------------------
 ds <- dto[["unitData"]]
 
-
+# table(ds$fu_year, ds$dementia)
 
 # ---- look-up-pattern-for-single-id --------------------------------------------------------------
 # if died==1, all subsequent focal_outcome==DEAD.
@@ -46,11 +46,11 @@ set.seed(1)
 ids <- sample(unique(ds$id),3)
 d <- ds %>% 
   dplyr::filter(id %in% ids) %>%
-  dplyr::select_("id","fu_year","age_death","age_at_visit", "dementia") %>%
+  dplyr::select_("id","fu_year","age_death","age_at_visit","dementia") %>%
   dplyr::mutate(
     age_death = as.numeric(age_death)
   )
-d 
+d
 # d$id <- substring(d$id,1,1)
 # write.csv(d,"./data/shared/musti-state-dementia.csv")  
 
@@ -101,7 +101,23 @@ ds$state <- ordered(ds$state, levels = c(1,2,3),
                     labels = c("Healthy","Sick","Dead"))
 str(ds)
 
+a <- dto[["unitData"]] %>% 
+  dplyr::filter(id %in% ids) %>%
+  dplyr::mutate(fu_point = fu_year) %>% 
+  dplyr::select_("id", "fu_point")
+b <- ds %>% dplyr::select_("id","fu_point")
+ab <- dplyr::union(a,b)
+dsab <- dto[["unitData"]] %>% 
+  dplyr::filter(id %in% ids) %>% 
+  dplyr::select(id, msex, age_at_visit)
 
+
+c <- dplyr::left_join(dto[[]])
+# a <- dto[["unitData"]]
+# d <- ds %>% dplyr::select(id,state)
+dsab <- dplyr::left_join(,a,  by="id")
+
+table(aa$fu_point, aa$state)
 
 # ---- save-to-disk ------------------------------------------------------------
 

@@ -11,3 +11,9 @@ rmarkdown::render(
   output_format="html_document", 
   clean=TRUE
 )
+
+
+knitr::stitch_rmd(
+  script="./manipulation/map/1-ms-measure-map.R", 
+  output="./manipulation/map/stitched-output/1-ms-measure-map.md"
+)
