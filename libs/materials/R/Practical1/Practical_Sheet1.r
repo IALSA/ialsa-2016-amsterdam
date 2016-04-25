@@ -14,12 +14,12 @@
 
 # Preliminaries:
 library(msm)
-source("ELECT.r")
+source("./libs/materials/R/Practical1/ELECT.r")
 # Define rounding in output:
 digits <- 3
 
 # Load data <dta>: 
-load("dataEx1.RData")
+load("./libs/materials/R/Practical1/dataEx1.RData")
 
 # Data info:
 subjects <- as.numeric(names(table(dta$id)))

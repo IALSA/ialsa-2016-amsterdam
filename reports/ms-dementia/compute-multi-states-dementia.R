@@ -118,7 +118,7 @@ str(ds)
 
 # ---- attach-original-covariates -------------------------------------
 selected_covariates <- dto[["unitData"]] %>% 
-  dplyr::select_("id","fu_year",
+  dplyr::select_("id","fu_year", "age_death","age_at_visit",
                  "msex",
                  "educ",
                  "smoke_bl", # Smoking at baseline
@@ -130,7 +130,7 @@ selected_covariates <- dto[["unitData"]] %>%
 d <- ds %>% dplyr::left_join(selected_covariates,by=c("id"="id", "fu_point"="fu_year"))
 
 
-stem <- c("id", "fu_point","age","state")
+stem <- c("id", "fu_point","age_deah","age_at_visit","age","state")
 not_stem <- setdiff(names(d), stem)
 death_state <- 3
 for(j in not_stem){

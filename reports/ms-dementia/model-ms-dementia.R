@@ -39,11 +39,11 @@ set.seed(1)
 ids <- sample(unique(ds$id),3)
 d <- ds %>% 
   dplyr::filter(id %in% ids) %>%
-  dplyr::select_("id","fu_point","age","msex", "educ")
+  dplyr::select_("id","fu_point","age_death","age_at_visit", "age","msex", "educ")
 d
 # d
 
-
+ 
 
 
 # ---- basic-model -----------------------------
@@ -52,9 +52,10 @@ simple_multistate <- function(ds, Q, qnames, cov_names, method){
   constraint <- NULL
   fixedpars <- NULL
   # Q <- rbind(c(0,q,q), c(q,0,q),c(0,0,0))
-  model <- msm(state~age, subject=id, data=ds, center=FALSE,
+  model <- msm::msm(state~age, subject=id, data=ds, center=FALSE,
                qmatrix=Q, death=TRUE, covariates=covariates,
-               censor= -2, censor.states=c(1,2), method=method,
+               # censor= -2, censor.states=c(1,2), 
+               method=method,
                constraint=constraint,fixedpars=fixedpars,
                control=list(trace=0,REPORT=1,maxit=1000,fnscale=10000))
   # Generate output:
@@ -91,7 +92,7 @@ d <- ds %>%
   dplyr::filter(id %in% ids) # turn off for all observations
 d
 
-
+d[,is.na(d$state)] <- d[,]
 # ---- explore-msm-a ------------------------------
 digits <- 3
 q = .01
