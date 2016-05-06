@@ -15,137 +15,77 @@ requireNamespace("dplyr", quietly=TRUE) #Avoid attaching dplyr, b/c its function
 requireNamespace("testit", quietly=TRUE)
 # requireNamespace("plyr", quietly=TRUE)
 
-# ---- declare_globals ---------------------------------------------------------
-path_input <- "./data/unshared/derived/dto.rds"
-path_output <- "data/unshared/derived/dto.rds"
+# ---- declare-globals ----------------------------------------------
+data_path_input  <- "./data/unshared/derived/dto.rds"
+metadata_path_input <- "./data/meta/map/meta-data-map.csv" # input file with your manual classification
 
-# ---- load-data ---------------------------------------------------------------
-# load the product of 0-ellis-island-wide.R,  a list object containing data and metad
-dto <- readRDS("./data/unshared/derived/dto.rds")
-
-# ---- inspect-data -------------------------------------------------------------
+# ---- load-data ------------------------------------------------
+dto <- readRDS(data_path_input)
 names(dto)
-# 1st element - unit(person) level data
-dplyr::tbl_df(dto[["unitData"]])
-# 2nd element - meta data, info about variables
-dto[["metaData"]]
-
-
-
-# ---- tweak_data --------------------------------------------------------------
-ds <- dto[["unitData"]]
-
-# table(ds$fu_year, ds$dementia)
-
-# ---- look-up-pattern-for-single-id --------------------------------------------------------------
-# if died==1, all subsequent focal_outcome==DEAD.
-set.seed(1)
-ids <- sample(unique(ds$id),3)
-d <- ds %>% 
-  dplyr::filter(id %in% ids) %>%
-  dplyr::select_("id","fu_year","age_death","age_at_visit","dementia") %>%
-  dplyr::mutate(
-    age_death = as.numeric(age_death)
-  )
-d
-# d$id <- substring(d$id,1,1)
-# write.csv(d,"./data/shared/musti-state-dementia.csv")  
-
-# ---- ms_dementia -------------------------------------------------------------
-ds_alive <- d %>% 
-  dplyr::rename(
-    dementia_now=dementia, 
-    fu_point = fu_year) %>% 
-  dplyr::group_by(id) %>% 
-  dplyr::mutate(
-    dead_now = FALSE,
-    dementia_now   = as.logical(dementia_now),
-    dementia_ever  = any(dementia_now)
+ds <- dto[["unitData"]] %>% 
+  dplyr::select_(
+    "id", 
+    "fu_year", # follow-up year, wave indicator
+    "age_at_visit", "age_death", 
+    "msex", # Gender
+    "educ", # Years of education
+    "smoke_bl", # Smoking at baseline
+    "alco_life", # Lifetime daily alcohol intake -baseline
+    "mmse" # Mini Mental State Exam 
   ) %>% 
-  dplyr::ungroup()
-ds_alive
-# str(ds_alive )
-ds_dead <- ds_alive %>% 
-  dplyr::filter(!is.na(age_death)) %>% 
-  dplyr::group_by(id) %>% 
-  dplyr::arrange(fu_point) %>% 
-  dplyr::summarize(
-    dead_now = TRUE,
-    fu_point       = max(fu_point) + 1L,
-    age_death      = max(age_death),
-    age_at_visit   = NA_real_,
-    dementia_last  = dplyr::last(dementia_now),
-    dementia_now   = ifelse(dementia_last, TRUE, NA),
-    dementia_ever  = any(dementia_now)
-  ) %>% 
-  dplyr::ungroup() %>% 
-  dplyr::select(-dementia_last)
-ds_dead
-# str(ds_dead)
-ds <- ds_alive %>%
-  dplyr::union(ds_dead) %>%
-  dplyr::arrange(id, fu_point)
-ds
-# compute the multistate variable
-ds <- ds %>%
-  dplyr::mutate(
-    state = ifelse(!dead_now & !dementia_now, 1,
-            ifelse(!dead_now & dementia_now, 2, 
-                           ifelse(dead_now, 3, NA)))
-  ) 
-ds
-ds$state <- ordered(ds$state, levels = c(1,2,3),
-                    labels = c("Healthy","Sick","Dead"))
-str(ds)
+  dplyr::filter(!(is.na(age_death) & is.na(age_at_visit)))
 
-a <- dto[["unitData"]] %>% 
-  dplyr::filter(id %in% ids) %>%
-  dplyr::mutate(fu_point = fu_year) %>% 
-  dplyr::select_("id", "fu_point")
-b <- ds %>% dplyr::select_("id","fu_point")
-ab <- dplyr::union(a,b)
-dsab <- dto[["unitData"]] %>% 
-  dplyr::filter(id %in% ids) %>% 
-  dplyr::select(id, msex, age_at_visit)
+i <- 1
+head(ds) 
 
+# ---- transform-to-wide-time ----------------------------------------
+# wave_counter <- 0:17
+wave_counter <- unique(ds$fu_year)
+(ms_outcome_wide_names <- paste0("mmse_",wave_counter))
+(ms_age_at_visit_wide_names <- paste0("age_", wave_counter))
+(not_long_stem <- c( "age_at_visit", "mmse"))
+(long_stem <- setdiff(names(ds),not_long_stem))
+# ds_wide <- ds_no_duplicates %>%
+# ds_wide <- ds %>%
+#   tidyr::spread_(key="fu_year", value %in% c("age_at_visit", "mmse") )
 
-c <- dplyr::left_join(dto[[]])
-# a <- dto[["unitData"]]
-# d <- ds %>% dplyr::select(id,state)
-dsab <- dplyr::left_join(,a,  by="id")
+library(data.table) ## v >= 1.9.6
+ds_wide <- data.table::dcast(
+  data.table::setDT(ds),
+  id + age_death + msex + educ + smoke_bl + alco_life ~ fu_year, value.var = c(
+    "age_at_visit", "mmse")) 
 
-table(aa$fu_point, aa$state)
+# ---- recognize-NAs-----------------------------------------------
+dsf <- dto[["unitData"]]
+sum(is.na(dsf$age_bl))
+sum(is.na(dsf$age_death))
+sum(is.na(dsf$age_at_visit))
 
-# ---- save-to-disk ------------------------------------------------------------
+# ---- recode-1-------------------------------------------------------
+d <- as.data.frame(ds_wide )
+for(w in wave_counter){
+  # define varnames at waves
+  state_w <- paste0("state_",w)
+  age_w <- paste0("age_at_visit_",w)
+  var_w <- paste0("mmse_",w)
+  
+  d[,var_w] <- 1 # presumed alive and healthy
+  
+  for(i in nrow(d)){
+    # if(is.na(d[i,"age_death"])){ # i'm not dead yet!
+    if(
+      !is.na(d[i,"age_death"]) # age of death is not missing
+      | # or
+      d[i,"age_death"] < d[i,age_w] # respondent is not dead yet
+      ){ # in this case, compute alive state
+      d[i,state_w] <- ifelse(
+        d[i,var_w] >= 27, 1, ifelse( # no impairment
+          d[i,var_w] >= 23 & d[i,var_w] < 27, 2, ifelse( # mild impairment
+            d[i,var_w] < 23, 3, NA)))  # sever imparement 
+    }else{
+      d[i,state_w] <- 4 # dead
+    } 
 
-# Save as a compress, binary R dataset.  It's no longer readable with a text editor, but it saves metadata (eg, factor information).
-saveRDS(dto, file="./data/unshared/derived/dto.rds", compress="xz")
-
-# ---- object-verification ------------------------------------------------
-# the production of the dto object is now complete
-# we verify its structure and content:
-dto <- readRDS("./data/unshared/derived/dto.rds")
-names(dto)
-# 1st element - unit(person) level data
-dplyr::tbl_df(dto[["unitData"]])
-# 2nd element - meta data, info about variables
-dto[["metaData"]]
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    }
+  }
+}
