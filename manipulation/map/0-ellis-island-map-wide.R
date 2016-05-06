@@ -21,24 +21,30 @@ requireNamespace("testit") #For asserting conditions meet expected patterns.
 
 # ---- declare-globals ----------------------------------------------
 data_path_input  <- "./data/unshared/derived/dto.rds"
-# data_path_input  <- "../MAP/data-unshared/derived/ds0.rds"
 metadata_path_input <- "./data/meta/map/meta-data-map.csv" # input file with your manual classification
 
 # ---- load-data ------------------------------------------------
 dto <- readRDS(data_path_input)
-
+names(dto)
 ds <- dto[["unitData"]] %>% 
-  dplyr::select_("id", "fu_year", "age_death",  "msex",
-                 "educ",
-                 "smoke_bl", # Smoking at baseline
-                 "ldai_bl", "age_at_visit","cts_mmse30") %>% 
-  dplyr::mutate_(mmse = "cts_mmse30") %>% 
+  dplyr::select_(
+    "id", 
+    "fu_year", # follow-up year, wave indicator
+    "age_at_visit", "age_death", 
+    "msex", # Gender
+    "educ", # Years of education
+    "smoke_bl", # Smoking at baseline
+    "alco_life", # Lifetime daily alcohol intake -baseline
+    "mmse" # Mini Mental State Exam 
+    ) %>% 
   dplyr::filter(!(is.na(age_death) & is.na(age_at_visit)))
 
 i <- 1
-head(ds)
+head(ds) 
 
-wave_counter <- 0:17
+# ---- transform-to-wide-time ----------------------------------------
+# wave_counter <- 0:17
+wave_counter <- unique(ds$fu_year)
 (ms_outcome_wide_names <- paste0("mmse_",wave_counter))
 (ms_age_at_visit_wide_names <- paste0("age_", wave_counter))
 (not_long_stem <- c( "age_at_visit", "mmse"))
@@ -50,7 +56,7 @@ wave_counter <- 0:17
 library(data.table) ## v >= 1.9.6
 ds_wide <- data.table::dcast(
   data.table::setDT(ds),
-  id + age_death + msex + educ + smoke_bl + ldai_bl ~ fu_year, value.var = c(
+  id + age_death + msex + educ + smoke_bl + alco_life ~ fu_year, value.var = c(
     "age_at_visit", "mmse")) 
 
 # ---- save-to-disk ---------------------------------------

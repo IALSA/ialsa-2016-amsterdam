@@ -20,8 +20,8 @@ requireNamespace("dplyr") #Avoid attaching dplyr, b/c its function names conflic
 requireNamespace("testit") #For asserting conditions meet expected patterns.
 
 # ---- declare-globals ----------------------------------------------
-data_path_input  <- "./data/unshared/derived/map-ds0.rds"
-# data_path_input  <- "../MAP/data-unshared/derived/ds0.rds"
+# data_path_input  <- "./data/unshared/derived/map-ds0.rds"
+data_path_input  <- "../MAP/data-unshared/derived/ds0.rds"
 metadata_path_input <- "./data/meta/map/meta-data-map.csv" # input file with your manual classification
 
 # ---- load-data ------------------------------------------------
@@ -87,33 +87,6 @@ dplyr::tbl_df(dto[["unitData"]])
 dto[["metaData"]]
 
 
-
-
-# ---- make-wide-data -------
-
-ds <- dto[["unitData"]] %>% 
-  dplyr::select_("id", "fu_year", "age_death", "age_at_visit", "msex",
-                 "educ",
-                 "smoke_bl", # Smoking at baseline
-                 "ldai_bl", "cts_mmse30")
-
-head(ds)
-
-# ds_long <- dplyr::select()
-(long_stem <- names(ds))
-(long_stem <- setdiff(long_stem,c( "cts_mmse30")))
-# ds_wide <- ds_no_duplicates %>%
-ds_wide <- ds %>%
-  tidyr::spread_(key="fu_year", value="cts_mmse30") 
-
-new_names <- paste0("mmse_",0:17)
-long_stem_notime <- setdiff(long_stem,c("fu_year"))
-new_names <- c(long_stem_notime, new_names)
-names(ds_wide) <- new_names
-names_labels(as.data.frame(ds_wide))
-head(ds_wide)
-
-saveRDS(ds,"./data/unshared/derived/wide-data-map-mmse.rds")
 
 
 
