@@ -61,7 +61,46 @@ sum(is.na(dsf$age_bl))
 sum(is.na(dsf$age_death))
 sum(is.na(dsf$age_at_visit))
 
-# ---- recode-1-------------------------------------------------------
+# ---- recode-one-wave -------------------------------------------------------
+d <- as.data.frame(ds_wide )
+d$state_0 <- 0 # missing state?
+d$state_0[d$mmse_0 >= 27] <- 1 # no impairment, alive & healthy
+d$state_0[d$mmse_0 >= 23 & d$mmse_0 < 27] <- 2 # mild cognitive impairment (MCI)
+d$state_0[d$mmse_0 < 23] <- 3 # sever cognitive impairment (SCI)
+d$state_0[!is.na(d$age_death) & d$age_death > d$age_at_visit_0]
+
+# after the baseline
+d$state_0 <- 0 # missing state?
+d$state_0[d$mmse_0 >= 27] <- 1 # no impairment, alive & healthy
+d$state_0[d$mmse_0 >= 23 & d$mmse_0 < 27] <- 2 # mild cognitive impairment (MCI)
+d$state_0[d$mmse_0 < 23] <- 3 # sever cognitive impairment (SCI)
+
+
+d$alive_1[is.na()] 
+
+# example of a inconsistent pattern
+# t(d[28,c(paste0("age_at_visit_",0:16),"age_death")])
+
+d$state_0[d$age_death >]
+
+for(i in nrow(d)){
+  # if(is.na(d[i,"age_death"])){ # i'm not dead yet!
+  if(
+    !is.na(d[i,"age_death"]) # age of death is not missing
+    | # or
+    d[i,"age_death"] < d[i,age_w] # respondent is not dead yet
+  ){ # in this case, compute alive state
+    d[i,state_w] <- ifelse(
+      d[i,var_w] >= 27, 1, ifelse( # no impairment
+        d[i,var_w] >= 23 & d[i,var_w] < 27, 2, ifelse( # mild impairment
+          d[i,var_w] < 23, 3, NA)))  # sever imparement 
+  }else{
+    d[i,state_w] <- 4 # dead
+  } 
+  
+
+
+# ---- recode-all-waves -------------------------------------------------------
 d <- as.data.frame(ds_wide )
 for(w in wave_counter){
   # define varnames at waves
