@@ -45,3 +45,4 @@ Desktop.ini
 *.sav
 *.SAV
 data/unshared/derived/dto.rds
+data/unshared/derived/wide-data-map-mmse.rds
