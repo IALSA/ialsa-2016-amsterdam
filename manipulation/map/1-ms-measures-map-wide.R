@@ -99,11 +99,13 @@ ds_wide <- data.table::dcast(
   data.table::setDT(ds),
   id  + msex + educ + smoke_bl + alco_life + age_death ~ fu_year, 
   value.var = make_these_long) 
-ds_wide %>% dplyr::glimpse()
+
 
 # ---- recode-all-waves -------------------------------------------------------
-d <- as.data.frame(ds_wide )
-dl <- make_long_from_wide(d,time_invariant_varnames)
+# this is the initial state for transformations:
+ds_wide %>% dplyr::glimpse()
+dl <- make_long_from_wide(ds_wide,time_invariant_varnames)
+head(dl)
 dl %>% dplyr::filter(id %in% c(2136155))
 
 # -1 = denotes an intermediate missing state, e.i. There is a time of interview, but no observed state
@@ -111,11 +113,10 @@ dl %>% dplyr::filter(id %in% c(2136155))
 
 for(w in time_points){
   # define varnames at waves
-  (state_w <- paste0("state_",w))
   (age_w <- paste0("age_at_visit_",w))
   (var_w <- paste0("mmse_",w))
   (alive_w <- paste0("alive_",w))
-
+  (state_w <- paste0("state_",w))
 
     d[,alive_w] <- 1 # start assuming R is alive
     for( i in 1:nrow(ds_wide)){
