@@ -1,6 +1,13 @@
 # ialsa-2016-amsterdam
 Multi-study and multivariate evaluation of healthy life expectancy (HLE): An IALSA workshop on multistate modeling using R . [edit me](https://github.com/IALSA/ialsa-2016-amsterdam/edit/master/README.md)
 
+#### Reproducible reports
+- Follow [`./utility/reproducibility-instructions.md`](utility/reproducibility-instructions.md) to create dynamic documents linked below:
+- `./manipulation/map/`[`0-ellis-island-map.R`][ellis-island-map]  
+- `./reports/`[`review-variables.R`][review-variables-map]
+- `./manipulation/map/`[`1-encode-multistate.R`][encode-multistate-map]
+
+
 #### Documentation
 - [letter of invitation](./documentation/log/2016-03-02-invitation-letter.md)   
 - venue: [Amsterdam, April 14-16, 2016](./documentation/venue.md)
@@ -28,3 +35,8 @@ The **objectives** of this workshop are:
 The workshop lectures will be delivered by Dr. Ardo van den Hout (UCL, Lecturer at the Department of Statistics), developer of the R package ELECT that estimates these models. Participants are encouraged to review at the [ELECT web site](http://www.ucl.ac.uk/~ucakadl/indexELECT.html ) to prepare for this workshop. 
 
 Here are some example operationalizations: http://www.ncbi.nlm.nih.gov/pmc/articles/PMC2966893/  and  http://www.ncbi.nlm.nih.gov/pubmed/25150976. For example, the BRFSS question used to assess health status was "Would you say that in general your health is excellent, very good, good, fair, or poor?" For this study, participant responses of "fair or poor" were categorized as "unhealthy" and "excellent, very good, or good" as "healthy."
+
+
+[ellis-island-map]:https://rawgit.com/IALSA/ialsa-2016-amsterdam-public/master/0-ellis-island-map.html
+[review-variables-map]:https://rawgit.com/IALSA/ialsa-2016-amsterdam-public/master/review-variables-map.html
+encode-multistate-map]:
