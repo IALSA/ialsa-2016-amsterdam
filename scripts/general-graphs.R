@@ -32,7 +32,7 @@ basic_line <- function(
   return( g )
 }
 
-# g <- basic_line(d, "cogn_global", "fu_year", "salmon", .9, .1, T)
+# g <- basic_line(d, "cogn_global", "fu_year", "salmon", .9, .1, F)
 # g
 
 
