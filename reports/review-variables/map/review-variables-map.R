@@ -29,13 +29,13 @@ requireNamespace("testit")# For asserting conditions meet expected patterns.
 dto <- readRDS("./data/unshared/derived/dto.rds") # local copy
 # each element this list is another list:
 names(dto)
-# 3rd element - data set with unit data
-dplyr::tbl_df(dto[["unitData"]]) 
+# 3rd element - data set with unit data. Inspect the names of variables:
+names(dto[["unitData"]])
 # 4th element - dataset with augmented names and labels of the unit data
-dplyr::tbl_df(dto[["metaData"]])
+kable(head(dto[["metaData"]]))
 # assing aliases
 ds0 <- dto[["unitData"]]
-ds <- ds0
+ds <- ds0 # to leave a clean copy of the ds, before any manipulation takes place
 
 # ---- meta-table --------------------------------------------------------
 dto[["metaData"]] %>%  
@@ -83,16 +83,16 @@ ds %>%
   dplyr::summarize(sample_size=n())
 
 # ----- B-2-cognitive-1 -----------------------
-dto[["metaData"]] %>% 
+knitr::kable(dto[["metaData"]] %>% 
   dplyr::filter(type=="cognitive") %>% 
   dplyr::select(-name,-type,-name_new, -include) %>%
-  dplyr::arrange(construct)
+  dplyr::arrange(construct))
 
 # ----- B-2-cognitive-2 -----------------------
-dto[["metaData"]] %>% 
+knitr::kable(dto[["metaData"]] %>% 
   dplyr::filter(type=="cognitive", include==TRUE) %>% 
   dplyr::select(-type,-name_new, - include) %>%
-  dplyr::arrange(construct)
+  dplyr::arrange(construct))
 
 # ----- B-2-cognitive-3 -----------------------
 dto[["unitData"]] %>% 
@@ -108,7 +108,7 @@ set.seed(1)
 ids <- sample(ds$id,100)
 d <- dto[["unitData"]] %>% dplyr::filter(id %in% ids)
 g <- basic_line(d, "cogn_global", "fu_year", "salmon", .9, .1, T)
-g
+# g
 
 
 # ----- B-2-cognitive-5-cogn_global -----------------------

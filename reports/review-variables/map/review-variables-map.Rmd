@@ -67,7 +67,7 @@ read_chunk("./reports/review-variables/map/review-variables-map.R")
 
 # (I) Exposition
 
-> This report is a record of interaction with a data transfer object (dto) produced by `./manipulation/map/0-ellis-island.R`. 
+> This report is a record of interaction with a data transfer object (dto) produced by `./manipulation/map/0-ellis-island-map.R`. 
 
 The next section recaps this script, exposes the architecture of the DTO, and demonstrates the language of interacting with it.   
 
@@ -78,13 +78,13 @@ The next section recaps this script, exposes the architecture of the DTO, and de
 The script `0-ellis-island.R` is the first script in the analytic workflow. It accomplished the following: 
 
 - (1) Reads in raw data file
-- (2) Extract, combines, and exports metadata (specifically, variable names and labels, if provided) into `./data/meta/map/names-labels-live.csv`, which is updated every time Ellis Island script is executed.   
-- (3) Augments raw metadata with instructions for renaming and classifying variables. The instructions are provided as manually entered values in `./data/meta/map/meta-data-map.csv`. They are used by automatic scripts in later manipulation and analysis.  
+- (2) Extract, combines, and exports metadata (specifically, variable names and labels, if provided) into `./data/shared/meta/map/names-labels-live.csv`, which is updated every time Ellis Island script is executed.   
+- (3) Augments raw metadata with instructions for renaming and classifying variables. The instructions are provided as manually entered values in `./data/shared/meta/map/meta-data-map.csv`. They are used by automatic scripts in later manipulation and analysis.  
 - (4) Combines unit and meta data into a single DTO to serve as a starting point to all subsequent analyses.   
 
 
 <!-- Load the datasets.   -->
-```{r load-data, echo=echoChunks, results='show', message=FALSE}
+```{r load-data, echo=T, results='show', message=FALSE}
 ```
 
 ### Meta
@@ -134,11 +134,11 @@ Details  were requested about the following items (including the availability of
 ### General comments
 
 for **all variables** conditions, declare whether they are   
-- self reported or diagnosed 
-- time variant or invariant (study entry only) 
-- treatment or management of the conditions is available
-- provide levels and labels for items with categorical responses 
-- specific description of measurement encoding 
+- self reported or diagnosed   
+- time variant or invariant (study entry only)   
+- treatment or management of the conditions is available  
+- provide levels and labels for items with categorical responses   
+- specific description of measurement encoding   
 
 ## (1) N at each wave
 
@@ -152,16 +152,20 @@ The following measures of cognitive capability are available in the present inst
 
 ```{r B-2-cognitive-1, echo=TRUE}
 ```
-Keep for modelling only composite score of cognitive domains
+
+\n\n
+
+Keep for modelling only composite score of cognitive  domains
 
 ```{r B-2-cognitive-2, echo=TRUE}
 ```
 
-Now we observe how the crossectional distribution of age was changing across follow-up points
-```{r B-2-cognitive-3, echo=TRUE}
+
+```{r B-2-cognitive-3, echo=TRUE, eval=F}
 ```
 
-Individual graphs could be produced with the following script
+In displays below, each cognitive measure is graphed across age (right) and time (left), examining observed trajectories (top row, black lines),  and their linear approximations (bottom row, red lines) with  loess curves (thik blue with ribbon). 
+<!-- Individual graphs could be produced with the following script -->
 ```{r B-2-cognitive-4, echo=FALSE, warning=FALSE, message=FALSE, dpi=300}
 ```
 
@@ -178,7 +182,7 @@ Global cognitive score
 
 
 ### Episodic 
- Calculated domain score-episodic memory
+ Calculated domain score - episodic memory
 ```{r B-2-cognitive-5-cogn_ep, echo=FALSE, warning=FALSE, message=FALSE, dpi=300}
 ```
 
