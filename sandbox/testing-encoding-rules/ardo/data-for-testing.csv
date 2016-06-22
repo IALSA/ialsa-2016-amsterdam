@@ -1,11 +1,13 @@
-id,male,edu,age_death,age_0,age_1,age_2,age_3,mmse_0,mmse_1,mmse_2,mmse_3
-1,0,-1,76.9,71,72.09,73.09,74.09,30,25,20,10
-2,0,1,77.9,75,76,77,NA,29,28,27,NA
-3,1,0,71.2,70,71,NA,NA,22,25,NA,NA
-4,1,1,72.8,69,NA,NA,NA,25,NA,NA,NA
-5,1,1,70.1,65,65.7,66.2,68,29,NA,29,NA
-6,0,-1,NA,71,72.24,73.24,74.24,30,25,20,10
-7,0,1,NA,75,76,77,NA,29,28,27,NA
-8,1,0,NA,70,71,NA,NA,22,25,NA,NA
-9,1,0,NA,69,NA,NA,NA,25,NA,NA,NA
-10,1,1,NA,65,NA,66.2,68,29,NA,29,25
+id,male,edu,age_death,age_0,age_1,age_2,age_3,mmse_0,mmse_1,mmse_2,mmse_3,condition
+1,0,-1,80,70,72,74,76,30,25,20,10,ideal
+2,0,-1,80,70,72,74,76,30,14,25,10,ideal + reverse transition
+3,0,1,80,70,72,74,76,30,25,20,NA,missing Y on last wave
+4,1,0,80,70,72,74,76,30,NA,25,10,missing Y on intermediate wave
+5,1,1,80,70,72,74,76,30,NA,25,NA,missing Y on intermediate and last waves
+6,1,1,80,70,72,74,NA,30,25,20,NA,missing Y and TIME on last wave
+7,0,-1,NA,70,72,74,76,30,25,20,10,ideal
+8,0,1,NA,70,72,74,76,30,14,25,10,ideal + reverse transition
+9,1,0,NA,70,72,74,76,30,25,20,NA,missing Y on last wave
+10,1,0,NA,70,72,74,76,30,NA,25,10,missing Y on intermediate wave
+11,0,-1,NA,70,72,74,76,30,NA,25,NA,missing Y on intermediate and last waves
+12,1,0,NA,70,72,74,NA,30,25,20,NA,missing Y and TIME on last wave
