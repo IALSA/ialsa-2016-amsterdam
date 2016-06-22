@@ -180,7 +180,7 @@ print(dta)
 # ---- andrey-encodes-missing-states ------------------
 d <- ds_long %>% 
   dplyr::select(id, male, edu, age, mmse, age_death ) 
-print(d[d$id %in% c(5,11),])
+# print(d[d$id %in% c(5,11),])
 str(d)
 # x <- c(NA, 5, NA, 7)
 determine_censor <- function(x, is_right_censored){
@@ -188,22 +188,43 @@ determine_censor <- function(x, is_right_censored){
          ifelse(is.na(x), -1, x)
   )
 }
-# determine_censor(x)
 
-d <- d %>% 
-  dplyr::filter(id %in% c(5,11)) %>%
-  dplyr::group_by(id) %>% 
-  dplyr::arrange(-age) %>% 
-  dplyr::mutate( 
-    missed_last_wave  = (cumsum(!is.na(mmse))==0L),
-    still_alive       = is.na(any(age_death)),
-    right_censored    = as.integer(missed_last_wave & still_alive)
-    ,mmse_recoded     = determine_censor(mmse, right_censored)
-    # ,mmse             = determine_censor(mmse, right_censored)
-  ) %>% 
-  dplyr::select(-missed_last_wave, -still_alive,-right_censored ) %>%
-  dplyr::arrange(age) %>% 
-  dplyr::ungroup()
+for(i in 1:N){
+  # Get the individual data:
+  (dta.i <- d[d$id==subjects[i],])
+  (dta.i <- as.data.frame(dta.i %>% dplyr::arrange(-age)))
+  (dta.i$missed_last_wave = (cumsum(!is.na(dta.i$mmse))==0L))
+  (dta.i$still_alive      =  is.na(any(dta.i$age_death)))
+  (dta.i$right_censored   = dta.i$missed_last_wave & dta.i$still_alive)
+  # dta.i$mmse_recoded     = determine_censor(dta.i$mmse, dta.i$right_censored)
+  (dta.i$mmse     <- determine_censor(dta.i$mmse, dta.i$right_censored))
+  (dta.i <- as.data.frame(dta.i %>% dplyr::arrange(age)))
+  (dta.i <- dta.i %>% dplyr::select(-missed_last_wave, -still_alive,-right_censored ))
+  # Rebuild the data:
+  if(i==1){ds_miss <- dta.i}else{ds_miss <- rbind(ds_miss,dta.i)}
+
+}
+
+# Alternative (dplyr) syntax, that produced untraced error:
+# determine_censor <- function(x, is_right_censored){
+#   ifelse(is_right_censored, -2,
+#          ifelse(is.na(x), -1, x)
+#   )
+# }
+# d <- d %>%
+#   dplyr::filter(id %in% c(5,11)) %>%
+#   dplyr::group_by(id) %>%
+#   dplyr::arrange(-age) %>%
+#   dplyr::mutate(
+#     missed_last_wave  = (cumsum(!is.na(mmse))==0L),
+#     still_alive       = is.na(any(age_death)),
+#     right_censored    = as.integer(missed_last_wave & still_alive)
+#     ,mmse_recoded     = determine_censor(mmse, right_censored)
+#     # ,mmse             = determine_censor(mmse, right_censored)
+#   ) %>%
+#   dplyr::select(-missed_last_wave, -still_alive,-right_censored ) %>%
+#   dplyr::arrange(age) %>%
+#   dplyr::ungroup()
 
 # drop variables you don't need
 # TODO: have  determine_censor include the sorting variable (age), so that 
@@ -265,12 +286,13 @@ encode_multistates <- function(
 }
 
 ds_ms <- encode_multistates(
-  d = d,
+  d = ds_miss,
   outcome_name = "mmse",
   age_name = "age",
   age_death_name = "age_death",
   dead_state_value = 4
 )
+msm::statetable.msm(state,id,ds_ms)
 # Remove all records with no state:
 ds_ms <-ds_ms[!is.na(ds_ms$state),] 
 
@@ -285,7 +307,7 @@ view_id <- function(d,ds_ms,id){
   cat("After ms encoding","\n")
   print(ds_ms[ds_ms$id==id,])
 }
-for(i in 12){
+for(i in 1:12){
   cat("\nPrinting observation for subject with id = ",i,"\n")
   view_id(d, ds_ms,i)  
 } 
