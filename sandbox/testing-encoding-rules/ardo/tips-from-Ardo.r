@@ -180,32 +180,37 @@ print(dta)
 # ---- andrey-encodes-missing-states ------------------
 d <- ds_long %>% 
   dplyr::select(id, male, edu, age, mmse, age_death ) 
-
+print(d[d$id %in% c(5,11),])
+str(d)
 # x <- c(NA, 5, NA, 7)
-determine_censor <- function(x, is_negative_two){
-  ifelse(is_negative_two, -2,
+determine_censor <- function(x, is_right_censored){
+  ifelse(is_right_censored, -2,
          ifelse(is.na(x), -1, x)
   )
 }
+# determine_censor(x)
 
 d <- d %>% 
-  # dplyr::filter(id==4) %>%
+  dplyr::filter(id %in% c(5,11)) %>%
   dplyr::group_by(id) %>% 
   dplyr::arrange(-age) %>% 
   dplyr::mutate( 
-    negative_two = (cumsum(!is.na(mmse))==0L)
-    # mmse_recoded = determine_censor(mmse, negative_two)) 
-    # ,mmse         = determine_censor(mmse, negative_two)
-    ) %>% 
-  dplyr::select(-negative_two) %>% 
-  dplyr::arrange(age)
+    missed_last_wave  = (cumsum(!is.na(mmse))==0L),
+    still_alive       = is.na(any(age_death)),
+    right_censored    = as.integer(missed_last_wave & still_alive)
+    ,mmse_recoded     = determine_censor(mmse, right_censored)
+    # ,mmse             = determine_censor(mmse, right_censored)
+  ) %>% 
+  dplyr::select(-missed_last_wave, -still_alive,-right_censored ) %>%
+  dplyr::arrange(age) %>% 
+  dplyr::ungroup()
 
 # drop variables you don't need
 # TODO: have  determine_censor include the sorting variable (age), so that 
 # you could make the outcome (mmse) dynamicly defined. 
 # example: negative_two <- (cumsum(!is.na(c(NA, 5, NA, 7)))==0L)
 
-print(d[d$id==4,])
+print(d[d$id==5,])
 
 # Subject's age at each measurement is assumed to be known
 # For ids 1:5, the age of death is available
@@ -243,7 +248,7 @@ encode_multistates <- function(
     dta.i$state <- ifelse( 
       dta.i$state > 26, 1, ifelse( # healthy
         dta.i$state <= 26 &  dta.i$state >= 23, 2, ifelse( # mild CI
-          dta.i$state < 23, 3,NA))) # mod-sever CI
+          dta.i$state < 23 & dta.i$state > 0, 3, dta.i$state))) # mod-sever CI
     # Is there a death? If so, add a record:
     (death <- !is.na(dta.i[,age_death_name][1]))
     if(death){
