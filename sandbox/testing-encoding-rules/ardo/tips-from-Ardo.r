@@ -52,6 +52,7 @@ filePath <- "./sandbox/testing-encoding-rules/ardo/data-for-testing.csv"
 
 # Load the example of the wide data:
 dta.wide <- read.table(file=filePath, header=TRUE, sep = ",")
+dta.wide <- as.data.frame(dta.wide %>% dplyr::select(-condition))
 # Have a look at the data:
 # (Note that state -1 is an intermediate missing state)
 cat("\nWide-data format:\n")
@@ -82,6 +83,7 @@ row.names(dta0) <- 1:nrow(dta0)
 #####################################################
 # ---- andrey-wide-to-long-transformation ----------------------
 ds_wide <- read.csv(filePath, stringsAsFactors = F, header = T)
+ds_wide <- as.data.frame(ds_wide %>% dplyr::select(-condition))
 head(ds_wide)
 
 # declare what variables do not change over time
@@ -172,6 +174,36 @@ dta <-dta1[!is.na(dta1$state),]
 cat("\nLong-data format:\n")
 print(dta)
 
+
+
+
+# ---- andrey-encodes-missing-states ------------------
+d <- ds_long %>% 
+  dplyr::select(id, male, edu, age, mmse, age_death ) 
+
+# x <- c(NA, 5, NA, 7)
+determine_censor <- function(x, is_negative_two){
+  ifelse(is_negative_two, -2,
+         ifelse(is.na(x), -1, x)
+  )
+}
+
+d <- d %>% 
+  dplyr::filter(id==3) %>% 
+  dplyr::group_by(id) %>% 
+  dplyr::arrange(-age) %>% 
+  dplyr::mutate( 
+    negative_two = (cumsum(!is.na(mmse))==0L),
+    # mmse_recoded = determine_censor(mmse, negative_two)) 
+    mmse         = determine_censor(mmse, negative_two)) %>% 
+  dplyr::select(-negative_two) %>% 
+  dplyr::arrange(age)
+
+# drop variables you don't need
+# TODO: have  determine_censor include the sorting variable (age), so that 
+# you could make the outcome (mmse) dynamicly defined. 
+# example: negative_two <- (cumsum(!is.na(c(NA, 5, NA, 7)))==0L)
+
 # ---- andrey-encode-states ----------------------------------
 
 encode_multistates <- function(
@@ -210,9 +242,7 @@ encode_multistates <- function(
   dta1[,age_death_name] <- NULL
   return(dta1)
 }
-d <- ds_long %>% 
-  dplyr::select(id, male, edu, age, mmse, age_death ) 
-  
+
 ds_ms <- encode_multistates(
   d = d,
   outcome_name = "mmse",
@@ -226,4 +256,30 @@ ds_ms <-ds_ms[!is.na(ds_ms$state),]
 # compare outcomes
 print(dta) # Ardo
 print(ds_ms) # Andrey
+
+# compare before and after ms encoding
+view_id <- function(d,ds_ms,id){
+  cat("Before ms encoding:","\n")
+  print(d[d$id==id,])
+  cat("After ms encoding","\n")
+  print(ds_ms[ds_ms$id==id,])
+}
+for(i in 12){
+  cat("\nPrinting observation for subject with id = ",i,"\n")
+  view_id(d, ds_ms,i)  
+} 
+# Subject's age at each measurement is assumed to be known
+# For ids 1:5, the age of death is available
+# For ids 6:10 the age of death is not available
+
+# id = 1(7)  : ideal case 
+# id = 2(8)  : ideal case + reverse transition
+# id = 3(9)  : missing Y on last wave 
+# id = 4(10) : missing Y on intermidiate wave
+# id = 5(11) : missing Y on intermediate wave and last wave
+# id = 6(12) : missing Y and TIME on last wave ( no measure collected on wave 4)
+
+
+
+
 
