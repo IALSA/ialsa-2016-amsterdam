@@ -189,13 +189,14 @@ determine_censor <- function(x, is_negative_two){
 }
 
 d <- d %>% 
-  dplyr::filter(id==3) %>% 
+  # dplyr::filter(id==4) %>%
   dplyr::group_by(id) %>% 
   dplyr::arrange(-age) %>% 
   dplyr::mutate( 
-    negative_two = (cumsum(!is.na(mmse))==0L),
+    negative_two = (cumsum(!is.na(mmse))==0L)
     # mmse_recoded = determine_censor(mmse, negative_two)) 
-    mmse         = determine_censor(mmse, negative_two)) %>% 
+    # ,mmse         = determine_censor(mmse, negative_two)
+    ) %>% 
   dplyr::select(-negative_two) %>% 
   dplyr::arrange(age)
 
@@ -203,6 +204,20 @@ d <- d %>%
 # TODO: have  determine_censor include the sorting variable (age), so that 
 # you could make the outcome (mmse) dynamicly defined. 
 # example: negative_two <- (cumsum(!is.na(c(NA, 5, NA, 7)))==0L)
+
+print(d[d$id==4,])
+
+# Subject's age at each measurement is assumed to be known
+# For ids 1:5, the age of death is available
+# For ids 6:10 the age of death is not available
+
+# id = 1(7)  : ideal case 
+# id = 2(8)  : ideal case + reverse transition
+# id = 3(9)  : missing Y on last wave 
+# id = 4(10) : missing Y on intermidiate wave
+# id = 5(11) : missing Y on intermediate wave and last wave
+# id = 6(12) : missing Y and TIME on last wave ( no measure collected on wave 4)
+
 
 # ---- andrey-encode-states ----------------------------------
 
@@ -214,7 +229,8 @@ encode_multistates <- function(
   dead_state_value # value to represent dead state
 ){
   # declare arguments for debugging
-  # d = d_long; outcome_name = "mmse"; age_name = "age_at_visit"; age_death_name = "age_death"; dead_state_value = 5
+  # d = d,
+  # outcome_name = "mmse";age_name = "age";age_death_name = "age_death";dead_state_value = 4
   (subjects <- sort(unique(d$id))) # list subject ids
   (N <- length(subjects)) # count subject ids
   # standardize names
