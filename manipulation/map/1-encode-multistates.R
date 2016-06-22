@@ -42,10 +42,10 @@ ds <- dto[["unitData"]]
 
 # ---- look-up-pattern-for-single-id --------------------------------------------------------------
 # if died==1, all subsequent focal_outcome==DEAD.
-set.seed(1)
+set.seed(43)
 ids <- sample(unique(ds$id),3)
-dta0 <- ds %>% 
-  dplyr::filter(id %in% ids) %>%
+ds_long <- ds %>% 
+  # dplyr::filter(id %in% ids) %>%
   dplyr::mutate(
     age_death = as.numeric(age_death), 
     male      = as.logical(ifelse(!is.na(msex), msex=="1", NA_integer_)),
@@ -58,11 +58,41 @@ dta0 <- ds %>%
     "age_death",
     "age_at_visit",
     "mmse") 
-dta0 # in long format
+ds_long # in long format
 # d$id <- substring(d$id,1,1)
 # write.csv(d,"./data/shared/musti-state-dementia.csv")  
 
-d <- dta0
+
+d <- ds_long %>% 
+  dplyr::select(id, male, age_at_visit, mmse, age_death ) 
+# print(d[d$id %in% c(5,11),])
+str(d)
+# x <- c(NA, 5, NA, 7)
+determine_censor <- function(x, is_right_censored){
+  ifelse(is_right_censored, -2,
+         ifelse(is.na(x), -1, x)
+  )
+}
+(N <- length(unique(ds_long$id)))
+(subjects <- as.numeric(unique(ds_long$id)))
+
+for(i in 1:N){
+  # Get the individual data:
+  (dta.i <- d[d$id==subjects[i],])
+  (dta.i <- as.data.frame(dta.i %>% dplyr::arrange(-age_at_visit)))
+  (dta.i$missed_last_wave = (cumsum(!is.na(dta.i$mmse))==0L))
+  (dta.i$still_alive      =  is.na(any(dta.i$age_death)))
+  (dta.i$right_censored   = dta.i$missed_last_wave & dta.i$still_alive)
+  # dta.i$mmse_recoded     = determine_censor(dta.i$mmse, dta.i$right_censored)
+  (dta.i$mmse     <- determine_censor(dta.i$mmse, dta.i$right_censored))
+  (dta.i <- as.data.frame(dta.i %>% dplyr::arrange(age_at_visit)))
+  (dta.i <- dta.i %>% dplyr::select(-missed_last_wave, -still_alive,-right_censored ))
+  # Rebuild the data:
+  if(i==1){ds_miss <- dta.i}else{ds_miss <- rbind(ds_miss,dta.i)}
+  
+}
+
+
 encode_multistates <- function(
   d, # data frame in long format 
   outcome_name, # measure to compute live states
@@ -70,52 +100,50 @@ encode_multistates <- function(
   age_death_name, # age of death
   dead_state_value # value to represent dead state
 ){
-  # d = dta0; outcome_name = "mmse"; age_name = "age_at_visit"; age_death_name = "age_death"; dead_state_value = 5
+  # declare arguments for debugging
+  # d = d,
+  # outcome_name = "mmse";age_name = "age_at_visit";age_death_name = "age_death";dead_state_value = 4
   (subjects <- sort(unique(d$id))) # list subject ids
   (N <- length(subjects)) # count subject ids
   # standardize names
   colnames(d)[colnames(d)==outcome_name] <- "state"
   colnames(d)[colnames(d)==age_name] <- "age"
   for(i in 1:N){
-  # Get the individual data: i = 1
-  (dta.i <- d[d$id==subjects[i],])
-  # 1 - healthy
-  # 2 - mild cognitive impairment
-  # 3 - moderate to severe cognitive impairment  
-  # dta.i$state <- car::recode(dta.i$state, "
-  #             27:hi = '1';
-  #             23:26 = '2';
-  #             lo:22 = '3' 
-  #            ")
-  dta.i$state <- ifelse( 
-    dta.i$state > 26, 1, ifelse( # healthy
-      dta.i$state <= 26 &  dta.i$state >= 23, 2, ifelse( # mild CI
-        dta.i$state < 23, 3,NA))) # mod-sever CI
-  # Is there a death? If so, add a record:
-  (death <- !is.na(dta.i[,age_death_name][1]))
-  if(death){
-    (record <- dta.i[1,])
-    (record$state <- dead_state_value)
-    (record$age   <- dta.i[,age_death_name][1])
-    (ddta.i <- rbind(dta.i,record))
-  }else{ddta.i <- dta.i}
-  # Rebuild the data:
-  if(i==1){dta1 <- ddta.i}else{dta1 <- rbind(dta1,ddta.i)}
+    # Get the individual data: i = 1
+    (dta.i <- d[d$id==subjects[i],])
+    # Encode live states
+    dta.i$state <- ifelse( 
+      dta.i$state > 26, 1, ifelse( # healthy
+        dta.i$state <= 26 &  dta.i$state >= 23, 2, ifelse( # mild CI
+          dta.i$state < 23 & dta.i$state >= 0, 3, dta.i$state))) # mod-sever CI
+    # Is there a death? If so, add a record:
+    (death <- !is.na(dta.i[,age_death_name][1]))
+    if(death){
+      (record <- dta.i[1,])
+      (record$state <- dead_state_value)
+      (record$age   <- dta.i[,age_death_name][1])
+      (ddta.i <- rbind(dta.i,record))
+    }else{ddta.i <- dta.i}
+    # Rebuild the data:
+    if(i==1){dta1 <- ddta.i}else{dta1 <- rbind(dta1,ddta.i)}
   }
   dta1[,age_death_name] <- NULL
   return(dta1)
 }
+
 ds_ms <- encode_multistates(
-  d = ds,
+  d = ds_miss,
   outcome_name = "mmse",
   age_name = "age_at_visit",
   age_death_name = "age_death",
   dead_state_value = 4
 )
-# ds_ms
+msm::statetable.msm(state,id,ds_ms)
+
 
 # examine transition matrix
-msm::statetable.msm(state,id,ds_ms)
+
+knitr::kable(msm::statetable.msm(state,id,ds_ms))
 
 
 # ---- save-to-disk ------------------------------------------------------------
