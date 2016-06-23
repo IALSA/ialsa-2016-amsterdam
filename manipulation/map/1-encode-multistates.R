@@ -78,12 +78,12 @@ for(i in 1:N){
   (dta.i <- d[d$id==subjects[i],])
   (dta.i <- as.data.frame(dta.i %>% dplyr::arrange(-age_at_visit)))
   (dta.i$missed_last_wave = (cumsum(!is.na(dta.i$mmse))==0L))
-  (dta.i$still_alive      =  is.na(any(dta.i$age_death)))
-  (dta.i$right_censored   = dta.i$missed_last_wave & dta.i$still_alive)
+  (dta.i$presumed_alive      =  is.na(any(dta.i$age_death)))
+  (dta.i$right_censored   = dta.i$missed_last_wave & dta.i$presumed_alive)
   # dta.i$mmse_recoded     = determine_censor(dta.i$mmse, dta.i$right_censored)
   (dta.i$mmse     <- determine_censor(dta.i$mmse, dta.i$right_censored))
   (dta.i <- as.data.frame(dta.i %>% dplyr::arrange(age_at_visit)))
-  (dta.i <- dta.i %>% dplyr::select(-missed_last_wave, -still_alive,-right_censored ))
+  (dta.i <- dta.i %>% dplyr::select(-missed_last_wave, -right_censored ))
   # Rebuild the data:
   if(i==1){ds_miss <- dta.i}else{ds_miss <- rbind(ds_miss,dta.i)}
   
