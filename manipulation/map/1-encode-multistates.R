@@ -16,15 +16,12 @@ requireNamespace("testit", quietly=TRUE)
 # requireNamespace("plyr", quietly=TRUE)
 
 # ---- declare_globals ---------------------------------------------------------
-# path_input  <- "./data-phi-free/raw/results-physical-cognitive.csv"
-# path_input <- paste0("./data/shared/parsed-results-pc-",study,".csv")
-# path_input  <- "./data/shared/parsed-results.csv"
 path_input <- "./data/unshared/derived/dto.rds"
 path_output <- "data/unshared/derived/dto.rds"
 
 # ---- load-data ---------------------------------------------------------------
 # load the product of 0-ellis-island.R,  a list object containing data and metad
-dto <- readRDS("./data/unshared/derived/dto.rds")
+dto <- readRDS(path_input)
 
 # ---- inspect-data -------------------------------------------------------------
 names(dto)
@@ -140,6 +137,22 @@ ds_ms <- encode_multistates(
 )
 msm::statetable.msm(state,id,ds_ms)
 
+# head(ds_ms)
+
+# compare before and after ms encoding
+view_id <- function(d,ds_ms,id){
+  cat("Before ms encoding:","\n")
+  print(d[d$id==id,])
+  cat("After ms encoding","\n")
+  print(ds_ms[ds_ms$id==id,])
+}
+for(i in 1:12){
+  cat("\nPrinting observation for subject with id = ",i,"\n")
+  view_id(d, ds_ms,i)  
+} 
+# view a random person for sporadic inspections
+ids <- unique(ds_miss$id)
+view_id(ds_miss, ds_ms, sample(ids,1))
 
 # examine transition matrix
 
@@ -147,9 +160,9 @@ knitr::kable(msm::statetable.msm(state,id,ds_ms))
 
 
 # ---- save-to-disk ------------------------------------------------------------
-
 # Save as a compress, binary R dataset.  It's no longer readable with a text editor, but it saves metadata (eg, factor information).
-saveRDS(dto, file="./data/unshared/derived/dto.rds", compress="xz")
+
+saveRDS(ds_ms, file="./data/unshared/derived/multistate_mmse.rds", compress="xz")
 
 # ---- object-verification ------------------------------------------------
 # the production of the dto object is now complete
