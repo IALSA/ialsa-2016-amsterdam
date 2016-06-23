@@ -46,7 +46,7 @@ requireNamespace("testit", quietly=TRUE)
 
 #######################################
 # point to the data object
-filePath <- "./sandbox/testing-encoding-rules/ardo/data-for-testing.csv"
+filePath <- "./sandbox/testing-encoding-rules/data-for-testing.csv"
 
 # ---- ardo-wide-to-long-transformation ----------------------
 
