@@ -135,34 +135,22 @@ ds_ms <- encode_multistates(
   age_death_name = "age_death",
   dead_state_value = 4
 )
-msm::statetable.msm(state,id,ds_ms)
-
-# head(ds_ms)
-
-# compare before and after ms encoding
-view_id <- function(d,ds_ms,id){
-  cat("Before ms encoding:","\n")
-  print(d[d$id==id,])
-  cat("After ms encoding","\n")
-  print(ds_ms[ds_ms$id==id,])
-}
-for(i in 1:12){
-  cat("\nPrinting observation for subject with id = ",i,"\n")
-  view_id(d, ds_ms,i)  
-} 
-# view a random person for sporadic inspections
-ids <- unique(ds_miss$id)
-view_id(ds_miss, ds_ms, sample(ids,1))
-
 # examine transition matrix
-
+msm::statetable.msm(state,id,ds_ms)
 knitr::kable(msm::statetable.msm(state,id,ds_ms))
-
 
 # ---- save-to-disk ------------------------------------------------------------
 # Save as a compress, binary R dataset.  It's no longer readable with a text editor, but it saves metadata (eg, factor information).
 
-saveRDS(ds_ms, file="./data/unshared/derived/multistate_mmse.rds", compress="xz")
+# at this point there exist two relevant data sets:
+# ds_miss - missing states are encoded
+# ds_ms   - multi   states are encoded
+# it is useful to have access to both while understanding/verifying encodings
+
+names(dto)
+dto[["ms_mmse"]][["missing"]] <- ds_miss
+dto[["ms_mmse"]][["multi"]] <- ds_ms
+saveRDS(dto, file="./data/unshared/derived/dto.rds", compress="xz")
 
 # ---- object-verification ------------------------------------------------
 # the production of the dto object is now complete
@@ -173,6 +161,26 @@ names(dto)
 dplyr::tbl_df(dto[["unitData"]])
 # 2nd element - meta data, info about variables
 dto[["metaData"]]
+# 3rd element - data for MMSE outcome
+names(dto[["ms_mmse"]])
+ds_miss <- dto$ms_mmse$missing
+ds_ms <- dto$ms_mmse$multi
+
+# ---- inspect-created-multistates ----------------------------------
+# compare before and after ms encoding
+view_id <- function(ds1,ds2,id){
+  cat("Before ms encoding:","\n")
+  print(ds1[ds1$id==id,])
+  cat("\nAfter ms encoding","\n")
+  print(ds2[ds2$id==id,])
+}
+# view a random person for sporadic inspections
+ids <- sample(unique(ds_miss$id),1)
+view_id(ds_miss, ds_ms, ids)
+
+
+
+
 
 
 
