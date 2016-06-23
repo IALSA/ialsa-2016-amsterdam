@@ -234,8 +234,8 @@ for(i in 1:N){
 print(d[d$id==5,])
 
 # Subject's age at each measurement is assumed to be known
-# For ids 1:5, the age of death is available
-# For ids 6:10 the age of death is not available
+# For ids 1:6, the age of death is available
+# For ids 7:12 the age of death is not available (subject presumed alive)
 
 # id = 1(7)  : ideal case 
 # id = 2(8)  : ideal case + reverse transition
@@ -294,7 +294,7 @@ ds_ms <- encode_multistates(
 )
 msm::statetable.msm(state,id,ds_ms)
 # Remove all records with no state:
-ds_ms <-ds_ms[!is.na(ds_ms$state),] 
+# ds_ms <-ds_ms[!is.na(ds_ms$state),] 
 
 # compare outcomes
 print(dta) # Ardo
@@ -322,7 +322,41 @@ for(i in 1:12){
 # id = 5(11) : missing Y on intermediate wave and last wave
 # id = 6(12) : missing Y and TIME on last wave ( no measure collected on wave 4)
 
+############################################################
+# begin modeling : data explorations used by Ardo during workshop
 
+cat("\nState table:"); print(statetable.msm(state,id,data=ds_ms))
+ds_ms %>% dplyr::summarise(unique_ids = n_distinct(id)) # subject count
+ds_ms %>% dplyr::group_by(state) %>% dplyr::summarize(count = n()) # basic frequiencies
+# NOTE: -2 is a right censored value, indicating being alive but in an unknown living state.
 
+# Add first observation indicator
+# this creates a new dummy variable "firstobs" with 1 for the frist wave
+cat("\nFirst observation indicator is added.\n")
+offset <- rep(NA,N)
+for(i in 1:N){offset[i] <- min(which(ds_ms$id==subjects[i]))}
+firstobs <- rep(0,nrow(ds_ms))
+firstobs[offset] <- 1
+ds_ms <- cbind(ds_ms,firstobs=firstobs)
+head(ds_ms)
+
+# Time intervals in data:
+# the age difference between timepoint for each individual
+intervals <- matrix(NA,nrow(ds_ms),2)
+for(i in 2:nrow(ds_ms)){
+  if(ds_ms$id[i]==ds_ms$id[i-1]){
+    intervals[i,1] <- ds_ms$id[i]
+    intervals[i,2] <- ds_ms$age[i]-ds_ms$age[i-1]
+  }
+  intervals <- as.data.frame(intervals)
+  colnames(intervals) <- c("id", "interval")
+}
+head(intervals)
+
+# the age difference between timepoint for each individual
+# Remove the N NAs:
+intervals <- intervals[!is.na(intervals[,2]),]
+cat("\nTime intervals between observations within individuals:\n")
+print(round(quantile(intervals[,2]),digits))
 
 

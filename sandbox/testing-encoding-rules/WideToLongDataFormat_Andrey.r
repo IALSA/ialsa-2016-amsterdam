@@ -33,7 +33,7 @@ table(table(cav$PTNUM))  # Number of records per individual
 # Some code to go form wide-data format to long-data format:
 
 # Load the example of the wide data: 
-dta.wide <- read.table(file="./sandbox/testing-encoding-rules/ardo/data-for-testing.csv", header=TRUE, sep = ",") 
+dta.wide <- read.table(file="./sandbox/testing-encoding-rules/ardo/data-for-testing-v1.csv", header=TRUE, sep = ",") 
 # Have a look at the data:
 # (Note that state -1 is an intermediate missing state)
 cat("\nWide-data format:\n")
