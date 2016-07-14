@@ -18,6 +18,16 @@ rmarkdown::render(
 
 # Encoding of the multi-state (ms) measure(s)
 knitr::stitch_rmd(
-  script="./manipulation/map/1-ms-measure-map.R", 
-  output="./manipulation/map/stitched-output/1-ms-measure-map.md"
+  script="./manipulation/map/1-encode-multistate-mmse.R", 
+  output="./manipulation/map/stitched-output/1-encode-multistate-mmse.md"
+)
+
+
+## Reproducible Reports
+
+# Domonstration and annotation of how multistate variable has been computed
+rmarkdown::render(
+  input = "./reports/encode-multistate/encode-multistate.Rmd",
+  output_format="html_document", 
+  clean=TRUE
 )

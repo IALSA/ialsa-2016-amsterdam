@@ -1,0 +1,148 @@
+---
+title: "Encode Multistate Outcome"
+output:
+  html_document:
+    css: ~/GitHub/ialsa-2016-amsterdam/libs/css/sidebar.css
+    keep_md: yes
+    toc: yes
+---
+
+This report demonstrates and annotates the computation of the multistate variable used as the outcome in multistate models.
+
+<!-- These two chunks should be added in the beginning of every .Rmd that you want to source an .R script -->
+<!--  The 1st mandatory chunck  -->
+<!--  Set the working directory to the repository's base directory -->
+```{r, echo=F, message=F}
+#Don't combine this call with any other chunk
+# cat("Working directory: ", getwd()) # check where you are
+  library(knitr)
+# Rmd is in "./reports/encode-multistate/encode-multistate.Rmd", but now the root is "./"
+  knitr::opts_knit$set(root.dir='../../')
+```
+
+<!--  The 2nd mandatory chunck  -->
+<!-- Set the report-wide options, and point to the external code file. -->
+```{r set_options, echo=F}
+# set options shared by all chunks
+opts_chunk$set(
+  results='show',
+  message = TRUE,
+  comment = NA,
+  tidy = FALSE,
+  fig.height = 4,
+  fig.width = 5.5,
+  out.width = "550px",
+  fig.path = 'figure_rmd/',     
+  dev = "png",
+  dpi = 400
+  # fig.path = 'figure_pdf/',     
+  # dev = "pdf"#,
+  # dev.args=list(pdf = list(colormodel = 'cmyk'))
+)
+echoChunks <- TRUE
+messageChunks <- FALSE
+options(width=120) #So the output is 50% wider than the default.
+# connect to the file with the underlying R script  
+read_chunk("./reports/encode-multistate/encode-multistate.R")
+```
+<!-- Load 'sourced' R files.  Suppress the output when loading packages. -->
+```{r load-packages, echo=echoChunks, message=messageChunks}
+```
+<!-- Load the sources.  Suppress the output when loading sources. -->
+```{r load-sources, echo=echoChunks, message=messageChunks}
+```
+<!-- Load any Global functions and variables declared in the R file.  Suppress the output. -->
+```{r declare-globals, echo=echoChunks, results='show', message=messageChunks}
+```
+<!-- Declare any global functions specific to a Rmd output.  Suppress the output. -->
+```{r, echo=echoChunks, message=FALSE}
+#Put code in here.  It doesn't call a chunk in the code behind file.
+```
+
+# (I) Exposition
+
+> This report is a record of interaction with a data transfer object (dto) produced by `./manipulation/map/0-ellis-island-map.R`.
+
+The next section recaps this script, exposes the architecture of the DTO, and demonstrates the language of interacting with it.   
+
+## (I.A) Ellis Island
+
+> All data land on Ellis Island.
+
+The script `0-ellis-island.R` is the first script in the analytic workflow. It accomplished the following:
+
+- (1) Reads in raw data file
+- (2) Extract, combines, and exports metadata (specifically, variable names and labels, if provided) into `./data/shared/meta/map/names-labels-live.csv`, which is updated every time Ellis Island script is executed.   
+- (3) Augments raw metadata with instructions for renaming and classifying variables. The instructions are provided as manually entered values in `./data/shared/meta/map/meta-data-map.csv`. They are used by automatic scripts in later manipulation and analysis.  
+- (4) Combines unit and meta data into a single DTO to serve as a starting point to all subsequent analyses.   
+
+
+<!-- Load the datasets.   -->
+```{r load-data, echo=echoChunks, results='show', message=FALSE}
+```
+
+<!-- Inspect the datasets.   -->
+```{r inspect-data, echo=echoChunks, results='show', message=FALSE}
+```
+
+### Meta
+```{r meta-table, echo=TRUE, results='show', message=FALSE}
+```
+
+#(II) Development
+
+## Define outcome
+
+The purpose of the transformations annotated in this report is to create a categorical outcome variable that would represent the observed state of the individual at time $t$. Mini-mental state exame (`mmse`) has been chosen to operationalize cognitive impairment. Possible states have been defined as :
+
+* `mmse` $=[27,30]$ --> `state = 1` - no impairment  
+* `mmse` $=[23,27)$ --> `state = 2` - mild impairment   
+* `mmse` $=[0 :22)$ --> `state = 3` - moderate/severe impairment  
+* `state = 4` - dead state  
+
+The covariates of interested include:   
+
+* `age` -  Centered at study specific mean age.   
+* `birth cohort` - Birth year (?)  
+* `male` -  Males 1, Female 0       
+* `education` - Categorized as tertiles within each study, Centered as middle tertile (-1, 0, 1)  
+
+The DTO has been queried to select relevant variables. The following view gives data for a two individuals:
+```{r intro-1, echo=F, results='show', message=FALSE}
+```
+
+For the purposes of the current demonstration we fill focus only on the variables that go into computation of the multistate outcome:
+```{r intro-2, echo=F, results='show', message=FALSE}
+```
+
+## Encode multistate
+Now we will demonstrate the logic of encoding
+```{r add-logical-variables, echo=T, results='show', message=FALSE, warning = FALSE}
+```
+
+### Define function
+```{r define-encoding-function, echo=T, results='show', message=FALSE}
+```
+
+### Encode outcome
+```{r encode-multistate-outcome, echo=TRUE, message=TRUE, warning=TRUE, results='show'}
+```
+
+### Inspect created
+```{r examine-created-data, echo=T, results='show', message=FALSE}
+```
+
+# Recapitulation
+
+```{r save-to-disk, echo=TRUE, results='show', message=FALSE}
+```
+
+
+```{r object-verification, echo=TRUE, results='show', message=FALSE}
+```
+
+
+```{rinspect-created-multistates, echo=TRUE, results='show', message=FALSE}
+```
+
+

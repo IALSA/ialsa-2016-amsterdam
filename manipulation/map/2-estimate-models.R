@@ -8,7 +8,7 @@ rm(list=ls(all=TRUE))  #Clear the variables from previous runs.
 # ---- load_packages -----------------------------------------------------------
 # Attach these packages so their functions don't need to be qualified: http://r-pkgs.had.co.nz/namespace.html#search-path
 library(magrittr) #Pipes
-
+library(msm)
 # Verify these packages are available on the machine, but their functions need to be qualified: http://r-pkgs.had.co.nz/namespace.html#search-path
 requireNamespace("ggplot2", quietly=TRUE)
 requireNamespace("dplyr", quietly=TRUE) #Avoid attaching dplyr, b/c its function names conflict with a lot of packages (esp base, stats, and plyr).
@@ -16,33 +16,66 @@ requireNamespace("testit", quietly=TRUE)
 # requireNamespace("plyr", quietly=TRUE)
 
 # ---- declare_globals ---------------------------------------------------------
+path_input <- "./data/unshared/derived/dto.rds"
+path_output <- "data/unshared/derived/dto.rds"
+
 digits = 2
+
 # ---- load-data ---------------------------------------------------------------
-# load the product of 1-encode-multistate.R
-ds <- readRDS("./data/unshared/derived/multistate_mmse.rds")
-
-
+# load the product of 0-ellis-island.R,  a list object 
+# after it had been augmented by 1-encode-multistate.R script.
+dto <- readRDS(path_input)
 
 # ---- inspect-data -------------------------------------------------------------
-# names(dto)
+names(dto)
 # 1st element - unit(person) level data
-# dplyr::tbl_df(dto[["unitData"]])
+dplyr::tbl_df(dto[["unitData"]])
 # 2nd element - meta data, info about variables
-# dto[["metaData"]]
+dto[["metaData"]]
+# 3rd element - data for MMSE outcome
+names(dto[["ms_mmse"]])
+ds_miss <- dto$ms_mmse$missing
+ds_ms <- dto$ms_mmse$multi
 
+# ---- inspect-created-multistates ----------------------------------
+# compare before and after ms encoding
+view_id <- function(ds1,ds2,id){
+  cat("Before ms encoding:","\n")
+  print(ds1[ds1$id==id,])
+  cat("\nAfter ms encoding","\n")
+  print(ds2[ds2$id==id,])
+}
+# view a random person for sporadic inspections
+ids <- sample(unique(ds_miss$id),1)
+view_id(ds_miss, ds_ms, ids)
 
 
 # ---- tweak_data --------------------------------------------------------------
 # remove the observation with missing age
 
+# ds_miss %>% 
+ds_ms %>% 
+  dplyr::group_by(id) %>% 
+  dplyr::summarize(n_data_points = n()) %>% 
+  dplyr::group_by(n_data_points) %>% 
+  dplyr::summarize(n_people=n())
 
+remove_ids <- ds_ms %>% 
+  dplyr::group_by(id) %>% 
+  dplyr::summarize(n_data_points = n()) %>% 
+  dplyr::arrange(n_data_points) %>% 
+  dplyr::filter(n_data_points==1) %>% 
+  dplyr::select(id)
+remove_ids <- remove_ids$id
+
+ds_clean <- ds_ms %>% 
+  dplyr::filter(!(id %in% remove_ids))
 
 # ---- object-verification ------------------------------------------------
 
 # begin modeling
-
-
-cat("\nState table:"); print(statetable.msm(state,id,data=ds))
+ds <- ds_clean
+cat("\nState table:"); print(msm::statetable.msm(state,id,data=ds))
 ds %>% dplyr::summarise(unique_ids = n_distinct(id)) # subject count
 ds %>% dplyr::group_by(state) %>% dplyr::summarize(count = n()) # basic frequiencies
 # NOTE: -2 is a right censored value, indicating being alive but in an unknown living state.
@@ -88,7 +121,6 @@ opar<-par(mfrow=c(1,1), mex=0.8,mar=c(5,5,2,1))
 
 
 # ---- explore-msm -----------------------------------------------
-ds <- ds %>% dplyr::filter(!id %in% c(1738075, 3060782, 3335936, 4406282, 4886978, 5274286))
 # define function for getting a simple multistate output
 # Choose model (0/1/2):
 # Model <- 2
@@ -96,19 +128,30 @@ q = .01
 qnames = c("q12","q21","q13","q14","q24", "q34", "q23", "q31")
 method = "BFGS"
 
-simple_multistate <- function(ds, Model, q, qnames, method, cov_names){
+simple_multistate <- function(ds, q, qnames, method, cov_names){
   covariates <- as.formula(paste0("~",cov_names))
   constraint <- NULL
   fixedpars <- NULL
   (Q <- rbind(c(0,q,q,q), c(q,0,q,q),c(q,q,0,0), c(0,0,0,0)))
-  model <- msm(state~age, subject=id, data=ds, center=FALSE,
-               qmatrix=Q, death=TRUE, covariates=covariates,
-               censor= c(-1,-2), censor.states=list(c(1,2,3), c(1,2,3)), method=method,
-               constraint=constraint,fixedpars=fixedpars,
-               control=list(trace=0,REPORT=1,maxit=1000,fnscale=10000))
-  # Generate output:
+  model <- msm(
+    formula       = state ~ age, 
+    subject       = id, 
+    data          = ds, 
+    center        = FALSE,
+    qmatrix       = Q, 
+    death         = TRUE, 
+    covariates    = covariates,
+    censor        = c(-1,-2), 
+    censor.states = list(c(1,2,3), c(1,2,3)), 
+    method        = method,
+    constraint    = constraint,
+    fixedpars     = fixedpars,
+    control       = list(trace=0,REPORT=1,maxit=1000,fnscale=10000)
+  )
+  return(model)
+    # Generate output:
   cat("\n---------------------------------------\n")
-  cat("\nModel",Model," with covariates: "); print(covariates)
+  cat("\nModel","---"," with covariates: "); print(covariates)
   cat("and constraints:\n"); print(constraint)
   cat("and fixedpars:\n"); print(fixedpars)
   cat("Convergence code =", model$opt$convergence,"\n")
@@ -122,19 +165,21 @@ simple_multistate <- function(ds, Model, q, qnames, method, cov_names){
   wald <- round((p/p.se)^2,digits)
   pvalue <- round(1-pchisq((p/p.se)^2,df=1),digits)
   # Do not test intercepts:
-  wald[1:sum(names(p)=="qbase")] <- "-"
-  pvalue[1:sum(names(p)=="qbase")] <- "-"
+  wald[1:sum(names(p)=="qbase")] <- wald
+  pvalue[1:sum(names(p)=="qbase")] <- pvalue
   # Results to screen:
   cat("\nParameter estimats and SEs:\n")
   print(cbind(q=qnames,p=round(p,digits),
               se=round(p.se,digits),"Wald ChiSq"=wald,
               "Pr>ChiSq"=pvalue),quote=FALSE)
   cat("\n---------------------------------------\n")
+  
 }
 
-simple_multistate(ds = ds, Model=0,q, qnames, method,  cov_names = "1 + age")
+m1 <- simple_multistate(ds, q, qnames, method,  cov_names = "1")
+m2 <- simple_multistate(ds, q, qnames, method,  cov_names = "1 + male")
 
-ds = ds; Model=0,q, qnames, method,  cov_names = "1"
+
 
 
 

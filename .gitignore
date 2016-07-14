@@ -46,3 +46,6 @@ Desktop.ini
 *.SAV
 data/unshared/derived/dto.rds
 data/unshared/derived/wide-data-map-mmse.rds
+README.html
+data/unshared/derived/copy/dto.rds
+data/unshared/derived/copy/multistate_mmse.rds
