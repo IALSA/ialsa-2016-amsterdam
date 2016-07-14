@@ -111,10 +111,6 @@ The DTO has been queried to select relevant variables. The following view gives 
 ```{r intro-1, echo=F, results='show', message=FALSE}
 ```
 
-For the purposes of the current demonstration we fill focus only on the variables that go into computation of the multistate outcome:
-```{r intro-2, echo=F, results='show', message=FALSE}
-```
-
 ## Encode multistate
 Now we will demonstrate the logic of encoding
 ```{r add-logical-variables, echo=T, results='show', message=FALSE, warning = FALSE}
@@ -142,7 +138,7 @@ Now we will demonstrate the logic of encoding
 ```
 
 
-```{rinspect-created-multistates, echo=TRUE, results='show', message=FALSE}
+```{r inspect-created-multistates, echo=TRUE, results='show', message=FALSE}
 ```
 
 

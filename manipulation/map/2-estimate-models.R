@@ -29,9 +29,9 @@ dto <- readRDS(path_input)
 # ---- inspect-data -------------------------------------------------------------
 names(dto)
 # 1st element - unit(person) level data
-dplyr::tbl_df(dto[["unitData"]])
+names(dto[["unitData"]])
 # 2nd element - meta data, info about variables
-dto[["metaData"]]
+names(dto[["metaData"]])
 # 3rd element - data for MMSE outcome
 names(dto[["ms_mmse"]])
 ds_miss <- dto$ms_mmse$missing
@@ -47,6 +47,7 @@ view_id <- function(ds1,ds2,id){
 }
 # view a random person for sporadic inspections
 ids <- sample(unique(ds_miss$id),1)
+ids <- c(30597867) #, 50101073, 6804844, 83001827 , 56751351, 13485298, 56751351)
 view_id(ds_miss, ds_ms, ids)
 
 
@@ -71,7 +72,7 @@ remove_ids <- remove_ids$id
 ds_clean <- ds_ms %>% 
   dplyr::filter(!(id %in% remove_ids))
 
-# ---- object-verification ------------------------------------------------
+# ---- modeling-1 ------------------------------------------------
 
 # begin modeling
 ds <- ds_clean
@@ -176,12 +177,16 @@ simple_multistate <- function(ds, q, qnames, method, cov_names){
   
 }
 
-m1 <- simple_multistate(ds, q, qnames, method,  cov_names = "1")
+ds <- ds %>% 
+  dplyr::mutate(age = age_bl - 75)
+
+# m1 <- simple_multistate(ds, q, qnames, method,  cov_names = "1")
 m2 <- simple_multistate(ds, q, qnames, method,  cov_names = "1 + male")
+m3 <- simple_multistate(ds, q, qnames, method,  cov_names = "1 + male + age")
+m4 <- simple_multistate(ds, q, qnames, method,  cov_names = "1 + male + age + edu")
 
 
-
-
+str(m2)
 
 
 

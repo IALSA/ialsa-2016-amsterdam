@@ -26,12 +26,12 @@ dto <- readRDS(path_input)
 # ---- inspect-data -------------------------------------------------------------
 names(dto)
 # 1st element - unit(person) level data
-dplyr::tbl_df(dto[["unitData"]]) 
+names(dto[["unitData"]]) 
 # 2nd element - meta data, info about variables
-dplyr::tbl_df(dto[["metaData"]])
+names(dto[["metaData"]])
 # create a convenient alias for individual-level data
 ds <- dto[["unitData"]]
-
+ 
 
 # ---- meta-table --------------------------------------------------------
 dto[["metaData"]] %>%  
@@ -53,11 +53,11 @@ dto[["metaData"]] %>%
 ds_long <- ds %>% 
   dplyr::mutate(
     mmse         = as.integer(mmse),
-    age_death    = round(as.numeric(age_death),2), 
+    age_death    = round(as.numeric(age_death),4), 
     male         = as.logical(ifelse(!is.na(msex), msex=="1", NA_integer_)),
     edu          = as.numeric(educ),
-    age_at_visit = round(age_at_visit,2),
-    age_bl = round(age_bl,2)
+    age_at_visit = round(age_at_visit,4),
+    age_bl = round(age_bl,4)
   ) %>% 
   dplyr::select_(
     "id",
@@ -71,6 +71,7 @@ ds_long <- ds %>%
   ) 
 
 ids <- c(30597867, 50101073, 6804844, 83001827 , 56751351, 13485298, 56751351)
+# ids <- c(68778359)
 ds_long %>% 
   dplyr::filter(id %in% ids) 
 
@@ -106,7 +107,7 @@ ds_long %>%
 select_vars <- c("id", "age_death", "fu_year", "age_at_visit", "mmse")
 
 d <- ds_long %>% 
-  dplyr::select_(.dots = select_vars) %>% 
+  # dplyr::select_(.dots = select_vars) %>%
   dplyr::filter(id %in% ids)
 d
 
@@ -240,7 +241,9 @@ names(dto[["unitData"]])
 names(dto[["metaData"]])
 # 3rd element - data for MMSE outcome
 names(dto[["ms_mmse"]])
+# dataset after encoding missing states
 ds_miss <- dto$ms_mmse$missing
+# data after encoding multistates
 ds_ms <- dto$ms_mmse$multi
 
 # ---- inspect-created-multistates ----------------------------------
@@ -251,11 +254,13 @@ view_id <- function(ds1,ds2,id){
   cat("\nAfter ms encoding","\n")
   print(ds2[ds2$id==id,])
 }
-# view a random person for sporadic inspections
-ids <- sample(unique(ds_miss$id),1)
-view_id(ds_miss, ds_ms, ids)
-
-
+# ids <- c(30597867, 50101073, 6804844, 83001827 , 56751351, 13485298, 56751351)
+# ids <- c(68778359)
+view_id(ds_miss, ds_ms, 68778359)
+view_id(ds_miss, ds_ms, 30597867)
+view_id(ds_miss, ds_ms, 6804844)
+view_id(ds_miss, ds_ms, 83001827)
+view_id(ds_miss, ds_ms, 56751351)
 
 
 

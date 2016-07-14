@@ -73,7 +73,9 @@ d_rules <- dto[["metaData"]] %>%
   dplyr::select(name, name_new ) # leave only collumn, which values you wish to append
 names(ds) <- d_rules[,"name_new"]
 # transfer changes to dto
-dto[["unitData"]] <- ds
+ds <- ds %>% dplyr::filter(study == "MAP ")
+table(ds$study)
+dto[["unitData"]] <- ds 
 
 # ---- save-to-disk ------------------------------------------------------------
 
