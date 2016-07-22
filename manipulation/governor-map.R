@@ -9,18 +9,18 @@ knitr::stitch_rmd(
 )
 # look into knitr::spin() http://www.r-bloggers.com/knitrs-best-hidden-gem-spin/
 
-# # Initial reivew of variables
-# rmarkdown::render(
-#   input = "./reports/review-variables/map/review-variables-map.Rmd" ,
-#   output_format="html_document", 
-#   clean=TRUE
-# )
-# 
-# # Encoding of the multi-state (ms) measure(s)
-# knitr::stitch_rmd(
-#   script="./manipulation/map/1-encode-multistate-mmse.R", 
-#   output="./manipulation/map/stitched-output/1-encode-multistate-mmse.md"
-# )
+# Initial reivew of variables
+rmarkdown::render(
+  input = "./reports/review-variables/map/review-variables-map.Rmd" ,
+  output_format="html_document",
+  clean=TRUE
+)
+
+# Encoding of the multi-state (ms) measure(s)
+knitr::stitch_rmd(
+  script="./manipulation/map/1-encode-multistate-mmse.R",
+  output="./manipulation/map/stitched-output/1-encode-multistate-mmse.md"
+)
 
 
 ## Reproducible Reports
