@@ -5,7 +5,7 @@ Multi-study and multivariate evaluation of healthy life expectancy (HLE): An IAL
 - Follow [`./utility/reproducibility-instructions.md`](utility/reproducibility-instructions.md) to create dynamic documents linked below:
 - `./manipulation/map/`[`0-ellis-island-map.R`][ellis-island-map]  
 - `./reports/`[`review-variables.R`][review-variables-map]
-- `./manipulation/map/`[`1-encode-multistate.R`][encode-multistate-map]
+- `./manipulation/map/`[`1-encode-multistate.R`][https://rawgit.com/IALSA/ialsa-2016-amsterdam/master/manipulation/map/1-encode-multistate-mmse.R]
 
 
 #### Documentation
