@@ -45,6 +45,7 @@ ids <- sample(unique(ds$id),3)
 ds_long <- ds %>% 
   # dplyr::filter(id %in% ids) %>%
   dplyr::mutate(
+    age_bl    = as.numeric(age_bl),
     age_death = as.numeric(age_death), 
     male      = as.logical(ifelse(!is.na(msex), msex=="1", NA_integer_)),
     edu       = as.numeric(educ)
@@ -52,6 +53,7 @@ ds_long <- ds %>%
   dplyr::select_(
     "id",
     # "fu_year",
+    "age_bl",
     "male",
     "edu",
     "age_death",
@@ -64,7 +66,7 @@ ds_long # in long format
 
 d <- ds_long %>% 
   # dplyr::select(id, male, age_at_visit, mmse, age_death ) 
-  dplyr::select(id, male,edu, age_at_visit, mmse, age_death ) 
+  dplyr::select(id, age_bl, male,edu, age_at_visit, mmse, age_death ) 
 # print(d[d$id %in% c(5,11),])
 str(d)
 # x <- c(NA, 5, NA, 7)
