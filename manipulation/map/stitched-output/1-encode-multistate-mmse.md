@@ -51,10 +51,9 @@ dplyr::tbl_df(dto[["unitData"]])
 ```
 
 ```
-## Source: local data frame [9,708 x 113]
-## 
+## # A tibble: 9,708 x 113
 ##        id study scaled_to.x agreeableness conscientiousness extraversion
-##     (int) (chr)       (chr)         (int)             (int)        (int)
+##     <int> <chr>       <chr>         <int>             <int>        <int>
 ## 1    9121  MAP         MAP             NA                35           34
 ## 2    9121  MAP         MAP             NA                35           34
 ## 3    9121  MAP         MAP             NA                35           34
@@ -65,32 +64,32 @@ dplyr::tbl_df(dto[["unitData"]])
 ## 8  204228  MAP         MAP             NA                NA           32
 ## 9  204228  MAP         MAP             NA                NA           32
 ## 10 204228  MAP         MAP             NA                NA           32
-## ..    ...   ...         ...           ...               ...          ...
-## Variables not shown: neo_altruism (int), neo_conscientiousness (int),
-##   neo_trust (int), openness (int), anxiety_10items (dbl), neuroticism_12
-##   (int), neuroticism_6 (int), age_bl (dbl), age_death (dbl), died (int),
-##   educ (int), msex (int), race (int), spanish (int), apoe_genotype (int),
-##   alco_life (dbl), q3smo_bl (int), q4smo_bl (int), smoke_bl (int), smoking
-##   (int), fu_year (int), scaled_to.y (chr), cesdsum (int), r_depres (int),
-##   intrusion (dbl), neglifeevents (int), negsocexchange (dbl), nohelp
-##   (dbl), panas (dbl), perceivedstress (dbl), rejection (dbl),
-##   unsympathetic (dbl), dcfdx (int), dementia (int), r_stroke (int),
-##   cogn_ep (dbl), cogn_global (dbl), cogn_po (dbl), cogn_ps (dbl), cogn_se
-##   (dbl), cogn_wo (dbl), cts_bname (int), catfluency (int), cts_db (int),
-##   cts_delay (int), cts_df (int), cts_doperf (int), cts_ebdr (int),
-##   cts_ebmt (int), cts_idea (int), cts_lopair (int), mmse (dbl), cts_nccrtd
-##   (int), cts_pmat (int), cts_read_nart (int), cts_read_wrat (int),
-##   cts_sdmt (int), cts_story (int), cts_wli (int), cts_wlii (int),
-##   cts_wliii (int), age_at_visit (dbl), iadlsum (int), katzsum (int),
-##   rosbscl (int), rosbsum (int), vision (int), visionlog (dbl), fev (dbl),
-##   mep (dbl), mip (dbl), pvc (dbl), bun (int), ca (dbl), chlstrl (int), cl
-##   (int), co2 (int), crn (dbl), fasting (int), glucose (int), hba1c (dbl),
-##   hdlchlstrl (int), hdlratio (dbl), k (dbl), ldlchlstrl (int), na (int),
-##   alcohol_g (dbl), bmi (dbl), htm (dbl), phys5itemsum (dbl), wtkg (dbl),
-##   bp11 (chr), bp2 (chr), bp3 (int), bp31 (chr), hypertension_cum (int),
-##   dm_cum (int), thyroid_cum (int), chf_cum (int), claudication_cum (int),
-##   heart_cum (int), stroke_cum (int), vasc_3dis_sum (dbl), vasc_4dis_sum
-##   (dbl), vasc_risks_sum (dbl), gait_speed (dbl), gripavg (dbl)
+## # ... with 9,698 more rows, and 107 more variables: neo_altruism <int>,
+## #   neo_conscientiousness <int>, neo_trust <int>, openness <int>,
+## #   anxiety_10items <dbl>, neuroticism_12 <int>, neuroticism_6 <int>,
+## #   age_bl <dbl>, age_death <dbl>, died <int>, educ <int>, msex <int>,
+## #   race <int>, spanish <int>, apoe_genotype <int>, alco_life <dbl>,
+## #   q3smo_bl <int>, q4smo_bl <int>, smoke_bl <int>, smoking <int>,
+## #   fu_year <int>, scaled_to.y <chr>, cesdsum <int>, r_depres <int>,
+## #   intrusion <dbl>, neglifeevents <int>, negsocexchange <dbl>,
+## #   nohelp <dbl>, panas <dbl>, perceivedstress <dbl>, rejection <dbl>,
+## #   unsympathetic <dbl>, dcfdx <int>, dementia <int>, r_stroke <int>,
+## #   cogn_ep <dbl>, cogn_global <dbl>, cogn_po <dbl>, cogn_ps <dbl>,
+## #   cogn_se <dbl>, cogn_wo <dbl>, cts_bname <int>, catfluency <int>,
+## #   cts_db <int>, cts_delay <int>, cts_df <int>, cts_doperf <int>,
+## #   cts_ebdr <int>, cts_ebmt <int>, cts_idea <int>, cts_lopair <int>,
+## #   mmse <dbl>, cts_nccrtd <int>, cts_pmat <int>, cts_read_nart <int>,
+## #   cts_read_wrat <int>, cts_sdmt <int>, cts_story <int>, cts_wli <int>,
+## #   cts_wlii <int>, cts_wliii <int>, age_at_visit <dbl>, iadlsum <int>,
+## #   katzsum <int>, rosbscl <int>, rosbsum <int>, vision <int>,
+## #   visionlog <dbl>, fev <dbl>, mep <dbl>, mip <dbl>, pvc <dbl>,
+## #   bun <int>, ca <dbl>, chlstrl <int>, cl <int>, co2 <int>, crn <dbl>,
+## #   fasting <int>, glucose <int>, hba1c <dbl>, hdlchlstrl <int>,
+## #   hdlratio <dbl>, k <dbl>, ldlchlstrl <int>, na <int>, alcohol_g <dbl>,
+## #   bmi <dbl>, htm <dbl>, phys5itemsum <dbl>, wtkg <dbl>, bp11 <chr>,
+## #   bp2 <chr>, bp3 <int>, bp31 <chr>, hypertension_cum <int>,
+## #   dm_cum <int>, thyroid_cum <int>, chf_cum <int>,
+## #   claudication_cum <int>, ...
 ```
 
 ```r
@@ -8034,28 +8033,16 @@ msm::statetable.msm(state,id,ds_ms)
 ```
 
 ```
-##     to
-## from   -2   -1    1    2    3    4
-##   -2   32    0    0    0    0    0
-##   -1    0   25   27   13   27   50
-##   1    32   59 4855  715  120  251
-##   2     8   20  534  478  257  146
-##   3     6   34   24   97  649  233
+## Error in loadNamespace(name): there is no package called 'msm'
 ```
 
 ```r
 knitr::kable(msm::statetable.msm(state,id,ds_ms))
 ```
 
-
-
-|   | -2| -1|    1|   2|   3|   4|
-|:--|--:|--:|----:|---:|---:|---:|
-|-2 | 32|  0|    0|   0|   0|   0|
-|-1 |  0| 25|   27|  13|  27|  50|
-|1  | 32| 59| 4855| 715| 120| 251|
-|2  |  8| 20|  534| 478| 257| 146|
-|3  |  6| 34|   24|  97| 649| 233|
+```
+## Error in loadNamespace(name): there is no package called 'msm'
+```
 
 ```r
 # Save as a compress, binary R dataset.  It's no longer readable with a text editor, but it saves metadata (eg, factor information).
@@ -8095,10 +8082,9 @@ dplyr::tbl_df(dto[["unitData"]])
 ```
 
 ```
-## Source: local data frame [9,708 x 113]
-## 
+## # A tibble: 9,708 x 113
 ##        id study scaled_to.x agreeableness conscientiousness extraversion
-##     (int) (chr)       (chr)         (int)             (int)        (int)
+##     <int> <chr>       <chr>         <int>             <int>        <int>
 ## 1    9121  MAP         MAP             NA                35           34
 ## 2    9121  MAP         MAP             NA                35           34
 ## 3    9121  MAP         MAP             NA                35           34
@@ -8109,32 +8095,32 @@ dplyr::tbl_df(dto[["unitData"]])
 ## 8  204228  MAP         MAP             NA                NA           32
 ## 9  204228  MAP         MAP             NA                NA           32
 ## 10 204228  MAP         MAP             NA                NA           32
-## ..    ...   ...         ...           ...               ...          ...
-## Variables not shown: neo_altruism (int), neo_conscientiousness (int),
-##   neo_trust (int), openness (int), anxiety_10items (dbl), neuroticism_12
-##   (int), neuroticism_6 (int), age_bl (dbl), age_death (dbl), died (int),
-##   educ (int), msex (int), race (int), spanish (int), apoe_genotype (int),
-##   alco_life (dbl), q3smo_bl (int), q4smo_bl (int), smoke_bl (int), smoking
-##   (int), fu_year (int), scaled_to.y (chr), cesdsum (int), r_depres (int),
-##   intrusion (dbl), neglifeevents (int), negsocexchange (dbl), nohelp
-##   (dbl), panas (dbl), perceivedstress (dbl), rejection (dbl),
-##   unsympathetic (dbl), dcfdx (int), dementia (int), r_stroke (int),
-##   cogn_ep (dbl), cogn_global (dbl), cogn_po (dbl), cogn_ps (dbl), cogn_se
-##   (dbl), cogn_wo (dbl), cts_bname (int), catfluency (int), cts_db (int),
-##   cts_delay (int), cts_df (int), cts_doperf (int), cts_ebdr (int),
-##   cts_ebmt (int), cts_idea (int), cts_lopair (int), mmse (dbl), cts_nccrtd
-##   (int), cts_pmat (int), cts_read_nart (int), cts_read_wrat (int),
-##   cts_sdmt (int), cts_story (int), cts_wli (int), cts_wlii (int),
-##   cts_wliii (int), age_at_visit (dbl), iadlsum (int), katzsum (int),
-##   rosbscl (int), rosbsum (int), vision (int), visionlog (dbl), fev (dbl),
-##   mep (dbl), mip (dbl), pvc (dbl), bun (int), ca (dbl), chlstrl (int), cl
-##   (int), co2 (int), crn (dbl), fasting (int), glucose (int), hba1c (dbl),
-##   hdlchlstrl (int), hdlratio (dbl), k (dbl), ldlchlstrl (int), na (int),
-##   alcohol_g (dbl), bmi (dbl), htm (dbl), phys5itemsum (dbl), wtkg (dbl),
-##   bp11 (chr), bp2 (chr), bp3 (int), bp31 (chr), hypertension_cum (int),
-##   dm_cum (int), thyroid_cum (int), chf_cum (int), claudication_cum (int),
-##   heart_cum (int), stroke_cum (int), vasc_3dis_sum (dbl), vasc_4dis_sum
-##   (dbl), vasc_risks_sum (dbl), gait_speed (dbl), gripavg (dbl)
+## # ... with 9,698 more rows, and 107 more variables: neo_altruism <int>,
+## #   neo_conscientiousness <int>, neo_trust <int>, openness <int>,
+## #   anxiety_10items <dbl>, neuroticism_12 <int>, neuroticism_6 <int>,
+## #   age_bl <dbl>, age_death <dbl>, died <int>, educ <int>, msex <int>,
+## #   race <int>, spanish <int>, apoe_genotype <int>, alco_life <dbl>,
+## #   q3smo_bl <int>, q4smo_bl <int>, smoke_bl <int>, smoking <int>,
+## #   fu_year <int>, scaled_to.y <chr>, cesdsum <int>, r_depres <int>,
+## #   intrusion <dbl>, neglifeevents <int>, negsocexchange <dbl>,
+## #   nohelp <dbl>, panas <dbl>, perceivedstress <dbl>, rejection <dbl>,
+## #   unsympathetic <dbl>, dcfdx <int>, dementia <int>, r_stroke <int>,
+## #   cogn_ep <dbl>, cogn_global <dbl>, cogn_po <dbl>, cogn_ps <dbl>,
+## #   cogn_se <dbl>, cogn_wo <dbl>, cts_bname <int>, catfluency <int>,
+## #   cts_db <int>, cts_delay <int>, cts_df <int>, cts_doperf <int>,
+## #   cts_ebdr <int>, cts_ebmt <int>, cts_idea <int>, cts_lopair <int>,
+## #   mmse <dbl>, cts_nccrtd <int>, cts_pmat <int>, cts_read_nart <int>,
+## #   cts_read_wrat <int>, cts_sdmt <int>, cts_story <int>, cts_wli <int>,
+## #   cts_wlii <int>, cts_wliii <int>, age_at_visit <dbl>, iadlsum <int>,
+## #   katzsum <int>, rosbscl <int>, rosbsum <int>, vision <int>,
+## #   visionlog <dbl>, fev <dbl>, mep <dbl>, mip <dbl>, pvc <dbl>,
+## #   bun <int>, ca <dbl>, chlstrl <int>, cl <int>, co2 <int>, crn <dbl>,
+## #   fasting <int>, glucose <int>, hba1c <dbl>, hdlchlstrl <int>,
+## #   hdlratio <dbl>, k <dbl>, ldlchlstrl <int>, na <int>, alcohol_g <dbl>,
+## #   bmi <dbl>, htm <dbl>, phys5itemsum <dbl>, wtkg <dbl>, bp11 <chr>,
+## #   bp2 <chr>, bp3 <int>, bp31 <chr>, hypertension_cum <int>,
+## #   dm_cum <int>, thyroid_cum <int>, chf_cum <int>,
+## #   claudication_cum <int>, ...
 ```
 
 ```r
@@ -8652,7 +8638,7 @@ sessionInfo()
 ```
 
 ```
-## R version 3.2.5 (2016-04-14)
+## R version 3.3.1 (2016-06-21)
 ## Platform: x86_64-w64-mingw32/x64 (64-bit)
 ## Running under: Windows >= 8 x64 (build 9200)
 ## 
@@ -8667,18 +8653,20 @@ sessionInfo()
 ## [1] stats     graphics  grDevices utils     datasets  methods   base     
 ## 
 ## other attached packages:
-## [1] magrittr_1.5
+## [1] ggplot2_2.1.0 magrittr_1.5  knitr_1.13   
 ## 
 ## loaded via a namespace (and not attached):
-##  [1] Rcpp_0.12.5      knitr_1.13       splines_3.2.5    munsell_0.4.3   
-##  [5] testit_0.5       lattice_0.20-33  colorspace_1.2-6 R6_2.1.2        
-##  [9] highr_0.6        stringr_1.0.0    plyr_1.8.3       dplyr_0.4.3     
-## [13] tools_3.2.5      parallel_3.2.5   grid_3.2.5       gtable_0.2.0    
-## [17] msm_1.6.1        DBI_0.4-1        htmltools_0.3.5  survival_2.38-3 
-## [21] lazyeval_0.1.10  assertthat_0.1   digest_0.6.9     Matrix_1.2-4    
-## [25] ggplot2_2.1.0    formatR_1.4      rsconnect_0.4.3  evaluate_0.9    
-## [29] rmarkdown_1.0    stringi_1.1.1    scales_0.4.0     expm_0.999-0    
-## [33] mvtnorm_1.0-5
+##  [1] Rcpp_0.12.6        testit_0.5         munsell_0.4.3     
+##  [4] colorspace_1.2-6   R6_2.1.2           highr_0.6         
+##  [7] stringr_1.0.0      plyr_1.8.4         dplyr_0.5.0       
+## [10] tools_3.3.1        DT_0.1             dichromat_2.0-0   
+## [13] grid_3.3.1         gtable_0.2.0       DBI_0.4-1         
+## [16] htmltools_0.3.5    lazyeval_0.2.0     yaml_2.1.13       
+## [19] digest_0.6.10      assertthat_0.1     tibble_1.1        
+## [22] RColorBrewer_1.1-2 formatR_1.4        tidyr_0.5.1       
+## [25] htmlwidgets_0.7    evaluate_0.9       rmarkdown_0.9.6.14
+## [28] labeling_0.3       stringi_1.1.1      scales_0.4.0      
+## [31] jsonlite_1.0
 ```
 
 ```r
@@ -8686,6 +8674,6 @@ Sys.time()
 ```
 
 ```
-## [1] "2016-07-22 14:53:46 PDT"
+## [1] "2016-08-08 07:27:26 PDT"
 ```
 
