@@ -7,7 +7,7 @@ cat("\f") # clear console
 # Call `base::source()` on any repo file that defines functions needed below.  Ideally, no real operations are performed.
 base::source("./scripts/common-functions.R") # used in multiple reports
 base::source("./scripts/graph-presets.R") # fonts, colors, themes 
-base::source("http://www.ucl.ac.uk/~ucakadl/ELECT.r") # load  ELECT functions
+base::source("http://www.ucl.ac.uk/~ucakadl/ELECT/ELECT.r") # load  ELECT functions
 
 # ---- load-packages -----------------------------------------------------------
 # Attach these packages so their functions don't need to be qualified: http://r-pkgs.had.co.nz/namespace.html#search-path
@@ -138,11 +138,12 @@ simple_multistate <- function(ds, Model, q, qnames, method, cov_names){
               se=round(p.se,digits),"Wald ChiSq"=wald,
               "Pr>ChiSq"=pvalue),quote=FALSE)
   cat("\n---------------------------------------\n")
+  return(model)
 }
 # 
 
 # ---- explore-msm-a ------------------------------
-simple_multistate(ds = dta, Model=0,q, qnames, method,  cov_names = "1")
+model <- simple_multistate(ds = dta, Model=0,q, qnames, method,  cov_names = "1")
 
 
 # ---- explore-msm-b ------------------------------

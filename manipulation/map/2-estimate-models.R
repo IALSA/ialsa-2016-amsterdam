@@ -3,8 +3,7 @@
 rm(list=ls(all=TRUE))  #Clear the variables from previous runs.
 
 # ---- load_sources ------------------------------------------------------------
-# Call `base::source()` on any repo file that defines functions needed below.  Ideally, no real operations are performed.
-
+base::source("http://www.ucl.ac.uk/~ucakadl/ELECT/ELECT.r") # load  ELECT functions
 # ---- load_packages -----------------------------------------------------------
 # Attach these packages so their functions don't need to be qualified: http://r-pkgs.had.co.nz/namespace.html#search-path
 library(magrittr) #Pipes
@@ -53,7 +52,7 @@ view_id(ds_miss, ds_ms, ids)
 
 # ---- tweak_data --------------------------------------------------------------
 # remove the observation with missing age
-
+sum(is.na(ds_ms$age)) # count obs with missing age
 # ds_miss %>% 
 ds_ms %>% 
   dplyr::group_by(id) %>% 
@@ -85,7 +84,7 @@ ds %>% dplyr::group_by(state) %>% dplyr::summarize(count = n()) # basic frequien
 subjects <- as.numeric(unique(ds$id))
 
 # Add first observation indicator
-# this creates a new dummy variable "firstobs" with 1 for the frist wave
+# this creates a new dummy variable "firstobs" with 1 for the first wave
 cat("\nFirst observation indicator is added.\n")
 offset <- rep(NA,N)
 for(i in 1:N){offset[i] <- min(which(ds$id==subjects[i]))}
@@ -178,18 +177,65 @@ simple_multistate <- function(ds, q, qnames, method, cov_names){
 }
 
 ds <- ds %>% 
-  dplyr::mutate(age = age_bl - 75)
+  dplyr::mutate(age_bl = age_bl - 75)
 
 # m1 <- simple_multistate(ds, q, qnames, method,  cov_names = "1")
-m2 <- simple_multistate(ds, q, qnames, method,  cov_names = "1 + male")
-m3 <- simple_multistate(ds, q, qnames, method,  cov_names = "1 + male + age")
-m4 <- simple_multistate(ds, q, qnames, method,  cov_names = "1 + male + age + edu")
+# m2 <- simple_multistate(ds, q, qnames, method,  cov_names = "1 + age_bl")
+# m3 <- simple_multistate(ds, q, qnames, method,  cov_names = "1 + age_bl + male")
+# m4 <- simple_multistate(ds, q, qnames, method,  cov_names = "1 + age_bl + male + edu")
 
+# models 3 and 4 produced the following warning message:
+# Optimisation has probably not converged to the maximum likelihood - Hessian is not positive definite.
+# models <- list(
+#   "empty"  = m1, 
+#   "age_bl" = m2,
+#   "male"   = m3, 
+#   "edu"    = m4)
 
-str(m2)
+# saveRDS(models, "./data/shared/derived/models.rds")
+models <- readRDS("./data/shared/derived/models.rds")
 
+# ---- compute-LE -------------------
+head(ds)
+ds <- ds %>% 
+  dplyr::mutate(
+    male = as.numeric(male)
+  )
 
-
+# ---- three-functions-of-ELECT -------------
+dta = ds; model = models$age_bl
+# graph_LE <- function(dta, model){
+  # Point-estimate life expectancies:
+  sddata <- dta[dta$state%in%c(1,2,3),]
+  age0 <- 65
+  age.max <- 115
+  male_ <- 0
+  LEs <- elect(
+    model=model, # fitted msm model
+    b.covariates=list(age=age0), # list with specified covarites values
+    statedistdata=sddata, # data for distribution of living states
+    time.scale.msm="years", # time scale in multi-state model ("years", ...)
+    h=0.5, # grid parameter for integration
+    age.max=age.max, # assumed maximum age in years
+    S=0 # seed for the randon number generation
+  )
+  
+  summary.elect(
+    LEs, # life expectancy estimated by elect()
+    probs = c(.025, .5, .975), # numeric vector of probabilities for quantiles
+    digits=2, # number of decimals places in output
+    print = TRUE # print toggle
+  )
+  
+  plot.elect(
+    LEs, # life expectancy estimated by elect()
+    kernel = "gaussian", #character string for smoothing kernal ("gaussian",...)
+    col = "red", # color of the curve
+    lwd = 2, # line width of the curve
+    cex.lab = 1 # magnification to be used for axis-labels
+  )
+  
+# }
 
 
 
