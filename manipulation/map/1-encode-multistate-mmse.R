@@ -53,6 +53,7 @@ ds_long <- ds %>%
     "id",
     # "fu_year",
     "male",
+    "edu",
     "age_death",
     "age_at_visit",
     "mmse") 
@@ -62,7 +63,8 @@ ds_long # in long format
 
 
 d <- ds_long %>% 
-  dplyr::select(id, male, age_at_visit, mmse, age_death ) 
+  # dplyr::select(id, male, age_at_visit, mmse, age_death ) 
+  dplyr::select(id, male,edu, age_at_visit, mmse, age_death ) 
 # print(d[d$id %in% c(5,11),])
 str(d)
 # x <- c(NA, 5, NA, 7)
@@ -136,9 +138,10 @@ ds_ms <- encode_multistates(
   age_death_name = "age_death",
   dead_state_value = 4
 )
+head(ds_ms)
 table(ds_ms$state)
 # examine transition matrix
-msm::statetable.msm(state,id,ds_ms)
+# msm::statetable.msm(state,id,ds_ms)
 knitr::kable(msm::statetable.msm(state,id,ds_ms))
 
 # ---- save-to-disk ------------------------------------------------------------
