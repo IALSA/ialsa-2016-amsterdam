@@ -39,6 +39,7 @@ ds <- dto[["unitData"]]
 
 # ---- look-up-pattern-for-single-id --------------------------------------------------------------
 # if died==1, all subsequent focal_outcome==DEAD.
+# during debuggin/testing use only a few ids, for manipulation use all
 set.seed(43)
 ids <- sample(unique(ds$id),3)
 ds_long <- ds %>% 
@@ -80,8 +81,8 @@ for(i in 1:N){
   (dta.i$missed_last_wave = (cumsum(!is.na(dta.i$mmse))==0L))
   (dta.i$presumed_alive      =  is.na(any(dta.i$age_death)))
   (dta.i$right_censored   = dta.i$missed_last_wave & dta.i$presumed_alive)
-  # dta.i$mmse_recoded     = determine_censor(dta.i$mmse, dta.i$right_censored)
-  (dta.i$mmse     <- determine_censor(dta.i$mmse, dta.i$right_censored))
+  # dta.i$mmse_recoded     = determine_censor(dta.i$mmse, dta.i$right_censored) # use when tracing
+  (dta.i$mmse     <- determine_censor(dta.i$mmse, dta.i$right_censored)) # replace in reality
   (dta.i <- as.data.frame(dta.i %>% dplyr::arrange(age_at_visit)))
   (dta.i <- dta.i %>% dplyr::select(-missed_last_wave, -right_censored ))
   # Rebuild the data:
@@ -135,6 +136,7 @@ ds_ms <- encode_multistates(
   age_death_name = "age_death",
   dead_state_value = 4
 )
+table(ds_ms$state)
 # examine transition matrix
 msm::statetable.msm(state,id,ds_ms)
 knitr::kable(msm::statetable.msm(state,id,ds_ms))

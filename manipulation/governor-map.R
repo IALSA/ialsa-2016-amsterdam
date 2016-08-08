@@ -21,7 +21,7 @@ knitr::stitch_rmd(
   script="./manipulation/map/1-encode-multistate-mmse.R",
   output="./manipulation/map/stitched-output/1-encode-multistate-mmse.md"
 )
-
+ 
 
 ## Reproducible Reports
 
