@@ -212,7 +212,7 @@ dta = ds; model = models$age
 # graph_LE <- function(dta, model){
   # Point-estimate life expectancies:
   sddata <- dta[dta$state%in%c(1,2,3),]
-  age_0 <- 0
+  age_0 <- -0
   ageMax <- 50
 
   LE.pnt <- elect(
@@ -222,7 +222,7 @@ dta = ds; model = models$age
     time.scale.msm="years", # time scale in multi-state model ("years", ...)
     h=0.5, # grid parameter for integration
     age.max=ageMax, # assumed maximum age in years
-    S=50 # number of simulation cycles
+    S=500 # number of simulation cycles
   )
   
   summary.elect(
@@ -233,7 +233,7 @@ dta = ds; model = models$age
   )
   
   plot.elect(
-    LEs, # life expectancy estimated by elect()
+    LE.pnt, # life expectancy estimated by elect()
     kernel = "gaussian", #character string for smoothing kernal ("gaussian",...)
     col = "red", # color of the curve
     lwd = 2, # line width of the curve
