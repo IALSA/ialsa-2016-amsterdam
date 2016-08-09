@@ -127,6 +127,7 @@ opar<-par(mfrow=c(1,1), mex=0.8,mar=c(5,5,2,1))
 q = .01
 qnames = c("q12","q21","q13","q14","q24", "q34", "q23", "q31")
 method = "BFGS"
+# cov_names = "1 + age_bl"
 
 simple_multistate <- function(ds, q, qnames, method, cov_names){
   covariates <- as.formula(paste0("~",cov_names))
@@ -159,8 +160,8 @@ simple_multistate <- function(ds, q, qnames, method, cov_names){
   AIC <- minus2LL + 2*length(model$opt$par)
   cat("\n-2loglik =", minus2LL,"\n")
   cat("AIC =", AIC,"\n")
-  p <- model$estimates
-  p.se <- sqrt(diag(model$covmat))
+  p <- round(model$estimates, 2)
+  p.se <- round(sqrt(diag(model$covmat)),2)
   # Univariate Wald tests:
   wald <- round((p/p.se)^2,digits)
   pvalue <- round(1-pchisq((p/p.se)^2,df=1),digits)
@@ -177,51 +178,55 @@ simple_multistate <- function(ds, q, qnames, method, cov_names){
 }
 
 ds <- ds %>% 
-  dplyr::mutate(age_bl = age_bl - 75)
+  dplyr::mutate(
+    # male = as.numeric(male),
+    age    = age - 75,
+    age_bl = age_bl - 75
+  )
 
-# m1 <- simple_multistate(ds, q, qnames, method,  cov_names = "1")
-# m2 <- simple_multistate(ds, q, qnames, method,  cov_names = "1 + age_bl")
-# m3 <- simple_multistate(ds, q, qnames, method,  cov_names = "1 + age_bl + male")
-# m4 <- simple_multistate(ds, q, qnames, method,  cov_names = "1 + age_bl + male + edu")
+# m0 <- simple_multistate(ds, q, qnames, method,  cov_names = "1")
+# m1 <- simple_multistate(ds, q, qnames, method,  cov_names = "age")
+# m2 <- simple_multistate(ds, q, qnames, method,  cov_names = "age + age_bl")
+# m3 <- simple_multistate(ds, q, qnames, method,  cov_names = "age + age_bl + male")
+# m4 <- simple_multistate(ds, q, qnames, method,  cov_names = "age + age_bl + male + edu")
+# 
+
 
 # models 3 and 4 produced the following warning message:
 # Optimisation has probably not converged to the maximum likelihood - Hessian is not positive definite.
-# models <- list(
-#   "empty"  = m1, 
-#   "age_bl" = m2,
-#   "male"   = m3, 
-#   "edu"    = m4)
+models <- list(
+  "empty"  = m0,
+  "age"    = m1,
+  "age_bl" = m2,
+  "male"   = m3,
+  "edu"    = m4
+)
 
 # saveRDS(models, "./data/shared/derived/models.rds")
 models <- readRDS("./data/shared/derived/models.rds")
 
 # ---- compute-LE -------------------
-head(ds)
-ds <- ds %>% 
-  dplyr::mutate(
-    male = as.numeric(male)
-  )
 
 # ---- three-functions-of-ELECT -------------
-dta = ds; model = models$age_bl
+dta = ds; model = models$age
 # graph_LE <- function(dta, model){
   # Point-estimate life expectancies:
   sddata <- dta[dta$state%in%c(1,2,3),]
-  age0 <- 65
-  age.max <- 115
-  male_ <- 0
-  LEs <- elect(
+  age_0 <- 0
+  ageMax <- 50
+
+  LE.pnt <- elect(
     model=model, # fitted msm model
-    b.covariates=list(age=age0), # list with specified covarites values
+    b.covariates=list(age=age_0), # list with specified covarites values
     statedistdata=sddata, # data for distribution of living states
     time.scale.msm="years", # time scale in multi-state model ("years", ...)
     h=0.5, # grid parameter for integration
-    age.max=age.max, # assumed maximum age in years
-    S=0 # seed for the randon number generation
+    age.max=ageMax, # assumed maximum age in years
+    S=50 # number of simulation cycles
   )
   
   summary.elect(
-    LEs, # life expectancy estimated by elect()
+    LE.pnt, # life expectancy estimated by elect()
     probs = c(.025, .5, .975), # numeric vector of probabilities for quantiles
     digits=2, # number of decimals places in output
     print = TRUE # print toggle
