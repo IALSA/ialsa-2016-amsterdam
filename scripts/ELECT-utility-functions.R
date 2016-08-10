@@ -43,7 +43,7 @@ estimate_multistate <- function(
 # ---- msm-examination ----------------------
 examine_multistate <- function(model, digits=3){
   # Generate output:
-  cat("\n---------------------------------------\n")
+  cat("---------------------------------------")
   cat("\nModel","---"," with covariates: "); print(model$covariates, showEnv=F)
   cat("and constraints:\n"); print(model$constraint)
   cat("and fixedpars:\n"); print(model$fixedpars)
@@ -70,9 +70,32 @@ examine_multistate <- function(model, digits=3){
     "Pr>ChiSq"=pvalue
   )
   cat("\nParameter estimats and SEs:\n")
-  cat("\n---------------------------------------\n")
+  cat("---------------------------------------")
   # print(model_results, quote = FALSE)
   # print(knitr::kable(model_results))
   return(model_results)
 }
 # (a <- examine_multistate(m1))
+
+# ----- print-LE ---------------------
+print_LE_results <- function(models, covar){
+  model <- models[[covar]]
+  # examine 
+  examine_multistate(model$msm)
+  print(model$msm)
+  summary.elect(
+    model$LE, # life expectancy estimated by elect()
+    probs = c(.025, .5, .975), # numeric vector of probabilities for quantiles
+    digits=2, # number of decimals places in output
+    print = TRUE # print toggle
+  )
+  
+  plot.elect(
+    model$LE, # life expectancy estimated by elect()
+    kernel = "gaussian", #character string for smoothing kernal ("gaussian",...)
+    col = "red", # color of the curve
+    lwd = 2, # line width of the curve
+    cex.lab = 1 # magnification to be used for axis-labels
+  )
+  
+}
