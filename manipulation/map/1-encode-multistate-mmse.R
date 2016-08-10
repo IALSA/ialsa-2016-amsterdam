@@ -2,10 +2,10 @@
 #These first few lines run only when the file is run in RStudio, !!NOT when an Rmd/Rnw file calls it!!
 rm(list=ls(all=TRUE))  #Clear the variables from previous runs.
 
-# ---- load_sources ------------------------------------------------------------
+# ---- load-sources ------------------------------------------------------------
 # Call `base::source()` on any repo file that defines functions needed below.  Ideally, no real operations are performed.
 
-# ---- load_packages -----------------------------------------------------------
+# ---- load-packages -----------------------------------------------------------
 # Attach these packages so their functions don't need to be qualified: http://r-pkgs.had.co.nz/namespace.html#search-path
 library(magrittr) #Pipes
 
@@ -15,7 +15,7 @@ requireNamespace("dplyr", quietly=TRUE) #Avoid attaching dplyr, b/c its function
 requireNamespace("testit", quietly=TRUE)
 # requireNamespace("plyr", quietly=TRUE)
 
-# ---- declare_globals ---------------------------------------------------------
+# ---- declare-globals ---------------------------------------------------------
 path_input <- "./data/unshared/derived/dto.rds"
 path_output <- "data/unshared/derived/dto.rds"
 
@@ -32,7 +32,7 @@ dto[["metaData"]]
 
 
 
-# ---- tweak_data --------------------------------------------------------------
+# ---- tweak-data --------------------------------------------------------------
 ds <- dto[["unitData"]]
 
 # table(ds$fu_year, ds$dementia)
@@ -42,8 +42,11 @@ ds <- dto[["unitData"]]
 # during debuggin/testing use only a few ids, for manipulation use all
 set.seed(43)
 ids <- sample(unique(ds$id),3)
+ids <- c(33027) #,33027, 50101073, 6804844, 83001827 , 56751351, 13485298, 30597867)
+
+# ---- into-long-format -------------------------
 ds_long <- ds %>% 
-  # dplyr::filter(id %in% ids) %>%
+  # dplyr::filter(id %in% ids) %>% # turn this off when using the entire sample
   dplyr::mutate(
     age_bl    = as.numeric(age_bl),
     age_death = as.numeric(age_death), 
@@ -59,42 +62,49 @@ ds_long <- ds %>%
     "age_death",
     "age_at_visit",
     "mmse") 
-ds_long # in long format
-# d$id <- substring(d$id,1,1)
+# save to disk for direct examination
 # write.csv(d,"./data/shared/musti-state-dementia.csv")  
 
 
-d <- ds_long %>% 
-  # dplyr::select(id, male, age_at_visit, mmse, age_death ) 
-  dplyr::select(id, age_bl, male,edu, age_at_visit, mmse, age_death ) 
-# print(d[d$id %in% c(5,11),])
-str(d)
+# inspect crated data object
+ds_long %>% 
+  dplyr::filter(id %in% ids) %>% 
+  print()
+
+
+
+# ---- encode-missing-states ---------------------------
 # x <- c(NA, 5, NA, 7)
 determine_censor <- function(x, is_right_censored){
   ifelse(is_right_censored, -2,
          ifelse(is.na(x), -1, x)
   )
 }
-(N <- length(unique(ds_long$id)))
-(subjects <- as.numeric(unique(ds_long$id)))
+(N <- length(unique(ds_long$id))) # sample size
+(subjects <- as.numeric(unique(ds_long$id))) # list the ids
 
 for(i in 1:N){
+# for(i in unique(ds$id)){  # use this line for testing
   # Get the individual data:
-  (dta.i <- d[d$id==subjects[i],])
-  (dta.i <- as.data.frame(dta.i %>% dplyr::arrange(-age_at_visit)))
-  (dta.i$missed_last_wave = (cumsum(!is.na(dta.i$mmse))==0L))
-  (dta.i$presumed_alive      =  is.na(any(dta.i$age_death)))
-  (dta.i$right_censored   = dta.i$missed_last_wave & dta.i$presumed_alive)
+  (dta.i <- ds_long[ds_long$id==subjects[i],]) # select a single individual
+  # (dta.i <- ds_long[ds_long$id==6804844,]) # select a single individual # use this line for testing
+  (dta.i <- as.data.frame(dta.i %>% dplyr::arrange(-age_at_visit))) # enforce sorting
+  (dta.i$missed_last_wave = (cumsum(!is.na(dta.i$mmse))==0L)) # is the last obs missing?
+  (dta.i$presumed_alive      =  is.na(any(dta.i$age_death))) # can we presume subject alive?
+  (dta.i$right_censored   = dta.i$missed_last_wave & dta.i$presumed_alive) # right-censored?
   # dta.i$mmse_recoded     = determine_censor(dta.i$mmse, dta.i$right_censored) # use when tracing
   (dta.i$mmse     <- determine_censor(dta.i$mmse, dta.i$right_censored)) # replace in reality
   (dta.i <- as.data.frame(dta.i %>% dplyr::arrange(age_at_visit)))
   (dta.i <- dta.i %>% dplyr::select(-missed_last_wave, -right_censored ))
   # Rebuild the data:
   if(i==1){ds_miss <- dta.i}else{ds_miss <- rbind(ds_miss,dta.i)}
-  
 }
+# inspect crated data object
+ds_miss %>% 
+  dplyr::filter(id %in% ids) %>% 
+  print()
 
-
+# ---- encode-multi-states ------------------------------
 encode_multistates <- function(
   d, # data frame in long format 
   outcome_name, # measure to compute live states
@@ -108,11 +118,13 @@ encode_multistates <- function(
   (subjects <- sort(unique(d$id))) # list subject ids
   (N <- length(subjects)) # count subject ids
   # standardize names
-  colnames(d)[colnames(d)==outcome_name] <- "state"
-  colnames(d)[colnames(d)==age_name] <- "age"
+  colnames(d)[colnames(d)==outcome_name] <- "state" # ELECT requires this name
+  colnames(d)[colnames(d)==age_name] <- "age" # ELECT requires this name
+  # for(i in unique(ds$id)){  # use this line for testing
   for(i in 1:N){
     # Get the individual data: i = 1
     (dta.i <- d[d$id==subjects[i],])
+    # (dta.i <- ds_long[ds_long$id==6804844,]) # select a single individual # use this line for testing
     # Encode live states
     dta.i$state <- ifelse( 
       dta.i$state > 26, 1, ifelse( # healthy
@@ -140,7 +152,12 @@ ds_ms <- encode_multistates(
   age_death_name = "age_death",
   dead_state_value = 4
 )
-head(ds_ms)
+
+ds_ms %>% 
+  dplyr::filter(id %in% ids) %>% 
+  print()
+
+# simple frequencies of states
 table(ds_ms$state)
 # examine transition matrix
 # msm::statetable.msm(state,id,ds_ms)
