@@ -4,7 +4,10 @@ rm(list=ls(all=TRUE))  #Clear the variables from previous runs.
 
 # ---- load-sources ------------------------------------------------------------
 # Call `base::source()` on any repo file that defines functions needed below.  Ideally, no real operations are performed.
-
+source("./scripts/common-functions.R") # used in multiple reports
+source("./scripts/graph-presets.R") # fonts, colors, themes 
+source("./scripts/general-graphs.R")
+source("./scripts/specific-graphs.R")
 # ---- load-packages -----------------------------------------------------------
 # Attach these packages so their functions don't need to be qualified: http://r-pkgs.had.co.nz/namespace.html#search-path
 library(magrittr) #Pipes
@@ -31,17 +34,18 @@ dplyr::tbl_df(dto[["unitData"]])
 dto[["metaData"]]
 
 
-
 # ---- tweak-data --------------------------------------------------------------
 ds <- dto[["unitData"]]
 
 # table(ds$fu_year, ds$dementia)
 
-# ---- look-up-pattern-for-single-id --------------------------------------------------------------
+
+# ---- describe-before-encoding --------------------------------------------------------------
 # if died==1, all subsequent focal_outcome==DEAD.
 # during debuggin/testing use only a few ids, for manipulation use all
 set.seed(43)
-ids <- sample(unique(ds$id),3)
+ids <- sample(unique(ds$id),3) # randomly select a few ids
+# custom select a few ids that give different pattern of data. To be used for testing
 ids <- c(33027) #,33027, 50101073, 6804844, 83001827 , 56751351, 13485298, 30597867)
 
 # ---- into-long-format -------------------------
@@ -55,7 +59,8 @@ ds_long <- ds %>%
   ) %>% 
   dplyr::select_(
     "id",
-    # "fu_year",
+    "fu_year",
+    "died",
     "age_bl",
     "male",
     "edu",
@@ -71,7 +76,12 @@ ds_long %>%
   dplyr::filter(id %in% ids) %>% 
   print()
 
+# ---- attrition-effect ------------------------------
+t <- table(ds_long[,"fu_year"], ds_long[,"died"]); t[t==0]<-".";t
 
+
+# ----- mmmse-trajectories ----------------------
+raw_smooth_lines(ds_long, "mmse")
 
 # ---- encode-missing-states ---------------------------
 # x <- c(NA, 5, NA, 7)
@@ -157,6 +167,19 @@ ds_ms %>%
   dplyr::filter(id %in% ids) %>% 
   print()
 
+# ---- inspect-created-multistates ----------------------------------
+# compare before and after ms encoding
+view_id <- function(ds1,ds2,id){
+  cat("Before ms encoding:","\n")
+  print(ds1[ds1$id==id,])
+  cat("\nAfter ms encoding","\n")
+  print(ds2[ds2$id==id,])
+}
+# view a random person for sporadic inspections
+ids <- sample(unique(ds_miss$id),1)
+view_id(ds_miss, ds_ms, ids)
+
+# ----- transitions-matrix -----------------------------
 # simple frequencies of states
 table(ds_ms$state)
 # examine transition matrix
@@ -190,17 +213,7 @@ names(dto[["ms_mmse"]])
 ds_miss <- dto$ms_mmse$missing
 ds_ms <- dto$ms_mmse$multi
 
-# ---- inspect-created-multistates ----------------------------------
-# compare before and after ms encoding
-view_id <- function(ds1,ds2,id){
-  cat("Before ms encoding:","\n")
-  print(ds1[ds1$id==id,])
-  cat("\nAfter ms encoding","\n")
-  print(ds2[ds2$id==id,])
-}
-# view a random person for sporadic inspections
-ids <- sample(unique(ds_miss$id),1)
-view_id(ds_miss, ds_ms, ids)
+
 
 
 

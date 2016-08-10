@@ -47,11 +47,11 @@ view_id <- function(ds1,ds2,id){
 }
 # view a random person for sporadic inspections
 ids <- sample(unique(ds_miss$id),1)
-ids <- c(30597867) #, 50101073, 6804844, 83001827 , 56751351, 13485298, 56751351)
+# ids <- c(30597867) #, 50101073, 6804844, 83001827 , 56751351, 13485298, 56751351)
 view_id(ds_miss, ds_ms, ids)
 
 
-# ---- tweak-data --------------------------------------------------------------
+# ---- remove-missing-age --------------------------------------------------------------
 # remove the observation with missing age
 sum(is.na(ds_ms$age)) # count obs with missing age
 # ds_miss %>% 
@@ -79,17 +79,16 @@ ds %>% dplyr::group_by(state) %>% dplyr::summarize(count = n()) # basic frequien
 cat("\nState table:"); print(msm::statetable.msm(state,id,data=ds)) # transition frequencies
 # NOTE: -2 is a right censored value, indicating being alive but in an unknown living state.
 
-# ---- new -----------
-head(ds)
-length(unique(ds$id))
+# ---- describe-age-composition -----------
 
-(N <- length(unique(ds$id)))
-subjects <- as.numeric(unique(ds$id))
+
+(N <- length(unique(ds_clean$id)))
+subjects <- as.numeric(unique(ds_clean$id))
 # Add first observation indicator
 # this creates a new dummy variable "firstobs" with 1 for the first wave
 cat("\nFirst observation indicator is added.\n")
 offset <- rep(NA,N)
-for(i in 1:N){offset[i] <- min(which(ds$id==subjects[i]))}
+for(i in 1:N){offset[i] <- min(which(ds_clean$id==subjects[i]))}
 firstobs <- rep(0,nrow(ds))
 firstobs[offset] <- 1
 ds <- cbind(ds,firstobs=firstobs)
@@ -99,9 +98,9 @@ head(ds)
 # the age difference between timepoint for each individual
 intervals <- matrix(NA,nrow(ds),2)
 for(i in 2:nrow(ds)){
-  if(ds$id[i]==ds$id[i-1]){
-    intervals[i,1] <- ds$id[i]
-    intervals[i,2] <- ds$age[i]-ds$age[i-1]
+  if(ds_clean$id[i]==ds_clean$id[i-1]){
+    intervals[i,1] <- ds_clean$id[i]
+    intervals[i,2] <- ds_clean$age[i]-ds_clean$age[i-1]
   }
   intervals <- as.data.frame(intervals)
   colnames(intervals) <- c("id", "interval")
@@ -116,8 +115,8 @@ print(round(quantile(intervals[,2]),digits))
 
 # Info on age and time between observations:
 opar<-par(mfrow=c(1,3), mex=0.8,mar=c(5,5,3,1))
-hist(ds$age[ds$firstobs==1],col="red",xlab="Age at baseline in years",main="")
-hist(ds$age,col="blue",xlab="Age in data in years",main="")
+hist(ds_clean$age[ds_clean$firstobs==1],col="red",xlab="Age at baseline in years",main="")
+hist(ds_clean$age,col="blue",xlab="Age in data in years",main="")
 hist(intervals[,2],col="green",xlab="Time intervals in data in years",main="")
 opar<-par(mfrow=c(1,1), mex=0.8,mar=c(5,5,2,1))
 
@@ -146,7 +145,10 @@ qnames = c(
   "Severe - Mild",   # q32
   "Severe - Dead"    # q34
   )
-(Q <- rbind(c(0,q,q,q), c(q,0,q,q),c(0,q,0,q), c(0,0,0,0))) # verify structure
+(Q <- rbind(c(0,q,q,q), 
+            c(q,0,q,q),
+            c(0,q,0,q), 
+            c(0,0,0,0))) # verify structure
 
 # turn off estimation lines after the first run 
 
@@ -187,7 +189,10 @@ qnames = c(
   "Severe - Mild",   # q32
   "Severe - Dead"    # q34
 )
-(Q <- rbind(c(0,q,q,q), c(q,0,q,q),c(q,q,0,q), c(0,0,0,0))) # verify structure
+(Q <- rbind(c(0,q,q,q), 
+            c(q,0,q,q),
+            c(q,q,0,q), 
+            c(0,0,0,0))) # verify structure
 
 # turn off estimation lines after the first run 
 
