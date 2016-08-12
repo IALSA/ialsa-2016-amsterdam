@@ -1,0 +1,48 @@
+name,label,name_new,include,label_short,longitudinal
+respnr,Respondent number ,id,TRUE,Respondent number ,FALSE
+geb.dat,Birthday ,birhtdate,TRUE,Date of Birth,FALSE
+t1.dat,LSN interview date (w1) ,,,,
+t2.dat,LASA main interview date (w2) ,,,,
+t2m.dat,LASA medical interview date (w2) ,,,,
+t3.dat,LASA main/telephonic interview date (w3) ,,,,
+t3m.dat,LASA medical interview date (w3) ,,,,
+t4.dat,LASA main/telephonic interview date (w4) ,,,,
+t4m.dat,LASA medical interview date (w4) ,,,,
+t5.dat,LASA main/telephonic interview date (w5) ,,,,
+t5m.dat,LASA medical interview date (w5) ,,,,
+t6.dat,LASA main/telephonic interview date (w6) ,,,,
+t6m.dat,LASA medical interview date (w6) ,,,,
+t7.dat,LASA main/telephonic interview date (w7) ,,,,
+t7m.dat,LASA medical interview date (w7) ,,,,
+t8.dat,LASA main/telephonic interview date (w8) ,,,,
+t8m.dat,LASA medical interview date (w8) ,,,,
+aage,Age at LSN interview (w1),,,,
+adays,Age at LSN interview in days (w1),,,,
+bage,Age at LASA main interview (w2),age_at_visit_01,TRUE,Age at wave B,TRUE
+bdays,Age at LASA main interview in days (w2),,,,
+bmage,Age at LASA medical interview (w2),,,,
+bmdays,Age at LASA medical interview in days (w2),,,,
+cage,Age at LASA main/telephonic interview (w3),age_at_visit_02,TRUE,Age at wave C,TRUE
+cdays,Age at LASA main/telephonic interview in days (w3),,,,
+cmage,Age at LASA medical interview (w3),,,,
+cmdays,Age at LASA medical interview in days (w3),,,,
+dage,Age at LASA main/telephonic interview (w4),age_at_visit_03,TRUE,Age at wave D,TRUE
+ddays,Age at LASA main/telephonic interview in days (w4),,,,
+dmage,Age at LASA medical interview (w4),,,,
+dmdays,Age at LASA medical interview in days (w4),,,,
+eage,Age at LASA main interview (w5),age_at_visit_04,TRUE,Age at wave E,TRUE
+edays,Age at LASA main interview in days (w5),,,,
+emage,Age at LASA medical interview (w5),,,,
+emdays,Age at LASA medical interview in days (w5),,,,
+fage,Age at LASA main/telephonic interview (w6),age_at_visit_05,TRUE,Age at wave F,TRUE
+fdays,Age at LASA main/telephonic interview in days (w6),,,,
+fmage,Age at LASA medical interview (w6),,,,
+fmdays,Age at LASA medical interview in days (w6),,,,
+gage,Age at LASA main/telephonic interview (w7),age_at_visit_06,TRUE,Age at wave G,TRUE
+gdays,Age at LASA main/telephonic interview in days (w7),,,,
+gmage,Age at LASA medical interview (w7),,,,
+gmdays,Age at LASA medical interview in days (w7),,,,
+hage,Age at LASA main/telephonic interview (w8),age_at_visit_07,TRUE,Age at wave H,TRUE
+hdays,Age at LASA main/telephonic interview in days (w8),,,,
+hmage,Age at LASA medical interview (w8),,,,
+hmdays,Age at LASA medical interview in days (w8),,,,

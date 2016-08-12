@@ -1,0 +1,9 @@
+name,label,name_new,include,label_short,longitudinal
+respnr,NA,id,TRUE,,FALSE
+bmmsesc,MMSE score at wave B,mmse_01,TRUE,,TRUE
+cmmsesc,MMSE score at wave C,mmse_02,TRUE,,TRUE
+dmmsesc,MMSE score at wave D,mmse_03,TRUE,,TRUE
+emmsesc,MMSE score at wave E,mmse_04,TRUE,,TRUE
+fmmsesc,MMSE score at wave F,mmse_05,TRUE,,TRUE
+gmmsesc,MMSE score at wave G,mmse_06,TRUE,,TRUE
+hmmsesc,MMSE score at wave H,mmse_07,TRUE,,TRUE
