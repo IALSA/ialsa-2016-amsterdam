@@ -119,17 +119,17 @@ opar<-par(mfrow=c(1,3), mex=0.8,mar=c(5,5,3,1))
 hist(ds_clean$age[ds_clean$firstobs==1],col="red",xlab="Age at baseline in years",main="")
 hist(ds_clean$age,col="blue",xlab="Age in data in years",main="")
 hist(intervals[,2],col="green",xlab="Time intervals in data in years",main="")
- 
+
+# ---- compute-baseline-age -----------------
+i <- 13257
+for(i in unique(ds_clean$id)){
+  ds_clean[ ds_clean$id==i,"age_bl"] <- ds_clean[ds_clean$id==i & ds_clean$firstobs==1,"age_at_visit"]
+}
 
 
 # ---- estimate-msm-1 -----------------------------------------------
 # load utility functions
 source("./scripts/ELECT-utility-functions.R")
-# define function for getting a simple multistate output
-i <- 13257
-for(i in unique(ds_clean$id)){
-  ds_clean[ ds_clean$id==i,"age_bl"] <- ds_clean[ds_clean$id==i & ds_clean$firstobs==1,"age_at_visit"]
-}
 
 ds <- ds_clean %>% 
   dplyr::mutate(
