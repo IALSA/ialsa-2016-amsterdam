@@ -47,7 +47,7 @@ view_id <- function(d,id){
 }
 # view a random person for sporadic inspections
 ids <- sample(unique(ds$id),1)
-# ids <- c(13257) #
+ids <- c(13257) #
 # problematic : 13257, 16986
 view_id(ds, ids)
 
