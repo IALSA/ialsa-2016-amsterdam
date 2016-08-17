@@ -5,6 +5,7 @@
 estimate_multistate <- function(
   ds,                # data object 
   Q,                 # Q-matrix of transitions
+  # E=NULL,      # misspecification matrix
   qnames,            # names of the rows in the Q matrix
   cov_names,         # string with covariate names
   method_ = "BFGS",  # alternatively, if does not converge "Nedler-Mead"
@@ -18,6 +19,7 @@ estimate_multistate <- function(
     data          = ds, 
     center        = FALSE,
     qmatrix       = Q, 
+    # ematrix       = E,
     death         = TRUE, 
     covariates    = covariates,
     censor        = c(-1,-2), 
