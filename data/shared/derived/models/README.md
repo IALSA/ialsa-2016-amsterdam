@@ -1,0 +1,1 @@
+`./data/shared/derived/models` folder contains model objects obtained by fitting msm() and elect() calls. Typically, produced by `2-compile-models` script, which index (ending) corresponds to the version number. 
