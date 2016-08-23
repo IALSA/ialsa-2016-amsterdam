@@ -95,6 +95,7 @@ Split MMSE into categories
 
 # Descriptives
 
+The following statistics describe measure in the sample at baseline. Only the cases with at least **two datapoints** and non-missing age are selected for analysis. 
 
 ## Age
 ```{r age, echo=TRUE, results='show', message=FALSE}
