@@ -1,7 +1,7 @@
 # Specification of the fitted models
 
 # common value for all models
-q <- .1
+q <- .01
 
 # ---- model-A --------------
 
@@ -39,7 +39,7 @@ Q <- rbind( c(0, q, q, q),
 # misclassification matrix
 E <- rbind( c(0, 0, 0, 0),  
             c(0, 0, 0, 0), 
-            c(.1, 0, 0, 0),
+            c(.1,0, 0, 0),
             c(0, 0, 0, 0) )
 # transition names
 qnames = c(
