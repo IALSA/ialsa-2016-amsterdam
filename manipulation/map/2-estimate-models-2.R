@@ -186,7 +186,8 @@ mB4_edu <- estimate_multistate(ds, Q, E, qnames,cov_names = "age + age_bl + male
 models_B <- list("age"    = mB1, 
                  "age_bl" = mB2, 
                  "male"   = mB3, 
-                 "educat" = mB4) # turn of after estimation
+                 "educat" = mB4, 
+                 "edu"    = mB4_edu) # turn of after estimation
 saveRDS(models,     "./data/shared/derived/models/version-2/models_B.rds")           # turn of after estimation
 models_B <- readRDS("./data/shared/derived/models/version-2/models_B.rds")
 lapply(models_B, names)
@@ -207,7 +208,8 @@ mC4_edu <- estimate_multistate(ds, Q, E, qnames,cov_names = "age + age_bl + male
 models_B <- list("age"    = mC1, 
                  "age_bl" = mC2, 
                  "male"   = mC3, 
-                 "educat" = mC4) # turn of after estimation
+                 "educat" = mC4, 
+                 "edu"    = mC4_edu) # turn of after estimation
 saveRDS(models,     "./data/shared/derived/models/version-2/models_C.rds")           # turn of after estimation
 models_C <- readRDS("./data/shared/derived/models/version-2/models_C.rds")
 lapply(models_C, names)
@@ -229,7 +231,8 @@ mD4_edu <- estimate_multistate(ds, Q, E, qnames,cov_names = "age + age_bl + male
 models_B <- list("age"    = mD1, 
                  "age_bl" = mD2, 
                  "male"   = mD3, 
-                 "educat" = mD4) # turn of after estimation
+                 "educat" = mD4, 
+                 "edu"    = mD4_edu) # turn of after estimation
 saveRDS(models,     "./data/shared/derived/models/version-2/models_D.rds")           # turn of after estimation
 models_D <- readRDS("./data/shared/derived/models/version-2/models_D.rds")
 lapply(models_D, names)
