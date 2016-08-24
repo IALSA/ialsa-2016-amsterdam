@@ -72,7 +72,7 @@ examine_multistate <- function(model, digits=3){
     "Pr>ChiSq"=pvalue
   )
   cat("\nParameter estimats and SEs:\n")
-  cat("---------------------------------------")
+  cat("--------------------------------------- \n")
   # print(model_results, quote = FALSE)
   # print(knitr::kable(model_results))
   return(model_results)

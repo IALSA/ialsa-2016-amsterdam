@@ -146,6 +146,8 @@ ds <- ds_clean %>%
     age_bl = age_bl - 80
   )
 head(ds)
+saveRDS(ds, "./data/unshared/")
+
 
 # ---- estimate-models-A ------------------------
 # define specification matrices
