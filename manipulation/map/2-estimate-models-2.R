@@ -137,17 +137,18 @@ mspec$A
 
 # ---- prepare-for-estimation --------------------
 head(ds_clean)
-ids <- sample(unique(ds_clean$id), 200)
+set.seed(42)
+ids <- sample(unique(ds_clean$id), 100)
 ds <- ds_clean %>% 
-  # dplyr::filter(id %in% ids) %>% 
+  # dplyr::filter(id %in% ids) %>%
   dplyr::mutate(
     male = as.numeric(male),
     age    = age - 80,
     age_bl = age_bl - 80
   )
 head(ds)
-saveRDS(ds, "./data/unshared/")
-
+# saveRDS(ds, "./data/unshared/ds_small.rds")
+saveRDS(ds, "./data/unshared/ds_clean.rds")
 
 # ---- estimate-models-A ------------------------
 # define specification matrices
