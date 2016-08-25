@@ -1,6 +1,9 @@
 # ialsa-2016-amsterdam
 Multi-study and multivariate evaluation of healthy life expectancy (HLE): An IALSA workshop on multistate modeling using R . [edit me](https://github.com/IALSA/ialsa-2016-amsterdam/edit/master/README.md)
 
+## Fast links
+ - [shared dropbox folder](https://www.dropbox.com/sh/r0gj02k6yml9hxg/AADXvjxdRC3dNIsgiUUA_UNOa?dl=0) with manuscript production
+
 #### Reproducible reports
 - Follow [`./utility/reproducibility-instructions.md`](utility/reproducibility-instructions.md) to create dynamic documents linked below:
 - `./manipulation/map/`[`0-ellis-island-map.R`][ellis-island-map]  
