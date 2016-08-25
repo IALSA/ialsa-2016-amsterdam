@@ -9,7 +9,7 @@ library(msm)
 digits <- 3
 
 # Load data:
-load(file="FourStateExample.RData")
+load(file="./sandbox/four-state-example-ardo/FourStateExample.RData")
 # Transform age to prevent numerical problems with estimation:
 dta$age <- dta$age/20 
 
@@ -71,8 +71,10 @@ if(Model==1){
 }
 
 # Misclassification matrix for msm function call:
-ematrix <- rbind(c(0, 0, 0,0), c(0, 0, 0.1,0), 
-                 c(0, 0, 0,0), c(0, 0, 0,0))
+ematrix <- rbind(c(0, 0, 0  ,0), 
+                 c(0, 0, 0.1,0), 
+                 c(0, 0, 0  ,0), 
+                 c(0, 0, 0  ,0))
 
 # Fit model:
 model <- msm(state ~ age, subject = id, data = dta,
