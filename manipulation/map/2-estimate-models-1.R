@@ -82,13 +82,13 @@ cat("\nState table:"); print(msm::statetable.msm(state,id,data=ds)) # transition
 # ---- describe-age-composition -----------
 
 
-(N <- length(unique(ds_clean$id)))
-subjects <- as.numeric(unique(ds_clean$id))
+(N <- length(unique(ds$id)))
+subjects <- as.numeric(unique(ds$id))
 # Add first observation indicator
 # this creates a new dummy variable "firstobs" with 1 for the first wave
 cat("\nFirst observation indicator is added.\n")
 offset <- rep(NA,N)
-for(i in 1:N){offset[i] <- min(which(ds_clean$id==subjects[i]))}
+for(i in 1:N){offset[i] <- min(which(ds$id==subjects[i]))}
 firstobs <- rep(0,nrow(ds))
 firstobs[offset] <- 1
 ds <- cbind(ds,firstobs=firstobs)
@@ -115,8 +115,8 @@ print(round(quantile(intervals[,2]),digits))
 
 # Info on age and time between observations:
 opar<-par(mfrow=c(1,3), mex=0.8,mar=c(5,5,3,1))
-hist(ds_clean$age[ds_clean$firstobs==1],col="red",xlab="Age at baseline in years",main="")
-hist(ds_clean$age,col="blue",xlab="Age in data in years",main="")
+hist(ds$age[ds$firstobs==1],col="red",xlab="Age at baseline in years",main="")
+hist(ds$age,col="blue",xlab="Age in data in years",main="")
 hist(intervals[,2],col="green",xlab="Time intervals in data in years",main="")
 opar<-par(mfrow=c(1,1), mex=0.8,mar=c(5,5,2,1))
 
