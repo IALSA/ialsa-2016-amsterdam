@@ -6,10 +6,32 @@ base::source("./scripts/ELECT-utility-functions.R") # ELECT utility functions
 base::source("./scripts/ELECT.R")
 
 # ---- prepare-for-estimation --------------------
+
+(N <- length(unique(ds_clean$id)))
+subjects <- as.numeric(unique(ds_clean$id))
+# Add first observation indicator
+# this creates a new dummy variable "firstobs" with 1 for the first wave
+cat("\nFirst observation indicator is added.\n")
+offset <- rep(NA,N)
+for(i in 1:N){offset[i] <- min(which(ds_clean$id==subjects[i]))}
+firstobs <- rep(0,nrow(ds_clean))
+firstobs[offset] <- 1
+ds_clean <- cbind(ds_clean ,firstobs=firstobs)
+head(ds_clean)
+
+# list ideas with intermidiate missing states (ims), right censors (rs), or with both
+ids_with_ims  <- unique(ds_clean[ds_clean$state == -1, "id"]); length(ids_with_ims)
+ids_with_rs   <- unique(ds_clean[ds_clean$state == -2, "id"]); length(ids_with_rs)
+ids_with_both <- unique(ds_clean[ds_clean$state == -2 | ds_clean$state == -1, "id"]); length(ids_with_both)
+
+
 set.seed(42)
 ids <- sample(unique(ds_clean$id), 100)
 ds <- ds_clean %>% 
   # dplyr::filter(id %in% ids) %>%
+  # dplyr::filter(!id %in% ids_with_ims) %>% 
+  # dplyr::filter(!id %in% ids_with_rs) %>% 
+  dplyr::filter(!id %in% ids_with_both) %>%
   dplyr::mutate(
     male = as.numeric(male), 
     # age      = age,
@@ -21,45 +43,50 @@ ds <- ds_clean %>%
     # age    = age/20,
     # age_bl = age_bl/20
   )
+# view data object to be passed to the estimation call
 head(ds)
-
-# ---- exclude-persons -----------------------
-
-
+ds %>% dplyr::summarise(unique_ids = n_distinct(id)) # subject count
+state_freqs <- ds %>% 
+  dplyr::group_by(state) %>% 
+  dplyr::summarize(count = n()) %>%  # basic frequiencies
+  dplyr::mutate(pct = round(count/sum(count),2)) %>%  # percentages, use for starter values
+  print()
+cat("\nState table:"); print(msm::statetable.msm(state,id,data=ds)) # transition frequencies
+initprobs_ <- as.numeric(state_freqs$pct) # these will be passed as starting values
 
 # ---- msm-options -------------------
 # set estimation options 
 digits = 2
 cov_names  = "age"   # string with covariate names
 method_    = "BFGS"  # alternatively, if does not converge "Nedler-Mead" or "BFGS", “CG”, “L-BFGS-B”, “SANN”, “Brent”
-constraint = NULL    # additional model constraints
-fixedpars  = NULL    # fixed parameters
+constraint_ = NULL    # additional model constraints
+fixedpars_  = NULL       # fixed parameters
+covariates_ <- as.formula(paste0("~",cov_names)) # construct covariate list
 
 q <- .01
 # transition matrix
-Q <- rbind( c(0, q, q, q), 
+Q <- rbind( c(0, q, 0, q), 
             c(q, 0, q, q),
-            c(q, q, 0, q), 
+            c(0, q, 0, q), 
             c(0, 0, 0, 0)) 
 # misclassification matrix
-E <- rbind( c(0, 0, 0, 0),  
-            c(0, 0, 0, 0), 
-            c(0, 0, 0, 0),
-            c(0, 0, 0, 0) )
+E <- rbind( c( 0,  0,  0,  0),  
+            c( 0,  0, .1,  0), 
+            c( 0, .1,  0,  0),
+            c( 0,  0,  0,  0) )
 # transition names
 qnames = c(
   "Healthy - Mild",  # q12
-  "Healthy - Severe", # q13
+  # "Healthy - Severe", # q13
   "Healthy - Dead",  # q14
   "Mild - Healthy",  # q21  
   "Mild - Severe",   # q23
   "Mild - Dead",     # q24
-  "Severe - Healthy",# q31
+  # "Severe - Healthy",# q31
   "Severe - Mild",   # q32
   "Severe - Dead"    # q34
 )
-# construct covariate list
-covariates <- as.formula(paste0("~",cov_names))
+
 
 # ---- msm-estimation --------------------------
 # estimate model
@@ -71,17 +98,20 @@ msm_model <- msm(
   qmatrix       = Q, 
   ematrix       = E,
   death         = TRUE, 
-  covariates    = covariates,
+  covariates    = covariates_,
   censor        = c(-1,-2), 
   censor.states = list(c(1,2,3), c(1,2,3)), 
   method        = method_,
-  constraint    = constraint,
-  fixedpars     = fixedpars,
+  constraint    = constraint_,
+  fixedpars     = fixedpars_,
+  initprobs     = initprobs_,# c(.67,.16,.11,.07), # initprobs_
+  est.initprobs = TRUE,
+  obstrue       = firstobs,
   control       = list(trace=0,REPORT=1,maxit=1000,fnscale=10000)
 )
 # summary(msm_model) 
 examine_multistate(msm_model)
-msm::summary.msm(msm_model)
+# msm::summary.msm(msm_model)
 print(msm_model)
 
 # ---- LE-options ---------------------------
