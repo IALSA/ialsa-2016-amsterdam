@@ -21,30 +21,30 @@ q <- .01
 
 Q <- rbind( c(0,  q,  q,  q),
             c(q,  0,  q,  q),
-            c(q,  q,  0,  q),
+            c(0,  q,  0,  q),
             c(0,  0,  0,  0))
 
 # misclassification matrix
 E <- rbind( c(0,  0,  0,  0),  
             c(0,  0,  0,  0), 
-            c(.01,  0,  0,  0),
+            c(0,  0,  0,  0),
             c(0,  0,  0,  0) )
 # transition names
-# qnames = c(
-#   "Healthy - Mild",  # q12
-#   "Health - Severe", # q13
-#   "Healthy - Dead",  # q14
-#   "Mild - Healthy",  # q21  
-#   "Mild - Severe",   # q23
-#   "Mild - Dead",     # q24
-#   "Severe - Healthy",# q31
-#   "Severe - Mild",   # q32
-#   "Severe - Dead"    # q34
-# )
+qnames = c(
+  "Healthy - Mild",  # q12
+  "Healthy - Severe", # q13
+  "Healthy - Dead",  # q14
+  "Mild - Healthy",  # q21
+  "Mild - Severe",   # q23
+  "Mild - Dead",     # q24
+  # "Severe - Healthy",# q31
+  "Severe - Mild",   # q32
+  "Severe - Dead"    # q34
+)
 # set estimation options 
 digits = 2
 cov_names  = "age"   # string with covariate names
-method_    = "Nelder-Mead"  # alternatively, if does not converge "Nedler-Mead" or "BFGS", “CG”, “L-BFGS-B”, “SANN”, “Brent”
+method_    = "BFGS"  # alternatively, if does not converge "Nedler-Mead" or "BFGS", “CG”, “L-BFGS-B”, “SANN”, “Brent”
 constraint = NULL    # additional model constraints
 fixedpars  = NULL    # fixed parameters
 # construct covariate list
