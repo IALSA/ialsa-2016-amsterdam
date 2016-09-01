@@ -79,6 +79,39 @@ examine_multistate <- function(model, digits=3){
 }
 # (a <- examine_multistate(m1))
 
+examine_multistate_simple <- function(model, digits=3){
+  # Generate output:
+  cat("---------------------------------------")
+  cat("\nModel","---"," with covariates: "); print(model$covariates, showEnv=F)
+  cat("and constraints:\n"); print(model$constraint)
+  cat("and fixedpars:\n"); print(model$fixedpars)
+  cat("Convergence code =", model$opt$convergence,"\n")
+  minus2LL <-  model$minus2loglik
+  AIC <- minus2LL + 2*length(model$opt$par)
+  cat("\n-2loglik =", minus2LL,"\n")
+  cat("AIC =", AIC,"\n")
+  # ardo's version
+  p <- model$estimates
+  p.se <- sqrt(diag(model$covmat))
+  # Univariate Wald tests:
+  wald <- round((p/p.se)^2,digits)
+  pvalue <- round(1-pchisq((p/p.se)^2,df=1),digits)
+  # Do not test intercepts:
+  wald[1:sum(names(p)=="qbase")] <- "-"
+  pvalue[1:sum(names(p)=="qbase")] <- "-"
+  # Results to screen:
+  cat("\nParameter estimats and SEs:\n")
+  print(cbind(q=qnames,p=round(p,digits),
+              se=round(p.se,digits),"Wald ChiSq"=wald,
+              "Pr>ChiSq"=pvalue),quote=FALSE)
+  cat("\nParameter estimats and SEs:\n")
+  cat("--------------------------------------- \n")
+  # print(model_results, quote = FALSE)
+  # print(knitr::kable(model_results))
+  return(model_results)
+}
+
+
 # ----- print-LE ---------------------
 print_LE_results <- function(models, covar){
   model <- models[[covar]]
