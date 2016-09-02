@@ -12,7 +12,7 @@ estimate_multistate <- function(
   constraint = NULL, # additional model constraints
   fixedpars = NULL   # fixed parameters
 ){
-  covariates <- as.formula(paste0("~",cov_names))
+  covariates_ <- as.formula(paste0("~",cov_names))
   model <- msm(
     formula       = state ~ age, 
     subject       = id, 
@@ -21,12 +21,15 @@ estimate_multistate <- function(
     qmatrix       = Q, 
     ematrix       = E,
     death         = TRUE, 
-    covariates    = covariates,
+    covariates    = covariates_,
     censor        = c(-1,-2), 
     censor.states = list(c(1,2,3), c(1,2,3)), 
     method        = method_,
-    constraint    = constraint,
-    fixedpars     = fixedpars,
+    constraint    = constraint_,
+    fixedpars     = fixedpars_,
+    initprobs     = initprobs_,# c(.67,.16,.11,.07), # initprobs_
+    est.initprobs = TRUE,
+    # obstrue       = firstobs,
     control       = list(trace=0,REPORT=1,maxit=1000,fnscale=10000)
   )
   return(model)

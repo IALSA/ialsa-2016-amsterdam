@@ -75,8 +75,15 @@ ds_clean <- ds_ms %>%
 # ---- inspect-clean-data ------------------------------------------------
 
 ds_clean %>% dplyr::summarise(unique_ids = n_distinct(id)) # subject count
-ds_clean %>% dplyr::group_by(state) %>% dplyr::summarize(count = n()) # basic frequiencies
+sf <- ds_clean %>%  # state frequencies
+  dplyr::group_by(state) %>% 
+  dplyr::summarize(count = n()) %>%  # basic frequiencies
+  dplyr::mutate(pct = round(count/sum(count),2)) %>%  # percentages, use for starter values
+  # dplyr::filter(!state %in% c(-1,-2)) %>%
+  print()
 cat("\nState table:"); print(msm::statetable.msm(state,id,data=ds_clean)) # transition frequencies
+# these will be passed as starting values
+(initprobs_ <- as.numeric(as.data.frame(sf[!sf$state %in% c(-1,-2),"pct"])$pct))
 # NOTE: -2 is a right censored value, indicating being alive but in an unknown living state.
 
 # ---- split-education ----------------------
@@ -90,17 +97,17 @@ ds_clean$educatF <- factor(ds_clean$educat, levels = c(-1, 0, 1),
 saveRDS(ds_clean, "./data/unshared/ds_clean.rds")
 
 # ---- describe-age-composition -----------
-# (N <- length(unique(ds_clean$id)))
-# subjects <- as.numeric(unique(ds_clean$id))
-# # Add first observation indicator
-# # this creates a new dummy variable "firstobs" with 1 for the first wave
-# cat("\nFirst observation indicator is added.\n")
-# offset <- rep(NA,N)
-# for(i in 1:N){offset[i] <- min(which(ds_clean$id==subjects[i]))}
-# firstobs <- rep(0,nrow(ds_clean))
-# firstobs[offset] <- 1
-# ds_clean <- cbind(ds_clean ,firstobs=firstobs)
-# head(ds_clean)
+(N <- length(unique(ds_clean$id)))
+subjects <- as.numeric(unique(ds_clean$id))
+# Add first observation indicator
+# this creates a new dummy variable "firstobs" with 1 for the first wave
+cat("\nFirst observation indicator is added.\n")
+offset <- rep(NA,N)
+for(i in 1:N){offset[i] <- min(which(ds_clean$id==subjects[i]))}
+firstobs <- rep(0,nrow(ds_clean))
+firstobs[offset] <- 1
+ds_clean <- cbind(ds_clean ,firstobs=firstobs)
+head(ds_clean)
 # 
 # # Time intervals in data:
 # # the age difference between timepoint for each individual
@@ -152,6 +159,16 @@ head(ds)
 # saveRDS(ds, "./data/unshared/ds_small.rds")
 saveRDS(ds, "./data/unshared/ds_clean.rds")
 
+# ---- msm-options -------------------
+# set estimation options that would be common for all models
+digits = 2
+# cov_names  = "age"   # string with covariate names
+method_    = "BFGS"  # alternatively, if does not converge "Nedler-Mead" or "BFGS", “CG”, “L-BFGS-B”, “SANN”, “Brent”
+constraint_ = NULL    # additional model constraints
+fixedpars_  = NULL       # fixed parameters
+# covariates_ <- as.formula(paste0("~",cov_names)) # construct covariate list
+initprobs_ # initial probabilities, observed freqs, computed above
+
 # ---- estimate-models-A ------------------------
 # define specification matrices
 (Q      <- model_specification[["A"]][["Q"]])
@@ -168,10 +185,10 @@ mA4_edu <- estimate_multistate(ds, Q, E, qnames,cov_names = "age + age_bl + male
 models_A <- list("age"    = mA1, 
                  "age_bl" = mA2, 
                  "male"   = mA3, 
-                 "educat" = mA4, # estimated with only 200 ids
+                 "educat" = mA4, 
                  "edu"    = mA4_edu) # turn of after estimation
-saveRDS(models,     "./data/shared/derived/models/version-2/models_A.rds")           # turn of after estimation
-models_A <- readRDS("./data/shared/derived/models/version-2/models_A.rds")
+saveRDS(models_A,     "./data/shared/derived/models/version-3/models_A.rds")           # turn of after estimation
+models_A <- readRDS("./data/shared/derived/models/version-3/models_A.rds")
 lapply(models_A, names)
 
 
@@ -193,8 +210,8 @@ models_B <- list("age"    = mB1,
                  "male"   = mB3, 
                  "educat" = mB4, 
                  "edu"    = mB4_edu) # turn of after estimation
-saveRDS(models,     "./data/shared/derived/models/version-2/models_B.rds")           # turn of after estimation
-models_B <- readRDS("./data/shared/derived/models/version-2/models_B.rds")
+saveRDS(models_B,     "./data/shared/derived/models/version-3/models_B.rds")           # turn of after estimation
+models_B <- readRDS("./data/shared/derived/models/version-3/models_B.rds")
 lapply(models_B, names)
 
 # ---- estimate-models-C ------------------------
@@ -210,37 +227,15 @@ mC4 <-     estimate_multistate(ds, Q, E, qnames,cov_names = "age + age_bl + male
 mC4_edu <- estimate_multistate(ds, Q, E, qnames,cov_names = "age + age_bl + male + edu")
 
 # save models estimated by msm() in a external object for faster access in the future
-models_B <- list("age"    = mC1, 
+models_C <- list("age"    = mC1, 
                  "age_bl" = mC2, 
                  "male"   = mC3, 
                  "educat" = mC4, 
                  "edu"    = mC4_edu) # turn of after estimation
-saveRDS(models,     "./data/shared/derived/models/version-2/models_C.rds")           # turn of after estimation
-models_C <- readRDS("./data/shared/derived/models/version-2/models_C.rds")
+saveRDS(models_C,     "./data/shared/derived/models/version-3/models_C.rds")           # turn of after estimation
+models_C <- readRDS("./data/shared/derived/models/version-3/models_C.rds")
 lapply(models_C, names)
 
-
-# ---- estimate-models-D ------------------------
-# define specification matrices
-(Q      <- model_specification[["D"]][["Q"]])
-(E      <- model_specification[["D"]][["E"]])
-(qnames <- model_specification[["D"]][["qnames"]])
-# compile model objects with msm() call
-mD1 <-     estimate_multistate(ds, Q, E, qnames,cov_names = "age")
-mD2 <-     estimate_multistate(ds, Q, E, qnames,cov_names = "age + age_bl")
-mD3 <-     estimate_multistate(ds, Q, E, qnames,cov_names = "age + age_bl + male")
-mD4 <-     estimate_multistate(ds, Q, E, qnames,cov_names = "age + age_bl + male + educat")
-mD4_edu <- estimate_multistate(ds, Q, E, qnames,cov_names = "age + age_bl + male + edu")
-
-# save models estimated by msm() in a external object for faster access in the future
-models_B <- list("age"    = mD1, 
-                 "age_bl" = mD2, 
-                 "male"   = mD3, 
-                 "educat" = mD4, 
-                 "edu"    = mD4_edu) # turn of after estimation
-saveRDS(models,     "./data/shared/derived/models/version-2/models_D.rds")           # turn of after estimation
-models_D <- readRDS("./data/shared/derived/models/version-2/models_D.rds")
-lapply(models_D, names)
 
 
 
@@ -249,34 +244,34 @@ alive_states <- c(1,2,3)
 ds_alive <- ds[ds$state %in% alive_states,]
 
 age_min <- 0
-age_max <- 50
+age_max <- 30
 age_bl <- 0
 male <- 0
-edu <- 9
+edu <- 0
 
-replication_n <- 50
+replication_n <- 100
 time_scale <- "years"
 grid_par <- .5
 
 # turn off estimation lines after the first run 
 
-# for(model_ in names(models)){
-#   # determine covariate list
-#   if(model_=="age"){covar_list= list(age=age_min)}  
-#   if(model_=="age_bl"){covar_list = list(age=age_min, age_bl=age_bl)}  
-#   if(model_=="male"){covar_list = list(age=age_min, age_bl=age_bl, male=male)}  
-#   if(model_=="edu"){covar_list = list(age=age_min, age_bl=age_bl, male=male, edu=edu)}  
-#   # compute LE
-#   models[[model_]][["LE"]] <- elect(
-#     model=models[[model_]][["msm"]], # fitted msm model
-#     b.covariates=covar_list, # list with specified covarites values
-#     statedistdata=ds_alive, # data for distribution of living states
-#     time.scale.msm=time_scale, # time scale in multi-state model ("years", ...)
-#     h=grid_par, # grid parameter for integration
-#     age.max=age_max, # assumed maximum age in years
-#     S=replication_n # number of simulation cycles
-#   )
-# }
+for(model_ in names(models)){
+  # determine covariate list
+  if(model_=="age"){covar_list= list(age=age_min)}
+  if(model_=="age_bl"){covar_list = list(age=age_min, age_bl=age_bl)}
+  if(model_=="male"){covar_list = list(age=age_min, age_bl=age_bl, male=male)}
+  if(model_=="edu"){covar_list = list(age=age_min, age_bl=age_bl, male=male, edu=edu)}
+  # compute LE
+  models[[model_]][["LE"]] <- elect(
+    model=models[[model_]][["msm"]], # fitted msm model
+    b.covariates=covar_list, # list with specified covarites values
+    statedistdata=ds_alive, # data for distribution of living states
+    time.scale.msm=time_scale, # time scale in multi-state model ("years", ...)
+    h=grid_par, # grid parameter for integration
+    age.max=age_max, # assumed maximum age in years
+    S=replication_n # number of simulation cycles
+  )
+}
   
 # save models estimated by elect() in a external object for faster access in the future 
 # saveRDS(models, "./data/shared/derived/models_LE.rds")
