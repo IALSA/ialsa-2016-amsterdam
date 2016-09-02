@@ -1,12 +1,16 @@
+# ---- load-packages -------------
+library(msm)
+base::source("http://www.ucl.ac.uk/~ucakadl/ELECT/ELECT.r") # load  ELECT functions
+
 # ---- load-data ------------------
 ds_clean <- readRDS("./data/unshared/ds_clean.rds")
 head(ds_clean)
-# base::source("http://www.ucl.ac.uk/~ucakadl/ELECT/ELECT.r") # load  ELECT functions
-base::source("./scripts/ELECT-utility-functions.R") # ELECT utility functions
-base::source("./scripts/ELECT.R")
+# load object "model_specification"
+base::source("https://raw.githubusercontent.com/IALSA/ialsa-2016-amsterdam-public/master/model-specification-v3.R")
+lapply(model_specification,names)
+model_specification$A
 
 # ---- prepare-for-estimation --------------------
-
 (N <- length(unique(ds_clean$id)))
 subjects <- as.numeric(unique(ds_clean$id))
 # Add first observation indicator
@@ -24,11 +28,11 @@ ids_with_ims  <- unique(ds_clean[ds_clean$state == -1, "id"]); length(ids_with_i
 ids_with_rs   <- unique(ds_clean[ds_clean$state == -2, "id"]); length(ids_with_rs)
 ids_with_both <- unique(ds_clean[ds_clean$state == -2 | ds_clean$state == -1, "id"]); length(ids_with_both)
 
-
+# subset a random sample of individuals if needed
 set.seed(42)
 ids <- sample(unique(ds_clean$id), 100)
 ds <- ds_clean %>% 
-  # dplyr::filter(id %in% ids) %>%
+  # dplyr::filter(id %in% ids) %>% # make sample smaller if needed 
   # dplyr::filter(!id %in% ids_with_ims) %>% 
   # dplyr::filter(!id %in% ids_with_rs) %>% 
   dplyr::filter(!id %in% ids_with_both) %>%
@@ -87,10 +91,14 @@ qnames = c(
   "Severe - Dead"    # q34
 )
 
+# ---- specification-via-common-object --------------
+(Q      <- model_specification[["A"]][["Q"]])
+(E      <- model_specification[["A"]][["E"]])
+(qnames <- model_specification[["A"]][["qnames"]])
 
 # ---- msm-estimation --------------------------
 # estimate model
-msm_model <- msm(
+model <- msm(
   formula       = state ~ age, 
   subject       = id, 
   data          = ds, 
@@ -109,10 +117,18 @@ msm_model <- msm(
   # obstrue       = firstobs,
   control       = list(trace=0,REPORT=1,maxit=1000,fnscale=10000)
 )
-# summary(msm_model) 
-examine_multistate(msm_model)
-# msm::summary.msm(msm_model)
-print(msm_model)
+
+# examine multistate object
+print(model)
+# ( Alternatively just type "print(model)" )
+cat("\n-2loglik =", model$minus2loglik,"\n")
+cat("Convergence code =", model$opt$convergence,"\n")
+p    <- model$opt$par
+p.se <- sqrt(diag(solve(1/2*model$opt$hessian)))
+print(cbind(p=round(p,digits),
+            se=round(p.se,digits),"Wald ChiSq"=round((p/p.se)^2,digits),
+            "Pr>ChiSq"=round(1-pchisq((p/p.se)^2,df=1),digits)),
+      quote=FALSE)
 
 # ---- LE-options ---------------------------
 alive_states <- c(1,2,3)
@@ -122,7 +138,7 @@ age_min <- 0
 age_max <- 50 
 age_bl <- 0
 male <- 0
-edu <- 9
+edu <- 0
 
 replication_n <- 50 # keep low (50-100) during testing stage
 time_scale <- "years"
