@@ -46,14 +46,14 @@ ds <- ds_clean %>%
 # view data object to be passed to the estimation call
 head(ds)
 ds %>% dplyr::summarise(unique_ids = n_distinct(id)) # subject count
-state_freqs <- ds %>% 
+sf <- ds %>% 
   dplyr::group_by(state) %>% 
   dplyr::summarize(count = n()) %>%  # basic frequiencies
   dplyr::mutate(pct = round(count/sum(count),2)) %>%  # percentages, use for starter values
   print()
 cat("\nState table:"); print(msm::statetable.msm(state,id,data=ds)) # transition frequencies
-initprobs_ <- as.numeric(state_freqs$pct) # these will be passed as starting values
-
+# these will be passed as starting values
+(initprobs_ <- as.numeric(as.data.frame(sf[!sf$state %in% c(-1,-2),"pct"])$pct))
 # ---- msm-options -------------------
 # set estimation options 
 digits = 2
@@ -65,24 +65,24 @@ covariates_ <- as.formula(paste0("~",cov_names)) # construct covariate list
 
 q <- .01
 # transition matrix
-Q <- rbind( c(0, q, 0, q), 
+Q <- rbind( c(0, q, q, q), 
             c(q, 0, q, q),
-            c(0, q, 0, q), 
+            c(q, q, 0, q), 
             c(0, 0, 0, 0)) 
 # misclassification matrix
 E <- rbind( c( 0,  0,  0,  0),  
-            c( 0,  0, .1,  0), 
-            c( 0, .1,  0,  0),
+            c( 0,  0,  0,  0), 
+            c( 0,  0,  0,  0),
             c( 0,  0,  0,  0) )
 # transition names
 qnames = c(
   "Healthy - Mild",  # q12
-  # "Healthy - Severe", # q13
+  "Healthy - Severe", # q13
   "Healthy - Dead",  # q14
   "Mild - Healthy",  # q21  
   "Mild - Severe",   # q23
   "Mild - Dead",     # q24
-  # "Severe - Healthy",# q31
+  "Severe - Healthy",# q31
   "Severe - Mild",   # q32
   "Severe - Dead"    # q34
 )
@@ -106,7 +106,7 @@ msm_model <- msm(
   fixedpars     = fixedpars_,
   initprobs     = initprobs_,# c(.67,.16,.11,.07), # initprobs_
   est.initprobs = TRUE,
-  obstrue       = firstobs,
+  # obstrue       = firstobs,
   control       = list(trace=0,REPORT=1,maxit=1000,fnscale=10000)
 )
 # summary(msm_model) 
