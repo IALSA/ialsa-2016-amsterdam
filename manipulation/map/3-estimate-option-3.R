@@ -32,7 +32,7 @@ estimate_multistate <- function(
     method        = method_,
     constraint    = constraint_,
     fixedpars     = fixedpars_,
-    # initprobs     = initprobs_,# c(.67,.16,.11,.07), # initprobs_
+    initprobs     = initprobs_,# c(.67,.16,.11,.07), # initprobs_
     # est.initprobs = TRUE,
     control       = list(trace=0,REPORT=1,maxit=1000,fnscale=10000)
   )
