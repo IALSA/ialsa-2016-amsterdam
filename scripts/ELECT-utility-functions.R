@@ -3,14 +3,16 @@
 
 #---- msm-estimation -----------------
 estimate_multistate <- function(
-  ds,                # data object 
-  Q,                 # Q-matrix of transitions
-  E,                 # misspecification matrix
-  qnames,            # names of the rows in the Q matrix
-  cov_names,         # string with covariate names
-  method_ = "BFGS",  # alternatively, if does not converge "Nedler-Mead"
-  constraint = NULL, # additional model constraints
-  fixedpars = NULL   # fixed parameters
+   model_name 
+  ,ds                   # data object 
+  ,Q                    # Q-matrix of transitions
+  ,E                    # misspecification matrix
+  ,qnames               # names of the rows in the Q matrix
+  ,cov_names            # string with covariate names
+  # ,method  = "BFGS"     # alternatively, if does not converge "Nedler-Mead" 
+  # ,constraint = NULL    # additional model constraints
+  # ,fixedpars = NULL     # fixed parameters
+  # ,initprobs = NULL     # initial probabilities
 ){
   covariates_ <- as.formula(paste0("~",cov_names))
   model <- msm(
@@ -29,10 +31,10 @@ estimate_multistate <- function(
     fixedpars     = fixedpars_,
     initprobs     = initprobs_,# c(.67,.16,.11,.07), # initprobs_
     est.initprobs = TRUE,
-    # obstrue       = firstobs,
     control       = list(trace=0,REPORT=1,maxit=1000,fnscale=10000)
   )
   return(model)
+  saveRDS(model, paste0("./data/shared/derived/models/version-3/",model_name,".rds"))
 } 
 
 # use of the function

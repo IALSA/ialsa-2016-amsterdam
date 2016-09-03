@@ -72,19 +72,7 @@ length(remove_ids) # number of ids to remove
 ds_clean <- ds_ms %>% 
   dplyr::filter(!(id %in% remove_ids))
 # saveRDS(ds_clean, "./data/unshared/derived/ds_clean-map.rds")
-# ---- inspect-clean-data ------------------------------------------------
 
-ds_clean %>% dplyr::summarise(unique_ids = n_distinct(id)) # subject count
-sf <- ds_clean %>%  # state frequencies
-  dplyr::group_by(state) %>% 
-  dplyr::summarize(count = n()) %>%  # basic frequiencies
-  dplyr::mutate(pct = round(count/sum(count),2)) %>%  # percentages, use for starter values
-  # dplyr::filter(!state %in% c(-1,-2)) %>%
-  print()
-cat("\nState table:"); print(msm::statetable.msm(state,id,data=ds_clean)) # transition frequencies
-# these will be passed as starting values
-(initprobs_ <- as.numeric(as.data.frame(sf[!sf$state %in% c(-1,-2),"pct"])$pct))
-# NOTE: -2 is a right censored value, indicating being alive but in an unknown living state.
 
 # ---- split-education ----------------------
 ds_clean$educat <- car::Recode(ds_clean$edu,
@@ -94,9 +82,8 @@ ds_clean$educat <- car::Recode(ds_clean$edu,
 ")
 ds_clean$educatF <- factor(ds_clean$educat, levels = c(-1, 0, 1), 
                            labels = c("0-9 years", "10-11 years", ">11 years"))
-saveRDS(ds_clean, "./data/unshared/ds_clean.rds")
 
-# ---- describe-age-composition -----------
+# ---- prepare-for-estimation --------------------
 (N <- length(unique(ds_clean$id)))
 subjects <- as.numeric(unique(ds_clean$id))
 # Add first observation indicator
@@ -108,32 +95,45 @@ firstobs <- rep(0,nrow(ds_clean))
 firstobs[offset] <- 1
 ds_clean <- cbind(ds_clean ,firstobs=firstobs)
 head(ds_clean)
-# 
-# # Time intervals in data:
-# # the age difference between timepoint for each individual
-# intervals <- matrix(NA,nrow(ds_clean),2)
-# for(i in 2:nrow(ds_clean)){
-#   if(ds_clean$id[i]==ds_clean$id[i-1]){
-#     intervals[i,1] <- ds_clean$id[i]
-#     intervals[i,2] <- ds_clean$age[i]-ds_clean$age[i-1]
-#   }
-#   intervals <- as.data.frame(intervals)
-#   colnames(intervals) <- c("id", "interval")
-# }
-# head(intervals)
-# 
-# # the age difference between timepoint for each individual
-# # Remove the N NAs:
-# intervals <- intervals[!is.na(intervals[,2]),]
-# cat("\nTime intervals between observations within individuals:\n")
-# print(round(quantile(intervals[,2]),digits))
-# 
-# # Info on age and time between observations:
-# opar<-par(mfrow=c(1,3), mex=0.8,mar=c(5,5,3,1))
-# hist(ds_clean$age[ds_clean$firstobs==1],col="red",xlab="Age at baseline in years",main="")
-# hist(ds_clean$age,col="blue",xlab="Age in data in years",main="")
-# hist(intervals[,2],col="green",xlab="Time intervals in data in years",main="")
-# opar<-par(mfrow=c(1,1), mex=0.8,mar=c(5,5,2,1))
+
+# list ids with intermidiate missing states (ims), right censors (rs), or with both
+ids_with_ims  <- unique(ds_clean[ds_clean$state == -1, "id"]); length(ids_with_ims)
+ids_with_rs   <- unique(ds_clean[ds_clean$state == -2, "id"]); length(ids_with_rs)
+ids_with_both <- unique(ds_clean[ds_clean$state == -2 | ds_clean$state == -1, "id"]); length(ids_with_both)
+
+# subset a random sample of individuals if needed
+set.seed(42)
+ids <- sample(unique(ds_clean$id), 100)
+ds <- ds_clean %>% 
+  # dplyr::filter(id %in% ids) %>% # make sample smaller if needed 
+  # exclude individuals with some missing states
+  # dplyr::filter(!id %in% ids_with_ims) %>%
+  # dplyr::filter(!id %in% ids_with_rs) %>%
+  # dplyr::filter(!id %in% ids_with_both) %>%
+  dplyr::mutate(
+    male = as.numeric(male), 
+    # age      = age,
+    # age_bl   = age_bl
+    # age    = (age - 80)/20,
+    # age_bl = (age_bl - 80)/20
+    age    = (age - 75),
+    age_bl = (age_bl - 75)
+    # age    = age/20,
+    # age_bl = age_bl/20
+  )
+# view data object to be passed to the estimation call
+head(ds)
+ds %>% dplyr::summarise(unique_ids = n_distinct(id)) # subject count
+sf <- ds %>% 
+  dplyr::group_by(state) %>% 
+  dplyr::summarize(count = n()) %>%  # basic frequiencies
+  dplyr::mutate(pct = round(count/sum(count),2)) %>%  # percentages, use for starter values
+  print()
+cat("\nState table:"); print(msm::statetable.msm(state,id,data=ds)) # transition frequencies
+# these will be passed as starting values
+(initial_probabilities <- as.numeric(as.data.frame(sf[!sf$state %in% c(-1,-2),"pct"])$pct))
+# save the object to be used during estimation
+# saveRDS(ds, "./data/unshared/ds_estimation.rds")
 
 
 # ---- model-specification-object --------------------------
@@ -142,32 +142,14 @@ mspec <- model_specification
 names(mspec)
 mspec$A
 
-# ---- prepare-for-estimation --------------------
-head(ds_clean)
-set.seed(42)
-ids <- sample(unique(ds_clean$id), 100)
-ds <- ds_clean %>% 
-  # dplyr::filter(id %in% ids) %>%
-  dplyr::mutate(
-    male = as.numeric(male),
-    # age    = (age - 80)/20,
-    # age_bl = (age_bl - 80)/20
-    age    = (age - 80),
-    age_bl = (age_bl - 80)
-  )
-head(ds)
-# saveRDS(ds, "./data/unshared/ds_small.rds")
-saveRDS(ds, "./data/unshared/ds_clean.rds")
 
 # ---- msm-options -------------------
 # set estimation options that would be common for all models
-digits = 2
-# cov_names  = "age"   # string with covariate names
-method_    = "BFGS"  # alternatively, if does not converge "Nedler-Mead" or "BFGS", “CG”, “L-BFGS-B”, “SANN”, “Brent”
+# digits = 2
+method_  = "BFGS"     # alternatively, if does not converge "Nedler-Mead" 
 constraint_ = NULL    # additional model constraints
-fixedpars_  = NULL       # fixed parameters
-# covariates_ <- as.formula(paste0("~",cov_names)) # construct covariate list
-initprobs_ # initial probabilities, observed freqs, computed above
+fixedpars_ = NULL     # fixed parameters
+initprobs_ = initial_probabilities 
 
 # ---- estimate-models-A ------------------------
 # define specification matrices
@@ -175,6 +157,12 @@ initprobs_ # initial probabilities, observed freqs, computed above
 (E      <- model_specification[["A"]][["E"]])
 (qnames <- model_specification[["A"]][["qnames"]])
 # compile model objects with msm() call
+estimate_multistate(mA1, ds, Q, E, qnames,cov_names = "age")
+estimate_multistate(mA2, ds, Q, E, qnames,cov_names = "age + age_bl")
+estimate_multistate(mA3, ds, Q, E, qnames,cov_names = "age + age_bl + male")
+estimate_multistate(mA4, ds, Q, E, qnames,cov_names = "age + age_bl + male + educat")
+estimate_multistate(mA5, ds, Q, E, qnames,cov_names = "age + age_bl + male + edu")
+
 mA1 <-     estimate_multistate(ds, Q, E, qnames,cov_names = "age")
 mA2 <-     estimate_multistate(ds, Q, E, qnames,cov_names = "age + age_bl")
 mA3 <-     estimate_multistate(ds, Q, E, qnames,cov_names = "age + age_bl + male")
