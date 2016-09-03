@@ -33,3 +33,5 @@ yaml,TRUE,TRUE,,Needed for knitr and reports.
 msm,TRUE,TRUE,,
 flexsurv,TRUE,TRUE,,
 mstate,TRUE,TRUE,,
+magrittr,TRUE,TRUE,,Piping
+msm,TRUE,TRUE,,Multi-state modeling
