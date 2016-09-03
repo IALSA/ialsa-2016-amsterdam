@@ -46,15 +46,15 @@ E <- rbind( c( 0,  0,  0, 0),
 
 # transition names
 qnames = c(
-  "Healthy - Mild",  # q12
+  "Healthy - Mild",        # q12
   # "Healthy - Severe", # q13
-  "Healthy - Dead",  # q14
-  "Mild - Healthy",  # q21  
-  "Mild - Severe",   # q23
-  "Mild - Dead",     # q24
-  # "Severe - Healthy",# q31
-  # "Severe - Mild",   # q32
-  "Severe - Dead"    # q34
+  "Healthy - Dead",       # q14
+  "Mild - Healthy",        # q21  
+  "Mild - Severe",         # q23
+  "Mild - Dead",            # q24
+  # "Severe - Healthy",  # q31
+  # "Severe - Mild",      # q32
+  "Severe - Dead"         # q34
 )
 ```
 
