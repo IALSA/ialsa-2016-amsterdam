@@ -33,8 +33,8 @@ estimate_multistate <- function(
     est.initprobs = TRUE,
     control       = list(trace=0,REPORT=1,maxit=1000,fnscale=10000)
   )
-  return(model)
   saveRDS(model, paste0("./data/shared/derived/models/version-3/",model_name,".rds"))
+  return(model)
 } 
 
 # use of the function
