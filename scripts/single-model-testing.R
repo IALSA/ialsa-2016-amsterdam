@@ -35,7 +35,7 @@ ds <- ds_clean %>%
   # dplyr::filter(id %in% ids) %>% # make sample smaller if needed 
   # dplyr::filter(!id %in% ids_with_ims) %>% 
   # dplyr::filter(!id %in% ids_with_rs) %>% 
-  dplyr::filter(!id %in% ids_with_both) %>%
+  # dplyr::filter(!id %in% ids_with_both) %>%
   dplyr::mutate(
     male = as.numeric(male), 
     # age      = age,
@@ -69,55 +69,55 @@ covariates_ <- as.formula(paste0("~",cov_names)) # construct covariate list
 
 q <- .01
 # transition matrix
-Q <- rbind( c(0, q, q, q), 
+Q <- rbind( c(0, q, 0, q), 
             c(q, 0, q, q),
-            c(q, q, 0, q), 
+            c(0, q, 0, q), 
             c(0, 0, 0, 0)) 
 # misclassification matrix
-E <- rbind( c( 0,  0,  0,  0),  
-            c( 0,  0,  0,  0), 
-            c( 0,  0,  0,  0),
-            c( 0,  0,  0,  0) )
+E <- rbind( c( 0,  0,  0, 0),  
+            c( 0,  0,  0, 0), 
+            c( 0,  0,  0, 0),
+            c( 0,  0,  0, 0) )
 # transition names
 qnames = c(
   "Healthy - Mild",  # q12
-  "Healthy - Severe", # q13
+  # "Healthy - Severe", # q13
   "Healthy - Dead",  # q14
   "Mild - Healthy",  # q21  
   "Mild - Severe",   # q23
   "Mild - Dead",     # q24
-  "Severe - Healthy",# q31
+  # "Severe - Healthy",# q31
   "Severe - Mild",   # q32
   "Severe - Dead"    # q34
 )
 
 # ---- specification-via-common-object --------------
-(Q      <- model_specification[["A"]][["Q"]])
-(E      <- model_specification[["A"]][["E"]])
-(qnames <- model_specification[["A"]][["qnames"]])
+# (Q      <- model_specification[["A"]][["Q"]])
+# (E      <- model_specification[["A"]][["E"]])
+# (qnames <- model_specification[["A"]][["qnames"]])
 
 # ---- msm-estimation --------------------------
 # estimate model
 model <- msm(
-  formula       = state ~ age, 
-  subject       = id, 
-  data          = ds, 
-  center        = FALSE,
-  qmatrix       = Q, 
-  ematrix       = E,
-  death         = TRUE, 
-  covariates    = covariates_,
-  censor        = c(-1,-2), 
-  censor.states = list(c(1,2,3), c(1,2,3)), 
-  method        = method_,
-  constraint    = constraint_,
-  fixedpars     = fixedpars_,
-  initprobs     = initprobs_,# c(.67,.16,.11,.07), # initprobs_
-  est.initprobs = TRUE,
-  # obstrue       = firstobs,
-  control       = list(trace=0,REPORT=1,maxit=1000,fnscale=10000)
+  formula       = state ~ age 
+  ,subject       = id 
+  ,data          = ds 
+  ,center        = FALSE
+  ,qmatrix       = Q 
+  ,ematrix       = E
+  ,death         = TRUE 
+  ,covariates    = covariates_
+  ,censor        = c(-1,-2) 
+  ,censor.states = list(c(1,2,3), c(1,2,3)) 
+  ,method        = method_
+  ,constraint    = constraint_
+  ,fixedpars     = fixedpars_
+  ,initprobs     = initprobs_# c(.67,.16,.11,.07), # initprobs_
+  , est.initprobs = TRUE
+  # , obstrue       = firstobs
+  ,control       = list(trace=0,REPORT=1,maxit=1000,fnscale=10000)
 )
-
+ 
 # examine multistate object
 print(model)
 # ( Alternatively just type "print(model)" )
