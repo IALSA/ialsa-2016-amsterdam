@@ -157,27 +157,15 @@ initprobs_ = initial_probabilities
 (E      <- model_specification[["A"]][["E"]])
 (qnames <- model_specification[["A"]][["qnames"]])
 # compile model objects with msm() call
-estimate_multistate(mA1, ds, Q, E, qnames,cov_names = "age")
-estimate_multistate(mA2, ds, Q, E, qnames,cov_names = "age + age_bl")
-estimate_multistate(mA3, ds, Q, E, qnames,cov_names = "age + age_bl + male")
-estimate_multistate(mA4, ds, Q, E, qnames,cov_names = "age + age_bl + male + educat")
-estimate_multistate(mA5, ds, Q, E, qnames,cov_names = "age + age_bl + male + edu")
+estimate_multistate("mA1", ds, Q, E, qnames,cov_names = "age")
+estimate_multistate("mA2", ds, Q, E, qnames,cov_names = "age + age_bl")
+estimate_multistate("mA3", ds, Q, E, qnames,cov_names = "age + age_bl + male")
+estimate_multistate("mA4", ds, Q, E, qnames,cov_names = "age + age_bl + male + educat")
+estimate_multistate("mA5", ds, Q, E, qnames,cov_names = "age + age_bl + male + edu")
 
-mA1 <-     estimate_multistate(ds, Q, E, qnames,cov_names = "age")
-mA2 <-     estimate_multistate(ds, Q, E, qnames,cov_names = "age + age_bl")
-mA3 <-     estimate_multistate(ds, Q, E, qnames,cov_names = "age + age_bl + male")
-mA4 <-     estimate_multistate(ds, Q, E, qnames,cov_names = "age + age_bl + male + educat")
-mA4_edu <- estimate_multistate(ds, Q, E, qnames,cov_names = "age + age_bl + male + edu")
-
-# save models estimated by msm() in a external object for faster access in the future
-models_A <- list("age"    = mA1, 
-                 "age_bl" = mA2, 
-                 "male"   = mA3, 
-                 "educat" = mA4, 
-                 "edu"    = mA4_edu) # turn of after estimation
-saveRDS(models_A,     "./data/shared/derived/models/version-3/models_A.rds")           # turn of after estimation
-models_A <- readRDS("./data/shared/derived/models/version-3/models_A.rds")
-lapply(models_A, names)
+# saveRDS(models_A,     "./data/shared/derived/models/version-3/models_A.rds")           # turn of after estimation
+# models_A <- readRDS("./data/shared/derived/models/version-3/models_A.rds")
+# lapply(models_A, names)
 
 
 # ---- estimate-models-B ------------------------
@@ -186,21 +174,30 @@ lapply(models_A, names)
 (E      <- model_specification[["B"]][["E"]])
 (qnames <- model_specification[["B"]][["qnames"]])
 # compile model objects with msm() call
-mB1 <-     estimate_multistate(ds, Q, E, qnames,cov_names = "age")
-mB2 <-     estimate_multistate(ds, Q, E, qnames,cov_names = "age + age_bl")
-mB3 <-     estimate_multistate(ds, Q, E, qnames,cov_names = "age + age_bl + male")
-mB4 <-     estimate_multistate(ds, Q, E, qnames,cov_names = "age + age_bl + male + educat")
-mB4_edu <- estimate_multistate(ds, Q, E, qnames,cov_names = "age + age_bl + male + edu")
+estimate_multistate("mB1", ds, Q, E, qnames,cov_names = "age")
+estimate_multistate("mB2", ds, Q, E, qnames,cov_names = "age + age_bl")
+estimate_multistate("mB3", ds, Q, E, qnames,cov_names = "age + age_bl + male")
+estimate_multistate("mB4", ds, Q, E, qnames,cov_names = "age + age_bl + male + educat")
+estimate_multistate("mB5", ds, Q, E, qnames,cov_names = "age + age_bl + male + edu")
 
-# save models estimated by msm() in a external object for faster access in the future
-models_B <- list("age"    = mB1, 
-                 "age_bl" = mB2, 
-                 "male"   = mB3, 
-                 "educat" = mB4, 
-                 "edu"    = mB4_edu) # turn of after estimation
-saveRDS(models_B,     "./data/shared/derived/models/version-3/models_B.rds")           # turn of after estimation
-models_B <- readRDS("./data/shared/derived/models/version-3/models_B.rds")
-lapply(models_B, names)
+
+# ---- estimate-models-C ------------------------
+# define specification matrices
+(Q      <- model_specification[["C"]][["Q"]])
+(E      <- model_specification[["C"]][["E"]])
+(qnames <- model_specification[["C"]][["qnames"]])
+# compile model objects with msm() call
+estimate_multistate("mC1", ds, Q, E, qnames,cov_names = "age")
+estimate_multistate("mC2", ds, Q, E, qnames,cov_names = "age + age_bl")
+estimate_multistate("mC3", ds, Q, E, qnames,cov_names = "age + age_bl + male")
+estimate_multistate("mC4", ds, Q, E, qnames,cov_names = "age + age_bl + male + educat")
+estimate_multistate("mC5", ds, Q, E, qnames,cov_names = "age + age_bl + male + edu")
+
+
+
+# saveRDS(models_B,     "./data/shared/derived/models/version-3/models_B.rds")           # turn of after estimation
+# models_B <- readRDS("./data/shared/derived/models/version-3/models_B.rds")
+# lapply(models_B, names)
 
 # ---- estimate-models-C ------------------------
 # define specification matrices
