@@ -61,7 +61,7 @@ cat("\nState table:"); print(msm::statetable.msm(state,id,data=ds)) # transition
 # ---- msm-options -------------------
 # set estimation options 
 digits = 2
-cov_names  = "age"   # string with covariate names
+cov_names  = "age + age_bl"   # string with covariate names
 method_    = "BFGS"  # alternatively, if does not converge "Nedler-Mead" or "BFGS", “CG”, “L-BFGS-B”, “SANN”, “Brent”
 constraint_ = NULL    # additional model constraints
 fixedpars_  = NULL       # fixed parameters
