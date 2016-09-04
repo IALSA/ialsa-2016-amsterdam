@@ -81,7 +81,7 @@ t <- table(ds_long[,"fu_year"], ds_long[,"died"]); t[t==0]<-".";t
 
 
 # ----- mmmse-trajectories ----------------------
-raw_smooth_lines(ds_long, "mmse")
+# raw_smooth_lines(ds_long, "mmse")
 
 # ---- encode-missing-states ---------------------------
 # x <- c(NA, 5, NA, 7)
@@ -127,6 +127,7 @@ encode_multistates <- function(
   # outcome_name = "mmse";age_name = "age_at_visit";age_death_name = "age_death";dead_state_value = 4
   (subjects <- sort(unique(d$id))) # list subject ids
   (N <- length(subjects)) # count subject ids
+  d[,"raw_outcome"] <- d[,outcome_name] # create a copy
   # standardize names
   colnames(d)[colnames(d)==outcome_name] <- "state" # ELECT requires this name
   colnames(d)[colnames(d)==age_name] <- "age" # ELECT requires this name
@@ -152,6 +153,8 @@ encode_multistates <- function(
     if(i==1){dta1 <- ddta.i}else{dta1 <- rbind(dta1,ddta.i)}
   }
   dta1[,age_death_name] <- NULL
+  colnames(dta1)[colnames(dta1)=="raw_outcome"] <- outcome_name
+  dta1[dta1$state == dead_state_value,outcome_name] <- NA_real_
   return(dta1)
 }
 
