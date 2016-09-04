@@ -155,6 +155,7 @@ encode_multistates <- function(
   dta1[,age_death_name] <- NULL
   colnames(dta1)[colnames(dta1)=="raw_outcome"] <- outcome_name
   dta1[dta1$state == dead_state_value,outcome_name] <- NA_real_
+  dta1[dta1$state == dead_state_value,"fu_year"] <- NA_real_
   return(dta1)
 }
 
