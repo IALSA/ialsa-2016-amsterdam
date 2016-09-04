@@ -74,17 +74,17 @@ initprobs_ = initial_probabilities
 
 # ---- estimate-msm-models ------------------------
 # compile model objects with msm() call
-estimate_multistate("mA1", ds, Q, E, qnames,cov_names = "age")
-estimate_multistate("mA2", ds, Q, E, qnames,cov_names = "age + age_bl")
-estimate_multistate("mA3", ds, Q, E, qnames,cov_names = "age + age_bl + male")
-estimate_multistate("mA4", ds, Q, E, qnames,cov_names = "age + age_bl + male + educat")
-estimate_multistate("mA5", ds, Q, E, qnames,cov_names = "age + age_bl + male + edu")
-
+# estimate_multistate("mA1", ds, Q, E, qnames,cov_names = "age")
+# estimate_multistate("mA2", ds, Q, E, qnames,cov_names = "age + age_bl")
+# estimate_multistate("mA3", ds, Q, E, qnames,cov_names = "age + age_bl + male")
+# estimate_multistate("mA4", ds, Q, E, qnames,cov_names = "age + age_bl + male + educat")
+# estimate_multistate("mA5", ds, Q, E, qnames,cov_names = "age + age_bl + male + edu")
+# 
 
 # ---- specify-elect-options --------------------------
 alive_states <- c(1,2,3)
 ds_alive <- ds[ds$state %in% alive_states,]
-
+fixedpars <- fixedpars_
 age_min <- 0
 age_max <- 35
 age_bl <- 0
@@ -92,7 +92,7 @@ male <- 0
 educat <- 0
 edu <- 11
 
-replication_n <- 100
+replication_n <- 50
 time_scale <- "years"
 grid_par <- .5
 
@@ -105,7 +105,7 @@ models[["msm"]][["male"]]   <- readRDS(paste0(pathSaveFolder,'mA3.rds'))
 models[["msm"]][["educat"]] <- readRDS(paste0(pathSaveFolder,'mA4.rds'))
 models[["msm"]][["edu"]]    <- readRDS(paste0(pathSaveFolder,'mA5.rds'))
 
-for(model_ in names(models)){
+for(model_ in names(models[["msm"]]) ){
   # determine covariate list
   if(model_=="age"){covar_list    = list(age=age_min)}
   if(model_=="age_bl"){covar_list = list(age=age_min, age_bl=age_bl)}
@@ -113,7 +113,7 @@ for(model_ in names(models)){
   if(model_=="educat"){covar_list = list(age=age_min, age_bl=age_bl, male=male, educat=educat)}
   if(model_=="edu"){covar_list    = list(age=age_min, age_bl=age_bl, male=male, edu=edu)}
   # compute LE
-  models[[model_]][["LE"]] <- elect(
+  models[["LE"]][[model_]] <- elect(
     model          = models[["msm"]][[model_]], # fitted msm model
     b.covariates   = covar_list, # list with specified covarites values
     statedistdata  = ds_alive, # data for distribution of living states
@@ -124,7 +124,8 @@ for(model_ in names(models)){
   )
   # models[[model_]][["LE"]] <- models[["msm"]][[model_]] 
 }
-  
+# inspect created object
+lapply(models, names)
 # save models estimated by elect() in a external object for faster access in the future 
 saveRDS(models, paste0(pathSaveFolder,"models.rds")) 
 models <- readRDS(paste0(pathSaveFolder,"models.rds"))
