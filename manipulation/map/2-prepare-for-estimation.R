@@ -1,7 +1,7 @@
 # knitr::stitch_rmd(script="./manipulation/rename-classify.R", output="./manipulation/rename-classify.md")
 #These first few lines run only when the file is run in RStudio, !!NOT when an Rmd/Rnw file calls it!!
 # rm(list=ls(all=TRUE))  #Clear the variables from previous runs.
-  
+    
 # ---- load-sources ------------------------------------------------------------
 base::source("http://www.ucl.ac.uk/~ucakadl/ELECT/ELECT.r") # load  ELECT functions
 base::source("./scripts/ELECT-utility-functions.R") # ELECT utility functions
