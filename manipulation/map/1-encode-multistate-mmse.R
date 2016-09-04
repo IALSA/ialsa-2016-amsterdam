@@ -167,6 +167,21 @@ ds_ms %>%
   dplyr::filter(id %in% ids) %>% 
   print()
 
+
+# ---- add-firstobs-flag -----------------------------
+(N  <- length(unique(ds_ms$id)))
+subjects <- as.numeric(unique(ds_ms$id))
+# Add first observation indicator
+# this creates a new dummy variable "firstobs" with 1 for the first wave
+cat("\nFirst observation indicator is added.\n")
+offset <- rep(NA,N)
+for(i in 1:N){offset[i] <- min(which(ds_ms$id==subjects[i]))}
+firstobs <- rep(0,nrow(ds_ms))
+firstobs[offset] <- 1
+ds_ms <- cbind(ds_ms ,firstobs=firstobs)
+print(head(ds_ms))
+
+
 # ---- inspect-created-multistates ----------------------------------
 # compare before and after ms encoding
 view_id <- function(ds1,ds2,id){
