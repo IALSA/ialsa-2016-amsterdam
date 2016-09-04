@@ -1,6 +1,6 @@
 # this script provide some utility functions to facilitate the use of ELECT
 # note that in the current state is covers ONLY the case with 4 categories
-
+  
 #---- msm-estimation -----------------
 estimate_multistate <- function(
    model_name 

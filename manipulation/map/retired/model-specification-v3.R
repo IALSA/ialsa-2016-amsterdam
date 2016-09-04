@@ -1,5 +1,5 @@
 # Specification of the fitted models
-
+  
 # common value for all models
 q <- .01
 

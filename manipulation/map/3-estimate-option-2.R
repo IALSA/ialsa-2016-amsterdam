@@ -7,7 +7,7 @@ base::source("./manipulation/map/2-prepare-for-estimation.R") # load  ELECT func
 
 cat("\n Save fitted models here:")
 pathSaveFolder <- "./data/shared/derived/models/option-2/"
-
+  
 # ----- define-estimation-function --------------------------
 estimate_multistate <- function(
   model_name 
