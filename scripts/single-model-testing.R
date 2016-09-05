@@ -23,7 +23,7 @@ firstobs[offset] <- 1
 ds_clean <- cbind(ds_clean ,firstobs=firstobs)
 head(ds_clean)
 
-# list ideas with intermidiate missing states (ims), right censors (rs), or with both
+# list ids with intermidiate missing states (ims), right censors (rs), or with both
 ids_with_ims  <- unique(ds_clean[ds_clean$state == -1, "id"]); length(ids_with_ims)
 ids_with_rs   <- unique(ds_clean[ds_clean$state == -2, "id"]); length(ids_with_rs)
 ids_with_both <- unique(ds_clean[ds_clean$state == -2 | ds_clean$state == -1, "id"]); length(ids_with_both)
@@ -33,8 +33,9 @@ set.seed(42)
 ids <- sample(unique(ds_clean$id), 100)
 ds <- ds_clean %>% 
   # dplyr::filter(id %in% ids) %>% # make sample smaller if needed 
-  # dplyr::filter(!id %in% ids_with_ims) %>% 
-  # dplyr::filter(!id %in% ids_with_rs) %>% 
+  # exclude individuals with some missing states
+  # dplyr::filter(!id %in% ids_with_ims) %>%
+  # dplyr::filter(!id %in% ids_with_rs) %>%
   # dplyr::filter(!id %in% ids_with_both) %>%
   dplyr::mutate(
     male = as.numeric(male), 
@@ -57,25 +58,30 @@ sf <- ds %>%
   print()
 cat("\nState table:"); print(msm::statetable.msm(state,id,data=ds)) # transition frequencies
 # these will be passed as starting values
-(initprobs_ <- as.numeric(as.data.frame(sf[!sf$state %in% c(-1,-2),"pct"])$pct))
+(initial_probabilities <- as.numeric(as.data.frame(sf[!sf$state %in% c(-1,-2),"pct"])$pct))
+# save the object to be used during estimation
+saveRDS(ds, "./data/unshared/ds_estimation.rds")
 # ---- msm-options -------------------
 # set estimation options 
 digits = 2
-cov_names  = "age + age_bl"   # string with covariate names
+cov_names  = "age + age_bl +  male + educat"   # string with covariate names
 method_    = "BFGS"  # alternatively, if does not converge "Nedler-Mead" or "BFGS", “CG”, “L-BFGS-B”, “SANN”, “Brent”
 constraint_ = NULL    # additional model constraints
 fixedpars_  = NULL       # fixed parameters
+initprobs_ = initial_probabilities 
+
 covariates_ <- as.formula(paste0("~",cov_names)) # construct covariate list
 
 q <- .01
+# ---- model-A --------------
 # transition matrix
 Q <- rbind( c(0, q, 0, q), 
             c(q, 0, q, q),
-            c(0, q, 0, q), 
+            c(0, 0, 0, q), 
             c(0, 0, 0, 0)) 
 # misclassification matrix
 E <- rbind( c( 0,  0,  0, 0),  
-            c( 0,  0,  0, 0), 
+            c( 0,  0, .1, 0), 
             c( 0,  0,  0, 0),
             c( 0,  0,  0, 0) )
 # transition names
@@ -87,10 +93,9 @@ qnames = c(
   "Mild - Severe",   # q23
   "Mild - Dead",     # q24
   # "Severe - Healthy",# q31
-  "Severe - Mild",   # q32
+  # "Severe - Mild",   # q32
   "Severe - Dead"    # q34
 )
-
 # ---- specification-via-common-object --------------
 # (Q      <- model_specification[["A"]][["Q"]])
 # (E      <- model_specification[["A"]][["E"]])
@@ -107,8 +112,8 @@ model <- msm(
   ,ematrix       = E
   ,death         = TRUE 
   ,covariates    = covariates_
-  ,censor        = c(-1,-2) 
-  ,censor.states = list(c(1,2,3), c(1,2,3)) 
+  ,censor        = c(-1,-2)
+  ,censor.states = list(c(1,2,3), c(1,2,3))
   ,method        = method_
   ,constraint    = constraint_
   ,fixedpars     = fixedpars_
@@ -148,7 +153,7 @@ covar_list <- list(age=age_min)
 
 # ---- LE-estimation ----------------------------
 LE <- elect(
-  model          = msm_model,    # fitted msm model
+  model          = model,    # fitted msm model
   b.covariates   = covar_list,   # list with specified covarites values
   statedistdata  = ds_alive,     # data for distribution of living states
   time.scale.msm = time_scale,   # time scale in multi-state model ("years", ...)
@@ -172,5 +177,7 @@ plot.elect(
   lwd = 2, # line width of the curve
   cex.lab = 1 # magnification to be used for axis-labels
 )
+
+
 
 
