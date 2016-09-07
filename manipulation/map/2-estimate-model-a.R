@@ -305,7 +305,7 @@ initprobs_ = initial_probabilities
 # turn this chunk OFF when printing the report
 # compile model objects with msm() call
 # each model will be saved in the specified folder, namely pathSaveFolder
-(Q_crude <- get_crude_Q(ds, Q, "age"))
+# (Q_crude <- get_crude_Q(ds, Q, "age"))
 # estimate_multistate("mA1", ds, Q_crude, E, qnames,cov_names = "age")
 # (Q_crude <- get_crude_Q(ds, Q, "age +  age_bl"))
 # estimate_multistate("mA2", ds, Q_crude, E, qnames,cov_names = "age + age_bl")
@@ -358,7 +358,6 @@ grid_par <- .5
 #     age.max        = age_max, # assumed maximum age in years
 #     S              = replication_n # number of simulation cycles
 #   )
-#   # models[[model_]][["LE"]] <- models[["msm"]][[model_]]
 # }
 # #save models estimated by elect() in a external object for faster access in the future
 # saveRDS(models, paste0(pathSaveFolder,"models.rds"))
