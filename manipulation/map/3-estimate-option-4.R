@@ -5,18 +5,18 @@ rm(list=ls(all=TRUE))  #Clear the variables from previous runs.
 base::source("http://www.ucl.ac.uk/~ucakadl/ELECT/ELECT.r") # load  ELECT functions
 base::source("./scripts/ELECT-utility-functions.R") # ELECT utility functions
 # ---- load-packages -----------------------------------------------------------
-# Attach these packages so their functions don't need to be qualified: http://r-pkgs.had.co.nz/namespace.html#search-path
 library(magrittr) #Pipes
 library(msm)
-# Verify these packages are available on the machine, but their functions need to be qualified: http://r-pkgs.had.co.nz/namespace.html#search-path
 requireNamespace("ggplot2", quietly=TRUE)
-requireNamespace("dplyr", quietly=TRUE) #Avoid attaching dplyr, b/c its function names conflict with a lot of packages (esp base, stats, and plyr).
+requireNamespace("dplyr", quietly=TRUE) 
 requireNamespace("testit", quietly=TRUE)
-# requireNamespace("plyr", quietly=TRUE)
 
 # ---- declare-globals ---------------------------------------------------------
-cat("\n Save fitted models here : \n")
 pathSaveFolder <- "./data/shared/derived/models/option-4/"
+digits = 2
+cat("\n Save fitted models here : \n")
+print(pathSaveFolder)
+
 
 # ---- load-data ---------------------------------------------------------------
 # first, the script `0-ellis-island.R` imports and cleans the raw data
@@ -122,7 +122,8 @@ for(i in 2:nrow(ds_clean)){
   intervals <- as.data.frame(intervals)
   colnames(intervals) <- c("id", "interval")
 }
-# head(intervals)
+cat("\n Minimum interval length : ",min(intervals, na.rm=T)) 
+cat("\n Maximum interval length : ", max(intervals, na.rm=T))
 # the age difference between timepoint for each individual
 intervals <- intervals[!is.na(intervals[,2]),] # Remove NAs:
 cat("\nTime intervals between observations within individuals:\n")
@@ -156,8 +157,8 @@ ds <- ds_clean %>%
   # dplyr::filter(!id %in% ids_with_rc) %>%
   dplyr::mutate(
     male = as.numeric(male), 
-    age    = (age - 75),
-    age_bl = (age_bl - 75)
+    age    = (age - 75), # centering
+    age_bl = (age_bl - 75) # centering
 ) %>% 
   dplyr::select(id, age_bl,male, edu, educat, educatF,firstobs, fu_year, age, state)
 # view data object to be passed to the estimation call
@@ -165,7 +166,7 @@ set.seed(42)
 ids <- sample(unique(ds$id), 1)
 ds %>% dplyr::filter(id %in% ids)
 cat("\n Subject count : ",length(unique(ds$id)),"\n")
-cat("\n Frequency of states\n")
+cat("\n Frequency of states at baseline\n")
 sf <- ds %>% 
   dplyr::filter(firstobs==TRUE) %>% 
   dplyr::group_by(state) %>% 
@@ -175,8 +176,8 @@ sf <- ds %>%
 cat("\nState table: \n") 
 print(msm::statetable.msm(state,id,data=ds)) # transition frequencies
 # these will be passed as starting values
-(initial_probabilities <- as.numeric(as.data.frame(sf[!sf$state %in% c(-1,-2),"pct"])$pct)) 
-(initial_probabilities <- c(initial_probabilities,0)) # no death state at first observation
+initial_probabilities <- as.numeric(as.data.frame(sf[!sf$state %in% c(-1,-2),"pct"])$pct) 
+initial_probabilities <- c(initial_probabilities,0) # no death state at first observation
 cat('\n The inital values for estimation : ', initial_probabilities)
 # save the object to be used during estimation
 saveRDS(ds, "./data/unshared/ds_estimation.rds")
@@ -214,6 +215,19 @@ estimate_multistate <- function(
   saveRDS(model, paste0(pathSaveFolder,model_name,".rds"))
   return(model)
 } 
+
+msm_summary <- function(model){
+cat("\n-2loglik =", model$minus2loglik,"\n")
+cat("Convergence code =", model$opt$convergence,"\n")
+p    <- model$opt$par
+p.se <- sqrt(diag(solve(1/2*model$opt$hessian)))
+print(cbind(p=round(p,digits),
+            se=round(p.se,digits),"Wald ChiSq"=round((p/p.se)^2,digits),
+            "Pr>ChiSq"=round(1-pchisq((p/p.se)^2,df=1),digits)),
+      quote=FALSE)
+}
+
+
 
 # ---- specify-model --------------------------
 q <- .01
@@ -308,11 +322,6 @@ grid_par <- .5
 models <- readRDS(paste0(pathSaveFolder,"models.rds"))
 # inspect created object
 lapply(models, names)
-
-
-
-
-
 
 
 
