@@ -1,5 +1,5 @@
 ---
-title: 'Model B : Estimation Results'
+title: 'Model A : Estimation Results'
 output:
   html_document:
     css: ~/GitHub/ialsa-2016-amsterdam/libs/css/sidebar.css
@@ -44,10 +44,10 @@ opts_chunk$set(
 echoChunks <- TRUE
 options(width=120) #So the output is 50% wider than the default.
 # connect to the file with the underlying R script  
-read_chunk("./manipulation/map/2-estimate-model-b.R") 
+read_chunk("./manipulation/map/2-estimate-model-a.R") 
 ```
 
-Estimation results of **Model B**, specified by the following input:
+Estimation results of **Model A**, specified by the following input:
 ```{r specify-model, echo=T, results='show', message=FALSE}
 ```
 

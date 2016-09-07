@@ -1,4 +1,4 @@
-# Model B : Estimation Results
+# Model A : Estimation Results
 
 <!-- These two chunks should be added in the beginning of every .Rmd that you want to source an .R script -->
 <!--  The 1st mandatory chunck  -->
@@ -9,18 +9,18 @@
 <!-- Set the report-wide options, and point to the external code file. -->
 
 
-Estimation results of **Model B**, specified by the following input:
+Estimation results of **Model A**, specified by the following input:
 
 ```r
 q <- .01
 # transition matrix
 Q <- rbind( c(0, q, 0, q), 
             c(q, 0, q, q),
-            c(0, 0, 0, q), 
+            c(0, q, 0, q), 
             c(0, 0, 0, 0)) 
 # misclassification matrix
 E <- rbind( c( 0,  0,  0, 0),  
-            c( 0,  0, .1, 0), 
+            c( 0,  0,  0, 0), 
             c( 0,  0,  0, 0),
             c( 0,  0,  0, 0) )
 # transition names
@@ -32,7 +32,7 @@ qnames = c(
   "Mild - Severe",   # q23
   "Mild - Dead",     # q24
   # "Severe - Healthy",# q31
-  # "Severe - Mild",   # q32
+  "Severe - Mild",   # q32
   "Severe - Dead"    # q34
 )
 ```
@@ -65,7 +65,7 @@ requireNamespace("testit", quietly=TRUE)
 ```
 
 ```
-[1] "./data/shared/derived/models/model-b/"
+[1] "./data/shared/derived/models/model-a/"
 ```
 
 # Load data
@@ -693,11 +693,11 @@ q <- .01
 # transition matrix
 Q <- rbind( c(0, q, 0, q), 
             c(q, 0, q, q),
-            c(0, 0, 0, q), 
+            c(0, q, 0, q), 
             c(0, 0, 0, 0)) 
 # misclassification matrix
 E <- rbind( c( 0,  0,  0, 0),  
-            c( 0,  0, .1, 0), 
+            c( 0,  0,  0, 0), 
             c( 0,  0,  0, 0),
             c( 0,  0,  0, 0) )
 # transition names
@@ -709,7 +709,7 @@ qnames = c(
   "Mild - Severe",   # q23
   "Mild - Dead",     # q24
   # "Severe - Healthy",# q31
-  # "Severe - Mild",   # q32
+  "Severe - Mild",   # q32
   "Severe - Dead"    # q34
 )
 ```
@@ -733,31 +733,31 @@ initprobs_ = initial_probabilities
 ```
 
 ```
-           [,1]       [,2]       [,3]       [,4]
-[1,] -0.1569916  0.1141470  0.0000000 0.04284465
-[2,]  0.3504402 -0.6212645  0.1696731 0.10115125
-[3,]  0.0000000  0.0000000 -0.2434208 0.24342081
-[4,]  0.0000000  0.0000000  0.0000000 0.00000000
+           [,1]        [,2]       [,3]       [,4]
+[1,] -0.1569916  0.11414700  0.0000000 0.04284465
+[2,]  0.3504402 -0.62126448  0.1696731 0.10115125
+[3,]  0.0000000  0.09542096 -0.3388418 0.24342081
+[4,]  0.0000000  0.00000000  0.0000000 0.00000000
 ```
 
 ```r
-# estimate_multistate("mB1", ds, Q_crude, E, qnames,cov_names = "age")
+# estimate_multistate("mA1", ds, Q_crude, E, qnames,cov_names = "age")
 # (Q_crude <- get_crude_Q(ds, Q, "age +  age_bl"))
-# estimate_multistate("mB2", ds, Q_crude, E, qnames,cov_names = "age + age_bl")
+# estimate_multistate("mA2", ds, Q_crude, E, qnames,cov_names = "age + age_bl")
 # (Q_crude <- get_crude_Q(ds, Q, "age +  age_bl + male"))
-# estimate_multistate("mB3", ds, Q_crude, E, qnames,cov_names = "age + age_bl + male")
+# estimate_multistate("mA3", ds, Q_crude, E, qnames,cov_names = "age + age_bl + male")
 # (Q_crude <- get_crude_Q(ds, Q, "age +  age_bl + male + educat"))
-# estimate_multistate("mB4", ds, Q_crude, E, qnames,cov_names = "age + age_bl + male + educat")
+# estimate_multistate("mA4", ds, Q_crude, E, qnames,cov_names = "age + age_bl + male + educat")
 ```
 
 
 ```r
 # assemble the list object with the results of msm estimation
 models <- list()
-models[["age"]][["msm"]]    <- readRDS(paste0(pathSaveFolder,'mB1.rds'))
-models[["age_bl"]][["msm"]] <- readRDS(paste0(pathSaveFolder,'mB2.rds'))
-models[["male"]][["msm"]]   <- readRDS(paste0(pathSaveFolder,'mB3.rds'))
-models[["educat"]][["msm"]] <- readRDS(paste0(pathSaveFolder,'mB4.rds'))
+models[["age"]][["msm"]]    <- readRDS(paste0(pathSaveFolder,'mA1.rds'))
+models[["age_bl"]][["msm"]] <- readRDS(paste0(pathSaveFolder,'mA2.rds'))
+models[["male"]][["msm"]]   <- readRDS(paste0(pathSaveFolder,'mA3.rds'))
+models[["educat"]][["msm"]] <- readRDS(paste0(pathSaveFolder,'mA4.rds'))
 ```
 
 ## `elect` options
@@ -819,9 +819,6 @@ $male
 
 $educat
 [1] "msm" "LE" 
-
-$edu
-[1] "msm" "LE" 
 ```
 
 
@@ -838,24 +835,23 @@ msm_summary(model$msm)
 
 ```
 
--2loglik = 15059.61 
+-2loglik = 12957.91 
 Convergence code = 0 
           p   se Wald ChiSq Pr>ChiSq
-qbase -2.12 0.07     865.97     0.00
-qbase -4.13 0.17     558.14     0.00
-qbase -0.29 0.08      12.28     0.00
-qbase -2.19 0.15     199.54     0.00
-qbase -3.06 0.35      78.06     0.00
-qbase -2.12 0.18     134.20     0.00
-qcov   0.08 0.01     160.84     0.00
-qcov   0.08 0.01      31.93     0.00
-qcov  -0.02 0.01       7.44     0.01
-qcov   0.05 0.01      23.01     0.00
-qcov   0.06 0.02       6.34     0.01
-qcov   0.07 0.01      33.05     0.00
-p     -2.15 0.09     589.75     0.00
-initp -1.33 0.06     433.56     0.00
-initp -2.85 0.13     480.86     0.00
+qbase -2.09 0.07     809.86     0.00
+qbase -4.11 0.17     571.54     0.00
+qbase -0.15 0.08       3.35     0.07
+qbase -1.44 0.12     144.96     0.00
+qbase -3.21 0.42      59.32     0.00
+qbase -1.72 0.19      84.83     0.00
+qbase -2.16 0.18     148.85     0.00
+qcov   0.08 0.01     153.88     0.00
+qcov   0.08 0.01      30.50     0.00
+qcov  -0.02 0.01       5.85     0.02
+qcov   0.04 0.01      20.34     0.00
+qcov   0.07 0.03       5.76     0.02
+qcov  -0.01 0.01       0.47     0.49
+qcov   0.06 0.01      32.95     0.00
 ```
 
 ### solution
@@ -874,40 +870,18 @@ Baselines are with covariates set to 0
 
 Transition intensities with hazard ratios for each covariate
                   Baseline                     age                   
-State 1 - State 1 -0.13609 (-0.15443,-0.11992)                       
-State 1 - State 2  0.11996 ( 0.10416, 0.13816) 1.0814 (1.0684,1.0946)
-State 1 - State 4  0.01613 ( 0.01145, 0.02271) 1.0869 (1.0559,1.1187)
-State 2 - State 1  0.74949 ( 0.63785, 0.88065) 0.9802 (0.9662,0.9944)
-State 2 - State 2 -0.90846 (-1.04359,-0.79082)                       
-State 2 - State 3  0.11212 ( 0.08276, 0.15189) 1.0560 (1.0328,1.0798)
-State 2 - State 4  0.04685 ( 0.02376, 0.09239) 1.0615 (1.0133,1.1119)
-State 3 - State 3 -0.11946 (-0.17114,-0.08339)                       
-State 3 - State 4  0.11946 ( 0.08339, 0.17114) 1.0674 (1.0439,1.0914)
-```
+State 1 - State 1 -0.13968 (-0.15896,-0.12274)                       
+State 1 - State 2  0.12330 ( 0.10675, 0.14242) 1.0814 (1.0681,1.0949)
+State 1 - State 4  0.01638 ( 0.01169, 0.02294) 1.0845 (1.0537,1.1161)
+State 2 - State 1  0.85673 ( 0.72591, 1.01113) 0.9819 (0.9674,0.9965)
+State 2 - State 2 -1.13455 (-1.29911,-0.99084)                       
+State 2 - State 3  0.23763 ( 0.18806, 0.30026) 1.0419 (1.0235,1.0607)
+State 2 - State 4  0.04019 ( 0.01774, 0.09105) 1.0695 (1.0124,1.1298)
+State 3 - State 2  0.17967 ( 0.12469, 0.25889) 0.9903 (0.9629,1.0184)
+State 3 - State 3 -0.29459 (-0.38071,-0.22795)                       
+State 3 - State 4  0.11492 ( 0.08118, 0.16269) 1.0658 (1.0429,1.0893)
 
-```
-Warning in res[plabs == "pbase"][unique(states[plabs == "p"])] <- 1/(1 + : number of items to replace is not a multiple
-of replacement length
-
-Warning in res[plabs == "pbase"][unique(states[plabs == "p"])] <- 1/(1 + : number of items to replace is not a multiple
-of replacement length
-```
-
-```
-
-Misclassification probabilities
-                      Baseline               
-Obs State 2 | State 2 0                      
-Obs State 3 | State 2 0.1041 (0.08898,0.1215)
-
-Initial state occupancy probabilities
-          Estimate        LCL        UCL
-State 1 0.75681606 0.73449835 0.77726093
-State 2 0.19930412 0.17966161 0.22057570
-State 3 0.04387982 0.03430043 0.05598259
-State 4 0.00000000 0.00000000 0.00000000
-
--2 * log-likelihood:  15059.61 
+-2 * log-likelihood:  12957.91 
 [Note, to obtain old print format, use "printold.msm"]
 ```
 
@@ -937,19 +911,19 @@ Life expectancies:Using simulation with  1000 replications
 
 Point estimates, and mean, SEs, and quantiles from simulation:
       pnt    mn   se 0.025q  0.5q 0.975q
-e11  9.26  9.23 0.22   8.78  9.24   9.64
-e12  2.33  2.31 0.10   2.12  2.30   2.49
-e13  1.58  1.57 0.10   1.38  1.57   1.77
-e21  7.23  7.20 0.30   6.55  7.21   7.73
-e22  2.74  2.71 0.13   2.45  2.71   2.95
-e23  2.00  1.99 0.15   1.71  1.99   2.30
-e31  0.00  0.00 0.00   0.00  0.00   0.00
-e32  0.00  0.00 0.00   0.00  0.00   0.00
-e33  5.75  5.76 0.62   4.62  5.75   6.98
-e.1  8.67  8.64 0.21   8.21  8.65   9.04
-e.2  2.27  2.25 0.09   2.07  2.24   2.44
-e.3  1.79  1.79 0.11   1.57  1.79   2.01
-e   12.73 12.68 0.27  12.16 12.68  13.18
+e11  9.27  9.24 0.21   8.83  9.23   9.65
+e12  2.12  2.10 0.08   1.95  2.10   2.28
+e13  1.81  1.80 0.10   1.61  1.80   2.01
+e21  7.37  7.32 0.29   6.76  7.34   7.89
+e22  2.50  2.49 0.11   2.28  2.48   2.71
+e23  2.25  2.24 0.14   1.98  2.24   2.54
+e31  3.30  3.30 0.39   2.62  3.28   4.09
+e32  1.42  1.42 0.16   1.11  1.41   1.75
+e33  4.14  4.14 0.32   3.51  4.14   4.79
+e.1  8.83  8.80 0.21   8.40  8.79   9.21
+e.2  2.13  2.11 0.08   1.95  2.11   2.29
+e.3  1.95  1.94 0.11   1.74  1.94   2.16
+e   12.91 12.85 0.27  12.31 12.85  13.38
 -----------------------------
 ```
 
@@ -979,30 +953,30 @@ msm_summary(model$msm)
 
 ```
 
--2loglik = 15026.84 
+-2loglik = 12897.55 
 Convergence code = 0 
           p   se Wald ChiSq Pr>ChiSq
-qbase -2.02 0.08     679.18     0.00
-qbase -4.25 0.20     447.08     0.00
-qbase -0.19 0.09       4.94     0.03
-qbase -2.25 0.16     196.77     0.00
-qbase -3.10 0.34      81.39     0.00
-qbase -2.22 0.19     132.69     0.00
-qcov   0.04 0.01       6.96     0.01
-qcov   0.12 0.03      13.74     0.00
-qcov  -0.07 0.02      16.64     0.00
-qcov   0.08 0.02      12.07     0.00
-qcov   0.11 0.04       6.46     0.01
-qcov   0.09 0.02      20.14     0.00
-qcov   0.05 0.01      13.09     0.00
-qcov  -0.04 0.03       1.47     0.23
-qcov   0.06 0.02      10.64     0.00
-qcov  -0.03 0.02       1.49     0.22
-qcov  -0.07 0.05       2.30     0.13
-qcov  -0.04 0.02       2.65     0.10
-p     -2.15 0.09     588.84     0.00
-initp -1.33 0.06     433.67     0.00
-initp -2.83 0.13     487.60     0.00
+qbase -1.99 0.08     636.11     0.00
+qbase -4.25 0.20     449.40     0.00
+qbase -0.05 0.09       0.32     0.57
+qbase -1.40 0.12     128.95     0.00
+qbase -3.23 0.41      61.63     0.00
+qbase -1.35 0.20      45.32     0.00
+qbase -2.29 0.19     152.10     0.00
+qcov   0.03 0.01       6.02     0.01
+qcov   0.12 0.03      14.03     0.00
+qcov  -0.07 0.02      18.23     0.00
+qcov   0.03 0.02       2.20     0.14
+qcov   0.11 0.05       4.65     0.03
+qcov  -0.16 0.04      19.83     0.00
+qcov   0.10 0.02      26.12     0.00
+qcov   0.05 0.01      13.85     0.00
+qcov  -0.04 0.03       1.72     0.19
+qcov   0.07 0.02      12.95     0.00
+qcov   0.02 0.02       0.64     0.43
+qcov  -0.06 0.06       1.18     0.28
+qcov   0.18 0.04      22.02     0.00
+qcov  -0.05 0.02       5.20     0.02
 ```
 
 ### solution
@@ -1020,41 +994,19 @@ Maximum likelihood estimates
 Baselines are with covariates set to 0
 
 Transition intensities with hazard ratios for each covariate
-                  Baseline                      age                    age_bl               
-State 1 - State 1 -0.14696 (-0.168443,-0.12821)                                             
-State 1 - State 2  0.13272 ( 0.114020, 0.15449) 1.0361 (1.0092,1.0638) 1.0519 (1.0234,1.081)
-State 1 - State 4  0.01423 ( 0.009598, 0.02111) 1.1269 (1.0579,1.2004) 0.9605 (0.8999,1.025)
-State 2 - State 1  0.82371 ( 0.694275, 0.97728) 0.9317 (0.9006,0.9639) 1.0628 (1.0246,1.102)
-State 2 - State 2 -0.97424 (-1.130972,-0.83923)                                             
-State 2 - State 3  0.10552 ( 0.077071, 0.14448) 1.0812 (1.0346,1.1299) 0.9720 (0.9287,1.017)
-State 2 - State 4  0.04500 ( 0.022944, 0.08827) 1.1185 (1.0260,1.2194) 0.9332 (0.8534,1.020)
-State 3 - State 3 -0.10897 (-0.158895,-0.07473)                                             
-State 3 - State 4  0.10897 ( 0.074732, 0.15889) 1.0985 (1.0544,1.1445) 0.9652 (0.9249,1.007)
-```
+                  Baseline                      age                    age_bl                
+State 1 - State 1 -0.15093 (-0.173499,-0.13130)                                              
+State 1 - State 2  0.13664 ( 0.117059, 0.15950) 1.0341 (1.0068,1.0622) 1.0545 (1.0254,1.0843)
+State 1 - State 4  0.01429 ( 0.009649, 0.02117) 1.1286 (1.0594,1.2024) 0.9570 (0.8961,1.0220)
+State 2 - State 1  0.95105 ( 0.798785, 1.13233) 0.9280 (0.8967,0.9604) 1.0706 (1.0316,1.1112)
+State 2 - State 2 -1.23614 (-1.427789,-1.07022)                                              
+State 2 - State 3  0.24552 ( 0.192670, 0.31286) 1.0280 (0.9911,1.0663) 1.0158 (0.9774,1.0559)
+State 2 - State 4  0.03958 ( 0.017674, 0.08864) 1.1182 (1.0102,1.2378) 0.9418 (0.8454,1.0492)
+State 3 - State 2  0.25832 ( 0.174191, 0.38309) 0.8504 (0.7918,0.9133) 1.1954 (1.1095,1.2880)
+State 3 - State 3 -0.35976 (-0.484268,-0.26727)                                              
+State 3 - State 4  0.10144 ( 0.070513, 0.14593) 1.1084 (1.0655,1.1530) 0.9532 (0.9146,0.9933)
 
-```
-Warning in res[plabs == "pbase"][unique(states[plabs == "p"])] <- 1/(1 + : number of items to replace is not a multiple
-of replacement length
-
-Warning in res[plabs == "pbase"][unique(states[plabs == "p"])] <- 1/(1 + : number of items to replace is not a multiple
-of replacement length
-```
-
-```
-
-Misclassification probabilities
-                      Baseline               
-Obs State 2 | State 2 0                      
-Obs State 3 | State 2 0.1041 (0.08896,0.1215)
-
-Initial state occupancy probabilities
-          Estimate        LCL        UCL
-State 1 0.75610249 0.73399586 0.77561052
-State 2 0.19930454 0.18017069 0.22017770
-State 3 0.04459297 0.03486444 0.05662713
-State 4 0.00000000 0.00000000 0.00000000
-
--2 * log-likelihood:  15026.84 
+-2 * log-likelihood:  12897.55 
 [Note, to obtain old print format, use "printold.msm"]
 ```
 
@@ -1084,19 +1036,19 @@ Life expectancies:Using simulation with  1000 replications
 
 Point estimates, and mean, SEs, and quantiles from simulation:
       pnt    mn   se 0.025q  0.5q 0.975q
-e11  8.87  8.83 0.32   8.23  8.81   9.50
-e12  1.83  1.80 0.14   1.55  1.79   2.09
-e13  1.17  1.16 0.18   0.87  1.15   1.56
-e21  7.03  6.98 0.35   6.34  6.97   7.76
-e22  2.29  2.25 0.14   1.99  2.25   2.53
-e23  1.58  1.57 0.20   1.22  1.56   2.04
-e31  0.00  0.00 0.00   0.00  0.00   0.00
-e32  0.00  0.00 0.00   0.00  0.00   0.00
-e33  5.58  5.58 0.55   4.54  5.58   6.69
-e.1  8.32  8.28 0.31   7.71  8.26   8.92
-e.2  1.80  1.77 0.13   1.53  1.76   2.04
-e.3  1.39  1.39 0.18   1.08  1.38   1.79
-e   11.51 11.43 0.37  10.75 11.43  12.18
+e11  8.79  8.72 0.33   8.13  8.73   9.34
+e12  1.67  1.64 0.14   1.40  1.64   1.93
+e13  1.33  1.31 0.16   1.04  1.31   1.65
+e21  7.00  6.93 0.36   6.24  6.93   7.64
+e22  2.05  2.03 0.14   1.78  2.02   2.30
+e23  1.81  1.79 0.18   1.49  1.78   2.18
+e31  3.13  3.12 0.42   2.36  3.10   3.96
+e32  1.18  1.17 0.15   0.89  1.16   1.51
+e33  3.82  3.79 0.34   3.15  3.79   4.51
+e.1  8.37  8.31 0.32   7.71  8.31   8.91
+e.2  1.69  1.66 0.13   1.42  1.65   1.93
+e.3  1.48  1.47 0.16   1.19  1.46   1.80
+e   11.54 11.44 0.39  10.71 11.45  12.17
 -----------------------------
 ```
 
@@ -1126,36 +1078,37 @@ msm_summary(model$msm)
 
 ```
 
--2loglik = 14977.86 
+-2loglik = 12831.67 
 Convergence code = 0 
           p   se Wald ChiSq Pr>ChiSq
-qbase -2.10 0.08     667.99     0.00
-qbase -4.38 0.21     437.79     0.00
-qbase -0.23 0.09       5.94     0.01
-qbase -2.23 0.17     179.55     0.00
-qbase -3.29 0.38      74.60     0.00
-qbase -2.47 0.21     132.89     0.00
-qcov   0.04 0.01       6.79     0.01
-qcov   0.13 0.03      15.41     0.00
-qcov  -0.07 0.02      15.98     0.00
-qcov   0.09 0.02      14.44     0.00
-qcov   0.09 0.05       4.06     0.04
-qcov   0.11 0.02      27.79     0.00
-qcov   0.05 0.01      13.23     0.00
-qcov  -0.05 0.03       2.12     0.15
-qcov   0.06 0.02      10.04     0.00
-qcov  -0.04 0.02       2.46     0.12
-qcov  -0.05 0.05       0.87     0.35
-qcov  -0.05 0.02       5.80     0.02
-qcov   0.33 0.09      13.14     0.00
-qcov   0.45 0.23       3.77     0.05
-qcov   0.12 0.11       1.30     0.25
-qcov  -0.16 0.16       1.08     0.30
-qcov   0.64 0.28       5.13     0.02
-qcov   0.43 0.14       9.23     0.00
-p     -2.15 0.09     589.03     0.00
-initp -1.33 0.06     434.12     0.00
-initp -2.84 0.13     486.43     0.00
+qbase -2.07 0.08     624.51     0.00
+qbase -4.36 0.21     451.61     0.00
+qbase -0.06 0.10       0.47     0.49
+qbase -1.28 0.13      97.24     0.00
+qbase -3.51 0.48      52.42     0.00
+qbase -1.09 0.21      26.60     0.00
+qbase -2.55 0.21     151.49     0.00
+qcov   0.03 0.01       5.62     0.02
+qcov   0.13 0.03      15.76     0.00
+qcov  -0.07 0.02      18.00     0.00
+qcov   0.03 0.02       2.52     0.11
+qcov   0.09 0.06       2.58     0.11
+qcov  -0.19 0.04      25.17     0.00
+qcov   0.12 0.02      36.50     0.00
+qcov   0.05 0.01      14.36     0.00
+qcov  -0.05 0.03       2.47     0.12
+qcov   0.07 0.02      12.64     0.00
+qcov   0.01 0.02       0.33     0.56
+qcov  -0.02 0.06       0.16     0.68
+qcov   0.20 0.04      26.84     0.00
+qcov  -0.07 0.02      10.29     0.00
+qcov   0.33 0.09      12.58     0.00
+qcov   0.47 0.23       4.29     0.04
+qcov   0.08 0.11       0.54     0.46
+qcov  -0.41 0.13      10.00     0.00
+qcov   0.67 0.34       3.81     0.05
+qcov  -0.67 0.23       8.38     0.00
+qcov   0.48 0.14      12.34     0.00
 ```
 
 ### solution
@@ -1173,41 +1126,19 @@ Maximum likelihood estimates
 Baselines are with covariates set to 0
 
 Transition intensities with hazard ratios for each covariate
-                  Baseline                      age                    age_bl                 male                 
-State 1 - State 1 -0.13442 (-0.155254,-0.11639)                                                                    
-State 1 - State 2  0.12190 ( 0.103921, 0.14300) 1.0357 (1.0087,1.0635) 1.0523 (1.0238,1.0817) 1.3930 (1.1644,1.666)
-State 1 - State 4  0.01252 ( 0.008307, 0.01887) 1.1332 (1.0646,1.2062) 0.9528 (0.8927,1.0169) 1.5623 (0.9956,2.451)
-State 2 - State 1  0.79683 ( 0.663817, 0.95650) 0.9327 (0.9014,0.9651) 1.0612 (1.0229,1.1009) 1.1290 (0.9164,1.391)
-State 2 - State 2 -0.94185 (-1.104543,-0.80312)                                                                    
-State 2 - State 3  0.10788 ( 0.077894, 0.14942) 1.0892 (1.0422,1.1383) 0.9642 (0.9212,1.0091) 0.8497 (0.6253,1.155)
-State 2 - State 4  0.03714 ( 0.017591, 0.07841) 1.0979 (1.0026,1.2024) 0.9558 (0.8692,1.0511) 1.8957 (1.0899,3.297)
-State 3 - State 3 -0.08480 (-0.128998,-0.05574)                                                                    
-State 3 - State 4  0.08480 ( 0.055742, 0.12900) 1.1198 (1.0737,1.1679) 0.9489 (0.9093,0.9903) 1.5390 (1.1652,2.033)
-```
+                  Baseline                      age                    age_bl                 male                  
+State 1 - State 1 -0.13857 (-0.160549,-0.11960)                                                                     
+State 1 - State 2  0.12579 ( 0.106913, 0.14800) 1.0331 (1.0057,1.0612) 1.0557 (1.0265,1.0857) 1.3911 (1.1592,1.6693)
+State 1 - State 4  0.01278 ( 0.008548, 0.01911) 1.1337 (1.0656,1.2062) 0.9492 (0.8894,1.0130) 1.5952 (1.0256,2.4812)
+State 2 - State 1  0.93719 ( 0.777969, 1.12900) 0.9280 (0.8966,0.9606) 1.0700 (1.0308,1.1107) 1.0832 (0.8757,1.3399)
+State 2 - State 2 -1.24628 (-1.451895,-1.06978)                                                                     
+State 2 - State 3  0.27923 ( 0.216696, 0.35982) 1.0305 (0.9930,1.0693) 1.0115 (0.9728,1.0518) 0.6647 (0.5161,0.8562)
+State 2 - State 4  0.02986 ( 0.011540, 0.07724) 1.0936 (0.9806,1.2197) 0.9758 (0.8671,1.0982) 1.9515 (0.9975,3.8179)
+State 3 - State 2  0.33722 ( 0.223111, 0.50970) 0.8288 (0.7702,0.8919) 1.2270 (1.1356,1.3257) 0.5098 (0.3231,0.8045)
+State 3 - State 3 -0.41516 (-0.583920,-0.29517)                                                                     
+State 3 - State 4  0.07794 ( 0.051911, 0.11701) 1.1313 (1.0869,1.1775) 0.9354 (0.8979,0.9743) 1.6221 (1.2384,2.1247)
 
-```
-Warning in res[plabs == "pbase"][unique(states[plabs == "p"])] <- 1/(1 + : number of items to replace is not a multiple
-of replacement length
-
-Warning in res[plabs == "pbase"][unique(states[plabs == "p"])] <- 1/(1 + : number of items to replace is not a multiple
-of replacement length
-```
-
-```
-
-Misclassification probabilities
-                      Baseline               
-Obs State 2 | State 2 0                      
-Obs State 3 | State 2 0.1042 (0.08905,0.1216)
-
-Initial state occupancy probabilities
-          Estimate       LCL        UCL
-State 1 0.75644307 0.7336018 0.77663358
-State 2 0.19914669 0.1799655 0.22019658
-State 3 0.04441024 0.0350617 0.05654718
-State 4 0.00000000 0.0000000 0.00000000
-
--2 * log-likelihood:  14977.86 
+-2 * log-likelihood:  12831.67 
 [Note, to obtain old print format, use "printold.msm"]
 ```
 
@@ -1237,19 +1168,19 @@ Life expectancies:Using simulation with  1000 replications
 
 Point estimates, and mean, SEs, and quantiles from simulation:
       pnt    mn   se 0.025q  0.5q 0.975q
-e11  9.35  9.29 0.37   8.63  9.28  10.09
-e12  1.85  1.81 0.16   1.51  1.80   2.13
-e13  1.31  1.29 0.19   0.96  1.28   1.68
-e21  7.40  7.31 0.40   6.52  7.31   8.13
-e22  2.34  2.30 0.17   1.98  2.29   2.64
-e23  1.81  1.80 0.22   1.41  1.78   2.28
-e31  0.00  0.00 0.00   0.00  0.00   0.00
-e32  0.00  0.00 0.00   0.00  0.00   0.00
-e33  6.24  6.26 0.65   5.02  6.22   7.54
-e.1  8.76  8.70 0.35   8.08  8.69   9.47
-e.2  1.82  1.78 0.15   1.50  1.77   2.08
-e.3  1.57  1.55 0.19   1.22  1.54   1.96
-e   12.15 12.04 0.43  11.20 12.03  12.90
+e11  9.24  9.19 0.39   8.49  9.17  10.03
+e12  1.66  1.62 0.15   1.34  1.61   1.92
+e13  1.51  1.49 0.18   1.16  1.48   1.88
+e21  7.39  7.33 0.42   6.53  7.31   8.21
+e22  2.08  2.04 0.15   1.75  2.03   2.35
+e23  2.07  2.04 0.21   1.65  2.03   2.49
+e31  3.93  3.89 0.51   2.94  3.88   4.89
+e32  1.40  1.37 0.17   1.07  1.36   1.69
+e33  3.98  3.94 0.39   3.26  3.92   4.78
+e.1  8.83  8.78 0.38   8.10  8.76   9.59
+e.2  1.69  1.65 0.14   1.38  1.64   1.95
+e.3  1.67  1.65 0.19   1.31  1.64   2.03
+e   12.19 12.08 0.46  11.16 12.06  13.00
 -----------------------------
 ```
 
@@ -1279,42 +1210,44 @@ msm_summary(model$msm)
 
 ```
 
--2loglik = 14965.72 
+-2loglik = 12820 
 Convergence code = 0 
           p   se Wald ChiSq Pr>ChiSq
-qbase -1.87 0.11     265.81     0.00
-qbase -4.32 0.32     186.83     0.00
-qbase -0.23 0.11       4.07     0.04
-qbase -2.15 0.19     125.35     0.00
-qbase -3.47 0.49      49.52     0.00
-qbase -2.38 0.22     112.26     0.00
-qcov   0.04 0.01       6.79     0.01
-qcov   0.12 0.03      14.88     0.00
-qcov  -0.07 0.02      16.22     0.00
-qcov   0.08 0.02      14.06     0.00
-qcov   0.10 0.05       4.23     0.04
-qcov   0.11 0.02      28.29     0.00
-qcov   0.05 0.01      12.34     0.00
-qcov  -0.05 0.03       1.87     0.17
-qcov   0.06 0.02      10.14     0.00
-qcov  -0.03 0.02       2.14     0.14
-qcov  -0.05 0.05       1.08     0.30
-qcov  -0.05 0.02       5.71     0.02
-qcov   0.33 0.09      12.92     0.00
-qcov   0.49 0.23       4.41     0.04
-qcov   0.12 0.11       1.30     0.25
-qcov  -0.14 0.16       0.81     0.37
-qcov   0.57 0.30       3.63     0.06
-qcov   0.44 0.14       9.66     0.00
-qcov  -0.25 0.09       7.31     0.01
-qcov  -0.09 0.27       0.11     0.74
-qcov   0.02 0.11       0.03     0.87
-qcov  -0.10 0.14       0.56     0.45
-qcov   0.25 0.44       0.33     0.56
-qcov  -0.15 0.12       1.39     0.24
-p     -2.15 0.09     588.76     0.00
-initp -1.33 0.06     433.80     0.00
-initp -2.83 0.13     486.75     0.00
+qbase -1.84 0.12     249.77     0.00
+qbase -4.37 0.35     159.38     0.00
+qbase -0.06 0.12       0.25     0.62
+qbase -1.18 0.15      59.31     0.00
+qbase -3.55 0.56      40.17     0.00
+qbase -1.04 0.23      20.25     0.00
+qbase -2.48 0.22     128.50     0.00
+qcov   0.03 0.01       5.78     0.02
+qcov   0.13 0.03      15.98     0.00
+qcov  -0.07 0.02      17.51     0.00
+qcov   0.03 0.02       2.70     0.10
+qcov   0.09 0.06       2.59     0.11
+qcov  -0.18 0.04      23.14     0.00
+qcov   0.12 0.02      36.06     0.00
+qcov   0.05 0.01      13.27     0.00
+qcov  -0.05 0.03       2.45     0.12
+qcov   0.07 0.02      12.08     0.00
+qcov   0.01 0.02       0.35     0.56
+qcov  -0.03 0.06       0.17     0.68
+qcov   0.20 0.04      25.81     0.00
+qcov  -0.07 0.02       9.98     0.00
+qcov   0.33 0.09      12.53     0.00
+qcov   0.47 0.23       4.05     0.04
+qcov   0.07 0.11       0.44     0.51
+qcov  -0.39 0.13       8.59     0.00
+qcov   0.66 0.38       2.98     0.08
+qcov  -0.65 0.23       7.79     0.01
+qcov   0.48 0.14      11.91     0.00
+qcov  -0.26 0.10       7.22     0.01
+qcov   0.00 0.31       0.00     1.00
+qcov   0.00 0.11       0.00     0.99
+qcov  -0.14 0.12       1.45     0.23
+qcov   0.04 0.47       0.01     0.94
+qcov  -0.12 0.16       0.49     0.49
+qcov  -0.09 0.13       0.48     0.49
 ```
 
 ### solution
@@ -1332,51 +1265,30 @@ Maximum likelihood estimates
 Baselines are with covariates set to 0
 
 Transition intensities with hazard ratios for each covariate
-                  Baseline                      age                    age_bl                 male                 
-State 1 - State 1 -0.16778 (-0.205801,-0.13679)                                                                    
-State 1 - State 2  0.15445 ( 0.123388, 0.19334) 1.0360 (1.0088,1.0640) 1.0510 (1.0222,1.0805) 1.3914 (1.1621,1.666)
-State 1 - State 4  0.01333 ( 0.007177, 0.02476) 1.1327 (1.0632,1.2067) 0.9546 (0.8931,1.0204) 1.6254 (1.0330,2.558)
-State 2 - State 1  0.79401 ( 0.634537, 0.99357) 0.9317 (0.9001,0.9643) 1.0617 (1.0233,1.1015) 1.1304 (0.9159,1.395)
-State 2 - State 2 -0.94182 (-1.146462,-0.77370)                                                                    
-State 2 - State 3  0.11662 ( 0.080061, 0.16989) 1.0880 (1.0411,1.1371) 0.9662 (0.9228,1.0117) 0.8667 (0.6349,1.183)
-State 2 - State 4  0.03118 ( 0.011869, 0.08192) 1.1008 (1.0046,1.2063) 0.9492 (0.8603,1.0472) 1.7758 (0.9836,3.206)
-State 3 - State 3 -0.09296 (-0.144258,-0.05990)                                                                    
-State 3 - State 4  0.09296 ( 0.059902, 0.14426) 1.1218 (1.0753,1.1703) 0.9490 (0.9091,0.9906) 1.5593 (1.1784,2.063)
+                  Baseline                      age                    age_bl                 male                  
+State 1 - State 1 -0.17153 (-0.211198,-0.13931)                                                                     
+State 1 - State 2  0.15887 ( 0.126458, 0.19958) 1.0338 (1.0062,1.0622) 1.0539 (1.0245,1.0841) 1.3922 (1.1591,1.6721)
+State 1 - State 4  0.01266 ( 0.006426, 0.02495) 1.1353 (1.0668,1.2082) 0.9487 (0.8882,1.0133) 1.5924 (1.0120,2.5057)
+State 2 - State 1  0.94394 ( 0.751364, 1.18588) 0.9284 (0.8967,0.9613) 1.0686 (1.0294,1.1094) 1.0752 (0.8677,1.3324)
+State 2 - State 2 -1.27987 (-1.543360,-1.06137)                                                                     
+State 2 - State 3  0.30709 ( 0.227398, 0.41472) 1.0316 (0.9940,1.0707) 1.0120 (0.9727,1.0529) 0.6804 (0.5260,0.8802)
+State 2 - State 4  0.02884 ( 0.009633, 0.08633) 1.0953 (0.9803,1.2239) 0.9738 (0.8581,1.1050) 1.9254 (0.9152,4.0504)
+State 3 - State 2  0.35289 ( 0.224187, 0.55548) 0.8336 (0.7741,0.8978) 1.2225 (1.1314,1.3211) 0.5231 (0.3319,0.8244)
+State 3 - State 3 -0.43663 (-0.634371,-0.30053)                                                                     
+State 3 - State 4  0.08374 ( 0.054539, 0.12857) 1.1314 (1.0867,1.1780) 0.9356 (0.8978,0.9751) 1.6177 (1.2310,2.1259)
                   educat                
 State 1 - State 1                       
-State 1 - State 2 0.7751 (0.6445,0.9323)
-State 1 - State 4 0.9152 (0.5427,1.5433)
-State 2 - State 1 1.0175 (0.8271,1.2518)
+State 1 - State 2 0.7741 (0.6422,0.9331)
+State 1 - State 4 1.0007 (0.5475,1.8290)
+State 2 - State 1 1.0016 (0.8095,1.2394)
 State 2 - State 2                       
-State 2 - State 3 0.9007 (0.6848,1.1847)
-State 2 - State 4 1.2886 (0.5450,3.0466)
+State 2 - State 3 0.8686 (0.6907,1.0923)
+State 2 - State 4 1.0380 (0.4100,2.6279)
+State 3 - State 2 0.8913 (0.6453,1.2312)
 State 3 - State 3                       
-State 3 - State 4 0.8635 (0.6765,1.1022)
-```
+State 3 - State 4 0.9157 (0.7143,1.1738)
 
-```
-Warning in res[plabs == "pbase"][unique(states[plabs == "p"])] <- 1/(1 + : number of items to replace is not a multiple
-of replacement length
-
-Warning in res[plabs == "pbase"][unique(states[plabs == "p"])] <- 1/(1 + : number of items to replace is not a multiple
-of replacement length
-```
-
-```
-
-Misclassification probabilities
-                      Baseline               
-Obs State 2 | State 2 0                      
-Obs State 3 | State 2 0.1042 (0.08904,0.1216)
-
-Initial state occupancy probabilities
-          Estimate        LCL        UCL
-State 1 0.75627049 0.73396526 0.77637390
-State 2 0.19927786 0.17984784 0.22039809
-State 3 0.04445165 0.03500507 0.05651733
-State 4 0.00000000 0.00000000 0.00000000
-
--2 * log-likelihood:  14965.72 
+-2 * log-likelihood:  12820 
 [Note, to obtain old print format, use "printold.msm"]
 ```
 
@@ -1406,19 +1318,19 @@ Life expectancies:Using simulation with  1000 replications
 
 Point estimates, and mean, SEs, and quantiles from simulation:
       pnt    mn   se 0.025q  0.5q 0.975q
-e11  8.33  8.24 0.51   7.31  8.22   9.33
-e12  2.07  2.02 0.23   1.58  2.01   2.49
-e13  1.45  1.43 0.26   1.00  1.41   1.98
-e21  6.56  6.46 0.50   5.56  6.43   7.46
-e22  2.51  2.45 0.24   1.99  2.44   2.94
-e23  1.92  1.90 0.30   1.37  1.87   2.55
-e31  0.00  0.00 0.00   0.00  0.00   0.00
-e32  0.00  0.00 0.00   0.00  0.00   0.00
-e33  5.84  5.84 0.69   4.57  5.83   7.25
-e.1  7.80  7.72 0.48   6.85  7.69   8.75
-e.2  2.03  1.97 0.22   1.56  1.97   2.43
-e.3  1.68  1.66 0.26   1.20  1.64   2.23
-e   11.51 11.36 0.60  10.22 11.36  12.55
+e11  8.25  8.15 0.52   7.16  8.13   9.20
+e12  1.77  1.72 0.20   1.36  1.71   2.14
+e13  1.72  1.68 0.26   1.24  1.66   2.22
+e21  6.55  6.44 0.51   5.50  6.39   7.51
+e22  2.15  2.09 0.20   1.74  2.07   2.52
+e23  2.24  2.21 0.29   1.68  2.18   2.83
+e31  3.52  3.46 0.52   2.50  3.46   4.48
+e32  1.44  1.41 0.21   1.05  1.39   1.85
+e33  3.91  3.90 0.44   3.14  3.87   4.83
+e.1  7.88  7.78 0.51   6.85  7.76   8.84
+e.2  1.80  1.74 0.20   1.39  1.73   2.16
+e.3  1.86  1.83 0.26   1.37  1.81   2.37
+e   11.54 11.36 0.64  10.12 11.36  12.57
 -----------------------------
 ```
 
