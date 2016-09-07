@@ -279,20 +279,19 @@ initprobs_ = initial_probabilities
 # turn this chunk OFF when printing the report
 # compile model objects with msm() call
 # each model will be saved in the specified folder, namely pathSaveFolder
-# estimate_multistate("mA1", ds, Q, E, qnames,cov_names = "age")
-# estimate_multistate("mA2", ds, Q, E, qnames,cov_names = "age + age_bl")
-# estimate_multistate("mA3", ds, Q, E, qnames,cov_names = "age + age_bl + male")
-# estimate_multistate("mA4", ds, Q, E, qnames,cov_names = "age + age_bl + male + educat")
-# estimate_multistate("mA5", ds, Q, E, qnames,cov_names = "age + age_bl + male + edu")
- 
+# estimate_multistate("mB1", ds, Q, E, qnames,cov_names = "age")
+# estimate_multistate("mB2", ds, Q, E, qnames,cov_names = "age + age_bl")
+# estimate_multistate("mB3", ds, Q, E, qnames,cov_names = "age + age_bl + male")
+# estimate_multistate("mB4", ds, Q, E, qnames,cov_names = "age + age_bl + male + educat")
+
 # ---- assemble-msm-models ------------------------
 # assemble the list object with the results of msm estimation
 models <- list()
-models[["age"]][["msm"]]    <- readRDS(paste0(pathSaveFolder,'mA1.rds'))
-models[["age_bl"]][["msm"]] <- readRDS(paste0(pathSaveFolder,'mA2.rds'))
-models[["male"]][["msm"]]   <- readRDS(paste0(pathSaveFolder,'mA3.rds'))
-models[["educat"]][["msm"]] <- readRDS(paste0(pathSaveFolder,'mA4.rds'))
-models[["edu"]][["msm"]]    <- readRDS(paste0(pathSaveFolder,'mA5.rds'))
+models[["age"]][["msm"]]    <- readRDS(paste0(pathSaveFolder,'mB1.rds'))
+models[["age_bl"]][["msm"]] <- readRDS(paste0(pathSaveFolder,'mB2.rds'))
+models[["male"]][["msm"]]   <- readRDS(paste0(pathSaveFolder,'mB3.rds'))
+models[["educat"]][["msm"]] <- readRDS(paste0(pathSaveFolder,'mB4.rds'))
+
 
 # ---- specify-elect-options --------------------------
 alive_states <- c(1,2,3)
@@ -303,7 +302,6 @@ age_max <- 35
 age_bl <- 0
 male <- 0
 educat <- 0
-edu <- 11
 
 replication_n <- 1000
 time_scale <- "years"
@@ -317,7 +315,6 @@ grid_par <- .5
 #   if(model_=="age_bl"){covar_list = list(age=age_min, age_bl=age_bl)}
 #   if(model_=="male"){covar_list   = list(age=age_min, age_bl=age_bl, male=male)}
 #   if(model_=="educat"){covar_list = list(age=age_min, age_bl=age_bl, male=male, educat=educat)}
-#   if(model_=="edu"){covar_list    = list(age=age_min, age_bl=age_bl, male=male, edu=edu)}
 #   # compute LE
 #   models[[model_]][["LE"]] <- elect(
 #     model          = models[[model_]][["msm"]], # fitted msm model
