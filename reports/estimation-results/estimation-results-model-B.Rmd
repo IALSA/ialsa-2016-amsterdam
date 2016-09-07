@@ -1,0 +1,279 @@
+---
+title: 'Model B : Estimation Results'
+output:
+  pdf_document:
+    toc: yes
+  html_document:
+    css: ~/GitHub/ialsa-2016-amsterdam/libs/css/sidebar.css
+    highlight: tango
+    keep_md: yes
+    theme: flatly
+    toc: yes
+---
+
+<!-- These two chunks should be added in the beginning of every .Rmd that you want to source an .R script -->
+<!--  The 1st mandatory chunck  -->
+<!--  Set the working directory to the repository's base directory -->
+```{r, echo=F, message=F} 
+#Don't combine this call with any other chunk 
+# cat("Working directory: ", getwd()) # check where you are
+  library(knitr)
+# Rmd is in "./reports/reportA/reportA.Rmd", but now the root is "./"
+  knitr::opts_knit$set(root.dir='../../') 
+```
+
+<!--  The 2nd mandatory chunck  -->
+<!-- Set the report-wide options, and point to the external code file. -->
+```{r set_options, echo=F}
+# set options shared by all chunks
+opts_chunk$set(
+  results='show', 
+  message = TRUE,
+  comment = NA, 
+  tidy = FALSE,
+  fig.height = 4, 
+  fig.width = 5.5, 
+  out.width = "550px",
+  fig.path = 'figure_rmd/',     
+  dev = "png",
+  dpi = 100
+  # fig.path = 'figure_pdf/',     
+  # dev = "pdf"#,
+  # dev.args=list(pdf = list(colormodel = 'cmyk'))
+)
+echoChunks <- TRUE
+options(width=120) #So the output is 50% wider than the default.
+# connect to the file with the underlying R script  
+read_chunk("./manipulation/map/3-estimate-model-b.R") 
+```
+
+Estimation results of **Model B**.
+
+# Load environmet
+<!-- Load the sources.  Suppress the output when loading sources. --> 
+```{r load-sources, echo=echoChunks, message=FALSE}
+```
+
+<!-- Load 'sourced' R files.  Suppress the output when loading packages. --> 
+```{r load-packages, echo=echoChunks, message=FALSE}
+```
+
+<!-- Load any Global functions and variables declared in the R file.  Suppress the output. --> 
+```{r declare-globals, echo=F, results='show', message=FALSE}
+```
+
+# Load data
+<!-- Load the datasets.   -->
+```{r load-data, echo=echoChunks, results='hide', message=FALSE}
+```
+
+<!-- Inspect the datasets.   -->
+```{r inspect-data, echo=echoChunks, results='hide', message=FALSE}
+```
+
+
+```{r inspect-created-multistates, echo=echoChunks, results='show', message=FALSE}
+```
+
+# Remove cases
+```{r remove-invalid-cases, echo=echoChunks, results='show', message=FALSE}
+```
+
+# Categorize covariates
+```{r split-education, echo=echoChunks, results='show', message=FALSE}
+```
+
+# Age diagnostic
+```{r describe-age-composition, echo=TRUE, results='show', message=FALSE, eval=T, out.width="900px", out.height="300px"}
+```
+
+# Estimation prep
+```{r prepare-for-estimation, echo=echoChunks, results='show', message=FALSE}
+```
+
+# Specifications
+
+## Fitting function
+```{r define-estimation-function, echo=echoChunks, results='show', message=FALSE}
+```
+
+### Support functions
+```{r define-support-functions, echo=echoChunks, results='show', message=FALSE}
+```
+
+## Model
+```{r specify-model, echo=echoChunks, results='show', message=FALSE}
+```
+
+## msm options
+```{r specify-msm-options, echo=echoChunks, results='show', message=FALSE}
+```
+
+```{r estimate-msm-models, echo=echoChunks, results='show', message=FALSE}
+```
+
+```{r assemble-msm-models, echo=echoChunks, results='show', message=FALSE}
+```
+
+## elect options
+```{r specify-elect-options, echo=echoChunks, results='show', message=FALSE}
+```
+
+```{r compute-life-expectancies, echo=echoChunks, results='show', message=FALSE}
+```
+
+
+# Model results
+
+## age
+
+### summary
+```{r results-1-1, echo=echoChunks, results='show', message=FALSE, eval=T, warning = T, out.width = "900px"}
+model <- models[["age"]]
+msm_summary(model$msm)
+```
+
+### solution
+```{r results-1-2, echo=echoChunks, results='show', message=FALSE, eval=T}
+print(model$msm, showEnv= F)
+```
+
+### ELECT summary 
+```{r results-1-3, echo=echoChunks, results='show', message=FALSE, eval=T}
+summary.elect(
+  model$LE, # life expectancy estimated by elect()
+  probs = c(.025, .5, .975), # numeric vector of probabilities for quantiles
+  digits=2, # number of decimals places in output
+  print = TRUE # print toggle
+)
+```
+
+### plots
+```{r results-1-4, echo=echoChunks, results='show', message=FALSE, eval=T, out.width="900px"}
+plot.elect(
+  model$LE, # life expectancy estimated by elect()
+  kernel = "gaussian", #character string for smoothing kernal ("gaussian",...)
+  col = "red", # color of the curve
+  lwd = 2, # line width of the curve
+  cex.lab = 1 # magnification to be used for axis-labels
+)
+```
+
+
+## age at baseline
+
+### summary
+```{r results-2-1, echo=echoChunks, results='show', message=FALSE, eval=T, warning = T, out.width = "900px"}
+model <- models[["age_bl"]]
+msm_summary(model$msm)
+```
+
+### solution
+```{r results-2-2, echo=echoChunks, results='show', message=FALSE, eval=T}
+print(model$msm, showEnv= F)
+```
+
+### ELECT summary 
+```{r results-2-3, echo=echoChunks, results='show', message=FALSE, eval=T}
+summary.elect(
+  model$LE, # life expectancy estimated by elect()
+  probs = c(.025, .5, .975), # numeric vector of probabilities for quantiles
+  digits=2, # number of decimals places in output
+  print = TRUE # print toggle
+)
+```
+
+### plots
+```{r results-2-4, echo=echoChunks, results='show', message=FALSE, eval=T, out.width="900px"}
+plot.elect(
+  model$LE, # life expectancy estimated by elect()
+  kernel = "gaussian", #character string for smoothing kernal ("gaussian",...)
+  col = "red", # color of the curve
+  lwd = 2, # line width of the curve
+  cex.lab = 1 # magnification to be used for axis-labels
+)
+```
+
+
+## male
+
+### summary
+```{r results-3-1, echo=echoChunks, results='show', message=FALSE, eval=T, warning = T, out.width = "900px"}
+model <- models[["male"]]
+msm_summary(model$msm)
+```
+
+### solution
+```{r results-3-2, echo=echoChunks, results='show', message=FALSE, eval=T}
+print(model$msm, showEnv= F)
+```
+
+### ELECT summary 
+```{r results-3-3, echo=echoChunks, results='show', message=FALSE, eval=T}
+summary.elect(
+  model$LE, # life expectancy estimated by elect()
+  probs = c(.025, .5, .975), # numeric vector of probabilities for quantiles
+  digits=2, # number of decimals places in output
+  print = TRUE # print toggle
+)
+```
+
+### plots
+```{r results-3-4, echo=echoChunks, results='show', message=FALSE, eval=T, out.width="900px"}
+plot.elect(
+  model$LE, # life expectancy estimated by elect()
+  kernel = "gaussian", #character string for smoothing kernal ("gaussian",...)
+  col = "red", # color of the curve
+  lwd = 2, # line width of the curve
+  cex.lab = 1 # magnification to be used for axis-labels
+)
+```
+
+
+## education
+
+### summary
+```{r results-4-1, echo=echoChunks, results='show', message=FALSE, eval=T, warning = F, out.width = "900px"}
+model <- models[["educat"]]
+msm_summary(model$msm)
+```
+
+### solution
+```{r results-4-2, echo=echoChunks, results='show', message=FALSE, eval=T}
+print(model$msm, showEnv= F)
+```
+
+### ELECT summary 
+```{r results-4-3, echo=echoChunks, results='show', message=FALSE, eval=T}
+summary.elect(
+  model$LE, # life expectancy estimated by elect()
+  probs = c(.025, .5, .975), # numeric vector of probabilities for quantiles
+  digits=2, # number of decimals places in output
+  print = TRUE # print toggle
+)
+```
+
+### plots
+```{r results-4-4, echo=echoChunks, results='show', message=FALSE, eval=T, out.width="900px"}
+plot.elect(
+  model$LE, # life expectancy estimated by elect()
+  kernel = "gaussian", #character string for smoothing kernal ("gaussian",...)
+  col = "red", # color of the curve
+  lwd = 2, # line width of the curve
+  cex.lab = 1 # magnification to be used for axis-labels
+)
+```
+
+
+
+# Session Info
+```{r}
+sessionInfo()
+
+```
+
+
+
+```{r print-model-results-1, echo=echoChunks, results='asis', message=FALSE, eval=F}
+```
+
