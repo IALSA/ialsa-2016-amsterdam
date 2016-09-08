@@ -31,3 +31,11 @@ rmarkdown::render(
   output_format="html_document", 
   clean=TRUE
 )
+
+
+# conduct estimation
+
+# base::source("./manipulation/map/2-estimate-model-a.R")
+# base::source("./manipulation/map/2-estimate-model-b.R")
+base::source("./manipulation/map/2-estimate-model-c.R")
+base::source("./manipulation/map/2-estimate-model-d.R")

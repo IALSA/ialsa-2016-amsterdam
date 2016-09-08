@@ -1,6 +1,8 @@
 ---
 title: 'Model B : Estimation Results'
 output:
+  word_document:
+    toc: yes
   pdf_document:
     toc: yes
   html_document:
@@ -180,6 +182,13 @@ msm_summary(model)
 ### details
 ```{r results-2-2, echo=echoChunks, results='show', message=FALSE, eval=T}
 msm_details(model)
+```
+
+
+```{r annie-table, echo=echoChunks, results='show', message=FALSE, eval=T}
+model <- readRDS(paste0(pathSaveFolder,'mB_mod1_1.rds'))
+msm_summary(model)
+hazard.msm(model)
 ```
 
 

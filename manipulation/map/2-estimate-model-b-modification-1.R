@@ -307,7 +307,6 @@ msm_details <- function(model){
   suppressWarnings(print(envisits.msm(model)))
   # ratio of transition intensities
   # qratio.msm(model,ind1 = c(2,1), ind2 = c(1,2))
-
 }
 
 # ---- specify-model --------------------------
