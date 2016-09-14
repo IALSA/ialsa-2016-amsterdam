@@ -102,15 +102,19 @@ determine_censor <- function(x, is_right_censored){
 }
 (N <- length(unique(ds_long$id))) # sample size
 (subjects <- as.numeric(unique(ds_long$id))) # list the ids
-
+# ds_long_temp <- ds_long
+# i <- 5; 
 for(i in 1:N){
 # for(i in unique(ds$id)){  # use this line for testing
   # Get the individual data:
+  # ds_long <- ds_long_temp %>% 
+  #   dplyr::select(id, fu_year, age_at_visit,died, age_death, mmse) %>% 
+  #   as.data.frame()
   (dta.i <- ds_long[ds_long$id==subjects[i],]) # select a single individual
   # (dta.i <- ds_long[ds_long$id==6804844,]) # select a single individual # use this line for testing
   (dta.i <- as.data.frame(dta.i %>% dplyr::arrange(-age_at_visit))) # enforce sorting
-  (dta.i$missed_last_wave = (cumsum(!is.na(dta.i$mmse))==0L)) # is the last obs missing?
-  (dta.i$presumed_alive      =  is.na(any(dta.i$age_death))) # can we presume subject alive?
+  (dta.i$missed_last_wave <- (cumsum(!is.na(dta.i$mmse))==0L)) # is the last obs missing?
+  (dta.i$presumed_alive   =  is.na(any(dta.i$age_death))) # can we presume subject alive?
   (dta.i$right_censored   = dta.i$missed_last_wave & dta.i$presumed_alive) # right-censored?
   # dta.i$mmse_recoded     = determine_censor(dta.i$mmse, dta.i$right_censored) # use when tracing
   (dta.i$mmse     <- determine_censor(dta.i$mmse, dta.i$right_censored)) # replace in reality
@@ -118,7 +122,7 @@ for(i in 1:N){
   (dta.i <- dta.i %>% dplyr::select(-missed_last_wave, -right_censored ))
   # Rebuild the data:
   if(i==1){ds_miss <- dta.i}else{ds_miss <- rbind(ds_miss,dta.i)}
-}
+} 
 # inspect crated data object
 ds_miss %>% 
   dplyr::filter(id %in% ids) %>% 
@@ -176,11 +180,42 @@ ds_ms <- encode_multistates(
   age_death_name = "age_death",
   dead_state_value = 4
 )
-
+# set.seed(NULL)
+# ids <- sample(unique(ds$id),1)
+ids <- 50107169
 ds_ms %>% 
   dplyr::filter(id %in% ids) %>% 
   print()
 
+# ---- correct-values-at-death -----------------------
+correct_values_at_death <- function(
+  ds, # data frame in long format with multistates encoded
+  outcome_name, # measure to correct value in
+  dead_state_value # value that represents dead state
+){
+  ds[ds$state == dead_state_value, outcome_name] <- NA_real_
+  return(ds)
+}
+# d <- ds_ms %>% correct_values_at_death("dementia", 4)
+# 
+# correct_these_variables <- c("dementia", "income_40", "date_at_visit","cogact_old",
+#                              "socact_old", "soc_net","social_isolation")
+
+# for(i in correct_these_variables){
+
+  ds_ms[ds_ms$state == 4, "date_at_visit"] <- NA
+  
+  ds_ms <- ds_ms %>% correct_values_at_death("dementia",4)
+  ds_ms <- ds_ms %>% correct_values_at_death("income_40",4)
+  ds_ms <- ds_ms %>% correct_values_at_death("cogact_old",4)
+  ds_ms <- ds_ms %>% correct_values_at_death("socact_old",4)
+  ds_ms <- ds_ms %>% correct_values_at_death("soc_net",4)
+  ds_ms <- ds_ms %>% correct_values_at_death("social_isolation",4)
+# }
+
+ds_ms %>% 
+  dplyr::filter(id %in% ids) %>% 
+  print()
 
 # ---- add-firstobs-flag -----------------------------
 (N  <- length(unique(ds_ms$id)))
