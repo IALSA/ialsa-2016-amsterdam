@@ -31,29 +31,32 @@ requireNamespace("testit") # for asserting conditions meet expected patterns.
 
 # ---- declare-globals ----------------------------------------------
 # reach out to the curator for a dataset prepared for general consumption
-data_path_input  <- "../MAP/data-unshared/derived/ds0.rds"
+data_path_input  <- "../MAP/data-unshared/derived/dto.rds"
 # point to the local metadata to be used for this project (specific consumption)
-metadata_path_input <- "./data/shared/meta/map/meta-data-map.csv" 
+# metadata_path_input <- "./data/shared/meta/map/meta-data-map.csv" 
+metadata_path_input <- "./data/shared/meta/map/meta-data-map-2016-09-09.csv" 
 
 # ---- load-data ------------------------------------------------
 # load data objects
-unitData <- readRDS(data_path_input) 
+dto      <- readRDS(data_path_input)
+# dto already contains meta data, but you should load a local one for greater control
 metaData <- read.csv(metadata_path_input, stringsAsFactors=F, header=T)
 
 # ---- inspect-data ----------------------------------------------
 # inspect loaded data objects (using basic demographic variables )
-ds <- unitData # assing alias
-length(unique(ds$id)) # there are this many of subjects
-t <- table(ds[,"fu_year"], ds[,"died"]); t[t==0]<-".";t
-t <- table(ds[,"msex"], ds[,"race"], useNA = "always"); t[t==0]<-".";t
-t <- table(ds[,"educ"], ds[,"race"]); t[t==0]<-".";t
+ds <- as.data.frame(dto$unitData) # assing alias
+length(unique(ds$id))  # there are this many of subjects
+t <- table(ds[,"fu_year"], ds[,"died"]); t[t==0]<-".";t 
+t <- table(ds[,"msex"], ds[,"race"], useNA = "always"); t[t==0]<-".";t 
+t <- table(ds[,"educ"], ds[,"race"]); t[t==0]<-".";t 
 
 # ---- assemble-data-object-dto-1 --------------------------------------
+# reconstruct the dto to be used in this project
 dto <- list()
 # the first element of data transfer object contains unit data
-dto[["unitData"]] <- unitData
+dto[["unitData"]] <- ds
 # the second element of data transfer object contains meta data
-dto[["metaData"]] <-  metaData
+dto[["metaData"]] <-  metaData # new, local meta-data!!
 # verify and glimpse
 dto[["unitData"]] %>% dplyr::glimpse()
 dto[["metaData"]] %>% dplyr::glimpse()
@@ -63,19 +66,20 @@ dto[["metaData"]] %>% dplyr::glimpse()
 meta_data <- dto[["metaData"]] %>%
   dplyr::filter(include == TRUE) %>%
   # dplyr::select(name, name_new, type, label, construct) %>%
-  dplyr::arrange(type, construct, name)
+  dplyr::arrange(type, construct, name) %>% 
+  dplyr::select(name_new, label, construct, longitudinal)
 knitr::kable(meta_data)
 
-# ----- apply-meta-data-1 -------------------------------------
-# rename variables
-d_rules <- dto[["metaData"]] %>%
-  dplyr::filter(name %in% names(ds)) %>% 
-  dplyr::select(name, name_new ) # leave only collumn, which values you wish to append
-names(ds) <- d_rules[,"name_new"]
-# transfer changes to dto
-ds <- ds %>% dplyr::filter(study == "MAP ")
-table(ds$study)
-dto[["unitData"]] <- ds 
+# # ----- apply-meta-data-1 -------------------------------------
+# # rename variables
+# d_rules <- dto[["metaData"]] %>%
+#   dplyr::filter(name %in% names(ds)) %>% 
+#   dplyr::select(name, name_new ) # leave only collumn, which values you wish to append
+# names(ds) <- d_rules[,"name_new"]
+# # transfer changes to dto
+# ds <- ds %>% dplyr::filter(study == "MAP ")
+# table(ds$study)
+# dto[["unitData"]] <- ds 
 
 # ---- save-to-disk ------------------------------------------------------------
 
@@ -92,7 +96,7 @@ names(dto)
 names(dto[["unitData"]])
 # 2nd element - meta data, info about variables
 names(dto[["metaData"]])
-
+names_labels(dto$unitData)
 
 
 

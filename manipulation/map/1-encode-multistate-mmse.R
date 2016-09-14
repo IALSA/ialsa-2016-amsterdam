@@ -66,7 +66,17 @@ ds_long <- ds %>%
     "edu",
     "age_death",
     "age_at_visit",
-    "mmse") 
+    "birth_year",
+    "date_at_visit",
+    "mmse",
+    # new
+    "dementia",
+    "income_40", # income at age 40
+    "cogact_old", # cognitive activity in late life
+    "socact_old", # social activity in late life
+    "soc_net", # social network size
+    "social_isolation" # loneliness 
+    ) 
 # save to disk for direct examination
 # write.csv(d,"./data/shared/musti-state-dementia.csv")  
 
