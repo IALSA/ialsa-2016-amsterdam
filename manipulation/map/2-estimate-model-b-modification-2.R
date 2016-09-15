@@ -377,5 +377,8 @@ initprobs_ = initial_probabilities
 #  
 
 
-
+# ----- dummy -------------------
+model <- readRDS(paste0(pathSaveFolder,'mB_mod2_2.rds'))
+msm_summary(model)
+msm_details(model)
 
