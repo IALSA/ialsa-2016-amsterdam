@@ -20,7 +20,7 @@ requireNamespace("testit", quietly=TRUE)
 
 # ---- declare-globals ---------------------------------------------------------
 path_input <- "./data/unshared/derived/dto.rds"
-path_output <- "data/unshared/derived/dto.rds"
+path_output <- "./data/unshared/derived/dto.rds"
 
 # ---- load-data ---------------------------------------------------------------
 # load the product of 0-ellis-island.R,  a list object containing data and metad
@@ -203,7 +203,7 @@ correct_values_at_death <- function(
 
 # for(i in correct_these_variables){
 
-  ds_ms[ds_ms$state == 4, "date_at_visit"] <- NA
+  ds_ms[ds_ms$state == 4, "date_at_visit"] <- NA # because of date format
   
   ds_ms <- ds_ms %>% correct_values_at_death("dementia",4)
   ds_ms <- ds_ms %>% correct_values_at_death("income_40",4)
