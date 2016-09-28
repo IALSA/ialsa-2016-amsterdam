@@ -109,37 +109,6 @@ ds_clean %>%
   dplyr::select(id) %>% print()
 
 
-# ---- split-cognitive-activity ------------------------
-ds_clean$cogact_old %>% summary()
-
-ds_clean$sescat <- car::Recode(ds_clean$income_40,
-                               " 1:3 = '-1'; 
-                               4:7  = '0';
-                               8:10 = '1';
-                               ")
-ds_clean$sescatF <- factor(
-  ds_clean$sescat, 
-  levels = c(-1,             0,             1), 
-  labels = c("Low", "Medium", "High"))
-cat("\n How income at age 40 was categorized: \n")
-ds_clean %>% 
-  dplyr::group_by(sescatF, sescat) %>% 
-  dplyr::summarize(n_data_points= n()) %>% 
-  as.data.frame() %>% 
-  print(nrow=100)
-cat("\n Create dummy variables for testing effects of income: \n")
-
-# ref  D1  D2
-#  -1  0   0
-#  0   1   0
-#  1   0   1
-ds_clean <- ds_clean %>% 
-  dplyr::mutate(
-    ses_low_med  = ifelse(sescat == 0, 1, 0 ), 
-    ses_low_high = ifelse(sescat == 1, 1, 0 ) 
-  )
-table(ds_clean$sescat, ds_clean$ses_low_med)
-table(ds_clean$sescat, ds_clean$ses_low_high)
 
 
 # ---- split-income ------------------------
