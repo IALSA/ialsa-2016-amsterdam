@@ -108,7 +108,81 @@ ds_clean %>%
   dplyr::filter(firstobs == TRUE & state == -1) %>% 
   dplyr::select(id) %>% print()
 
+
+# ---- split-cognitive-activity ------------------------
+ds_clean$cogact_old %>% summary()
+
+ds_clean$sescat <- car::Recode(ds_clean$income_40,
+                               " 1:3 = '-1'; 
+                               4:7  = '0';
+                               8:10 = '1';
+                               ")
+ds_clean$sescatF <- factor(
+  ds_clean$sescat, 
+  levels = c(-1,             0,             1), 
+  labels = c("Low", "Medium", "High"))
+cat("\n How income at age 40 was categorized: \n")
+ds_clean %>% 
+  dplyr::group_by(sescatF, sescat) %>% 
+  dplyr::summarize(n_data_points= n()) %>% 
+  as.data.frame() %>% 
+  print(nrow=100)
+cat("\n Create dummy variables for testing effects of income: \n")
+
+# ref  D1  D2
+#  -1  0   0
+#  0   1   0
+#  1   0   1
+ds_clean <- ds_clean %>% 
+  dplyr::mutate(
+    ses_low_med  = ifelse(sescat == 0, 1, 0 ), 
+    ses_low_high = ifelse(sescat == 1, 1, 0 ) 
+  )
+table(ds_clean$sescat, ds_clean$ses_low_med)
+table(ds_clean$sescat, ds_clean$ses_low_high)
+
+
+# ---- split-income ------------------------
+ds_clean %>% 
+  dplyr::group_by(income_40) %>%
+  dplyr::summarize(n=n()) %>% print(n=50)
+
+ds_clean$sescat <- car::Recode(ds_clean$income_40,
+                                  " 1:3 = '-1'; 
+                                   4:7  = '0';
+                                   8:10 = '1';
+                                  ")
+ds_clean$sescatF <- factor(
+  ds_clean$sescat, 
+  levels = c(-1,             0,             1), 
+  labels = c("Low", "Medium", "High"))
+cat("\n How income at age 40 was categorized: \n")
+ds_clean %>% 
+  dplyr::group_by(sescatF, sescat) %>% 
+  dplyr::summarize(n_data_points= n()) %>% 
+  as.data.frame() %>% 
+  print(nrow=100)
+cat("\n Create dummy variables for testing effects of income: \n")
+
+# ref  D1  D2
+#  -1  0   0
+#  0   1   0
+#  1   0   1
+ds_clean <- ds_clean %>% 
+  dplyr::mutate(
+    ses_low_med  = ifelse(sescat == 0, 1, 0 ), 
+    ses_low_high = ifelse(sescat == 1, 1, 0 ) 
+  )
+table(ds_clean$sescat, ds_clean$ses_low_med)
+table(ds_clean$sescat, ds_clean$ses_low_high)
+
+
+
 # ---- split-education ----------------------
+ds_clean %>% 
+  dplyr::group_by(edu) %>%
+  dplyr::summarize(n=n()) %>% print(n=50)
+  
 ds_clean$educat <- car::Recode(ds_clean$edu,
                                " 0:9   = '-1'; 
                                10:11 = '0';
@@ -133,7 +207,7 @@ cat("\n Create dummy variables for testing effects of education: \n")
 table(ds_clean$educat, useNA = "always")
 
 # ref  D1  D2
-#  -1  0   0
+#  -1  0   04
 #  0   1   0
 #  1   0   1
 ds_clean <- ds_clean %>% 
@@ -166,7 +240,7 @@ intervals <- intervals[!is.na(intervals[,2]),] # Remove NAs:
 cat("\nTime intervals between observations within individuals:\n")
 print(round(quantile(intervals[,2]),digits))
 
-# Info on age and time between observations:
+# Info on age and time between obser4vations:
 cat("\n Graphs of age distribution :\n")
 opar<-par(mfrow=c(1,3), mex=0.8,mar=c(5,5,3,1))
 hist(ds_clean$age[ds_clean$firstobs==1],col="red",xlab="Age at baseline in years",main="")
