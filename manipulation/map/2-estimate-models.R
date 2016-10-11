@@ -10,8 +10,8 @@ requireNamespace("testit", quietly=TRUE)
 
 # ---- load-sources ------------------------------------------------------------
 # base::source("http://www.ucl.ac.uk/~ucakadl/ELECT/ELECT.r") # load  ELECT functions
-base::source("./scripts/ELECT.r") # load  ELECT functions
-base::source("./scripts/ELECT-utility-functions.R") # ELECT utility functions
+# base::source("./scripts/ELECT.r") # load  ELECT functions
+# base::source("./scripts/ELECT-utility-functions.R") # ELECT utility functions
 # ---- declare-globals ---------------------------------------------------------
 pathSaveFolder <- "./data/shared/derived/models/model-b-mod-2/"
 digits = 2
@@ -91,6 +91,7 @@ ids_firstobs_ims <- ds_clean %>%
   dplyr::filter(firstobs == TRUE & state == -1) %>% 
   dplyr::select(id) %>% print()
 ids_firstobs_ims <- ids_firstobs_ims[,"id"]
+# Establish the focal dataset
 ds_clean <- ds_clean %>% 
   dplyr::filter(!id %in% ids_firstobs_ims)
 # Resultant view of subjects with intermediate missing state at first observation:
@@ -135,8 +136,6 @@ ds_clean <- ds_clean %>%
 table(ds_clean$sescat, ds_clean$ses_low_med)
 table(ds_clean$sescat, ds_clean$ses_low_high)
 
-
-
 # ---- split-education ----------------------
 ds_clean %>% 
   dplyr::group_by(edu) %>%
@@ -180,6 +179,7 @@ table(ds_clean$educat, ds_clean$edu_low_high)
 # save clean data object for records and faster access
 saveRDS(ds_clean, "./data/unshared/ds_clean.rds")
 
+
 # ---- describe-age-composition -----------
 # Time intervals in data:
 # the age difference between timepoint for each individual
@@ -207,7 +207,9 @@ hist(ds_clean$age,col="blue",xlab="Age in data in years",main="")
 hist(intervals[,2],col="green",xlab="Time intervals in data in years",main="")
 opar<-par(mfrow=c(1,1), mex=0.8,mar=c(5,5,2,1))
 
-# ---- prepare-for-estimation --------------------
+
+
+# ---- keep-only-legal-states --------------------------------
 # list ids with intermidiate missing (im) or right censored (rc) states
 ids_with_im    <- unique(ds_clean[ds_clean$state == -1, "id"]) 
 cat("\n Number of subjects with intermediate missing state (-1) : ",length(ids_with_im) )
@@ -222,16 +224,15 @@ set.seed(42)
 ids <- sample(unique(ds_clean$id), 100)
 
 
+# ---- centering-decisions -----------------------
 # centering decisions
 cat("\n Centering decisions :")
 age_center = 75
 age_bl_center = 75
+year_center = 1900
 
-cat("\n The variable `age` is centered at :", age_center)
-cat("\n The variable `age_bl` is centered at :", age_bl_center)
+# ---- prepare-for-estimation --------------------
 
-
-cat("\n\n The following dataset will be passed to msm call (view for one person): \n")
 # define the data object to be passed to the estimation call
 ds <- ds_clean %>% 
   # dplyr::filter(id %in% ids) %>% # make sample smaller if needed 
@@ -240,11 +241,33 @@ ds <- ds_clean %>%
   # dplyr::filter(!id %in% ids_with_rc) %>%
   dplyr::mutate(
     male = as.numeric(male), 
-    age    = (age - 75), # centering
-    age_bl = (age_bl - 75) # centering
+    age    = (age - age_center), # centering
+    age_bl = (age_bl - age_bl_center), # centering
+    birth_year  = as.integer(birth_year - year_center) # centering (for numerical reasons)
 ) %>% 
-  dplyr::select(id, age_bl,birth_year, male, sescat, edu, educat, educatF, edu_low_med, edu_low_high, firstobs, fu_year, age, state)
+  dplyr::select(
+     id            # 
+    ,age_bl        # age at baseline     
+    ,birth_year    # year of birth         
+    ,male          # sex
+    ,sescat        # income at age 40  
+    ,edu           # years of education
+    ,educat        # years of education (categorical)      
+    ,educatF       # years of education (categorical, factor)              
+    ,edu_low_med   # dummy, edu low as compared to edu medium           
+    ,edu_low_high  # dummy, edu low as compared to edu high           
+    ,fu_year       # follow-up year       
+    ,firstobs      # baseline indicator        
+    ,age           # age at visit
+    ,state         # outcome state encoded from mmse
+  )
+# save the object to be used during estimation
+saveRDS(ds, "./data/unshared/ds_estimation.rds")
+
+# --- inspect-before-estimation --------------------
+ds <- readRDS("./data/unshared/ds_estimation.rds")
 # view data object to be passed to the estimation call
+cat("\n\n The following dataset will be passed to msm call (view for one person): \n")
 set.seed(42)
 ids <- sample(unique(ds$id), 1)
 ds %>% dplyr::filter(id %in% ids)
@@ -261,9 +284,8 @@ print(msm::statetable.msm(state,id,data=ds)) # transition frequencies
 # these will be passed as starting values
 initial_probabilities <- as.numeric(as.data.frame(sf[!sf$state %in% c(-1,-2),"pct"])$pct) 
 initial_probabilities <- c(initial_probabilities,0) # no death state at first observation
-cat('\n The inital values for estimation : ', initial_probabilities)
-# save the object to be used during estimation
-saveRDS(ds, "./data/unshared/ds_estimation.rds")
+cat('\n The inital values for estimation : ', paste0(initial_probabilities, collapse = ", "))
+
 
 
 # ----- define-estimation-function --------------------------
@@ -313,7 +335,7 @@ estimate_multistate <- function(
 } 
 
   
-#---- define-support-functions ----------------------
+# ---- define-support-functions ----------------------
 get_crude_Q <- function(ds, Q, cov_names){
   formula_ <- as.formula(paste0("state ~ ",cov_names))
   Q_crude <- crudeinits.msm(
@@ -351,8 +373,8 @@ msm_details <- function(model){
   cat("\n Misclassification matrix : \n")
   suppressWarnings(print(ematrix.msm(model), warnings=F))
   # hazard ratios
-  cat("\n Hazard ratios : \n")
-  print(hazard.msm(model))
+  # cat("\n Hazard ratios : \n")
+  # print(hazard.msm(model))
   # mean sojourn times
   cat("\n Mean sojourn times : \n")
   print(sojourn.msm(model))
@@ -410,24 +432,25 @@ initprobs_ = initial_probabilities
 #                     cf = "age + male + edu_low_med + edu_low_high",
 #                     cb = "age",
 #                     cd = "age + male")
-                     
-
-# m2 <- estimate_multistate("mB_mod2_2", ds, Q_crude, E, qnames,
+# 
+# estimate_multistate("mB_mod2_2", ds, Q_crude, E, qnames,
 #                     cf = "age + male + edu_low_med + edu_low_high",
 #                     cb = "age",
 #                     cd = "age + male + edu_low_med + edu_low_high")
-#   
 # 
-# m3 <- estimate_multistate("mB_mod2_3", ds, Q_crude, E, qnames,
+# estimate_multistate("mB_mod2_3", ds, Q_crude, E, qnames,
 #                     cf = "age + male  + edu_low_med + edu_low_high + sescat",
 #                     cb = "age",
-#                     cd = "age + male  + edu_low_med + edu_low_high + sescat")
+#                     cd = "age + male  + edu_low_med + edu_low_high ")
 # 
-# 
-m4 <- estimate_multistate("mB_mod2_4", ds, Q_crude, E, qnames,
-                          cf = "age + birth_year + male  + edu_low_med + edu_low_high + sescat",
-                          cb = "age",
-                          cd = "age + birth_year + male  + edu_low_med + edu_low_high")
+# estimate_multistate("mB_mod2_4", ds, Q_crude, E, qnames,
+#                     cf = "age + male  + edu_low_med + edu_low_high + sescat",
+#                     cb = "age",
+#                     cd = "age  + male  + edu_low_med + edu_low_high + sescat")
 
-
-
+# ---- inspect-estimated-model -----------------------------
+# call in the model object for inspection
+msm_model <- readRDS(paste0(pathSaveFolder, "mB_mod2_2.rds"))
+print_hazards(msm_model)
+msm_summary(msm_model)
+msm_details(msm_model)
