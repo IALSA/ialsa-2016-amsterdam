@@ -45,7 +45,7 @@ metaData <- read.csv(metadata_path_input, stringsAsFactors=F, header=T)
 # ---- inspect-data ----------------------------------------------
 # inspect loaded data objects (using basic demographic variables )
 ds <- as.data.frame(dto$unitData) # assing alias
-length(unique(ds$id))  # there are this many of subjects
+length(unique(ds$id))  # sample size, number of respondents
 t <- table(ds[,"fu_year"], ds[,"died"]); t[t==0]<-".";t 
 t <- table(ds[,"msex"], ds[,"race"], useNA = "always"); t[t==0]<-".";t 
 t <- table(ds[,"educ"], ds[,"race"]); t[t==0]<-".";t 
@@ -67,7 +67,7 @@ meta_data <- dto[["metaData"]] %>%
   dplyr::filter(include == TRUE) %>%
   # dplyr::select(name, name_new, type, label, construct) %>%
   dplyr::arrange(type, construct, name) %>% 
-  dplyr::select(name_new, label, construct, longitudinal)
+  dplyr::select(name, name_new, label, construct, longitudinal)
 knitr::kable(meta_data)
 
 # # ----- apply-meta-data-1 -------------------------------------

@@ -74,7 +74,7 @@ d <- dto[["unitData"]] %>% dplyr::filter(id %in% ids)
 g <- basic_line(d, "cogn_global", "fu_year", "salmon", .9, .1, T)
 g
 
-# raw_smooth_lines_v2(d, "cogn_global")
+# raw_smooth_lines(d, "cogn_global")
 
 
 # ---- testing --------------------------
@@ -178,28 +178,28 @@ g <- basic_line(d, "cogn_global", "fu_year", "salmon", .9, .1, T)
 
 
 # ----- B-2-cognitive-5-cogn_global -----------------------
-raw_smooth_lines_v2(d, "cogn_global")
+raw_smooth_lines(d, "cogn_global")
 
 # ----- B-2-cognitive-5-cogn_se -----------------------
-raw_smooth_lines_v2(d, "cogn_se")
+raw_smooth_lines(d, "cogn_se")
 
 # ----- B-2-cognitive-5-cogn_ep -----------------------
-raw_smooth_lines_v2(d, "cogn_ep") 
+raw_smooth_lines(d, "cogn_ep") 
 
 # ----- B-2-cognitive-5-cogn_wo -----------------------
-raw_smooth_lines_v2(d, "cogn_wo") 
+raw_smooth_lines(d, "cogn_wo") 
 
 # ----- B-2-cognitive-5-cogn_po -----------------------
-raw_smooth_lines_v2(d, "cogn_po")
+raw_smooth_lines(d, "cogn_po")
 
 # ----- B-2-cognitive-5-cogn_ps -----------------------
-raw_smooth_lines_v2(d, "cogn_ps")
+raw_smooth_lines(d, "cogn_ps")
 
 # ----- B-2-cognitive-5-cogn_ps -----------------------
-raw_smooth_lines_v2(d, "cogn_ps")
+raw_smooth_lines(d, "cogn_ps")
 
 # ----- B-2-cognitive-5-mmse -----------------------
-raw_smooth_lines_v2(d, "mmse")
+raw_smooth_lines(d, "mmse")
 
 
 
