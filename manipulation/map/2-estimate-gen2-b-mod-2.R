@@ -1,9 +1,6 @@
 #These first few lines run only when the file is run in RStudio, !!NOT when an Rmd/Rnw file calls it!!
 rm(list=ls(all=TRUE))  #Clear the variables from previous runs.
 
-# ---- load-sources ------------------------------------------------------------
-base::source("http://www.ucl.ac.uk/~ucakadl/ELECT/ELECT.r") # load  ELECT functions
-base::source("./scripts/ELECT-utility-functions.R") # ELECT utility functions
 # ---- load-packages -----------------------------------------------------------
 library(magrittr) #Pipes
 library(msm)
@@ -11,6 +8,10 @@ requireNamespace("ggplot2", quietly=TRUE)
 requireNamespace("dplyr", quietly=TRUE) 
 requireNamespace("testit", quietly=TRUE)
 
+# ---- load-sources ------------------------------------------------------------
+# base::source("http://www.ucl.ac.uk/~ucakadl/ELECT/ELECT.r") # load  ELECT functions
+base::source("./scripts/ELECT.r") # load  ELECT functions
+base::source("./scripts/ELECT-utility-functions.R") # ELECT utility functions
 # ---- declare-globals ---------------------------------------------------------
 pathSaveFolder <- "./data/shared/derived/models/model-b-mod-2/"
 digits = 2
@@ -42,19 +43,8 @@ view_id <- function(ds1,ds2,id){
 }
 ids <- sample(unique(ds_miss$id),1) # view a random person for sporadic inspections
 # 50402431 , 37125649, 50101073, 6804844, 83001827 , 56751351, 13485298, 56751351, 75507759)
-# ids <- c(50402431) #96351191
+ids <- c(50402431) #96351191
 view_id(ds_miss, ds_ms, ids)
-
-ds <- ds_miss
-ds %>% 
-  dplyr::filter(died ==1) %>% 
-  dplyr::group_by(presumed_alive) %>% 
-  dplyr::summarize(n = n())
-
-ds %>% 
-  dplyr::filter(presumed_alive == 0) %>% 
-  dplyr::group_by(died) %>% 
-  dplyr::summarize(n = n())
 
 # ---- remove-invalid-cases --------------------------------------------------------------
 #### 1) Remove observations with missing age
@@ -253,7 +243,7 @@ ds <- ds_clean %>%
     age    = (age - 75), # centering
     age_bl = (age_bl - 75) # centering
 ) %>% 
-  dplyr::select(id, age_bl,male, edu, educat, educatF, edu_low_med, edu_low_high, firstobs, fu_year, age, state)
+  dplyr::select(id, age_bl,birth_year, male, sescat, edu, educat, educatF, edu_low_med, edu_low_high, firstobs, fu_year, age, state)
 # view data object to be passed to the estimation call
 set.seed(42)
 ids <- sample(unique(ds$id), 1)
@@ -420,14 +410,24 @@ initprobs_ = initial_probabilities
 #                     cf = "age + male + edu_low_med + edu_low_high",
 #                     cb = "age",
 #                     cd = "age + male")
-#                     
-# (Q_crude <- get_crude_Q(ds, Q, "age"))
+                     
+
 # m2 <- estimate_multistate("mB_mod2_2", ds, Q_crude, E, qnames,
 #                     cf = "age + male + edu_low_med + edu_low_high",
 #                     cb = "age",
 #                     cd = "age + male + edu_low_med + edu_low_high")
-#  
-
+#   
+# 
+# m3 <- estimate_multistate("mB_mod2_3", ds, Q_crude, E, qnames,
+#                     cf = "age + male  + edu_low_med + edu_low_high + sescat",
+#                     cb = "age",
+#                     cd = "age + male  + edu_low_med + edu_low_high + sescat")
+# 
+# 
+m4 <- estimate_multistate("mB_mod2_4", ds, Q_crude, E, qnames,
+                          cf = "age + birth_year + male  + edu_low_med + edu_low_high + sescat",
+                          cb = "age",
+                          cd = "age + birth_year + male  + edu_low_med + edu_low_high")
 
 
 
