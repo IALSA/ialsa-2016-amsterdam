@@ -1,0 +1,191 @@
+---
+title: 'Model B : Estimation Results'
+output:
+  html_document:
+    css: ~/GitHub/ialsa-2016-amsterdam/libs/css/sidebar.css
+    highlight: tango
+    keep_md: yes
+    theme: flatly
+    toc: yes
+  pdf_document:
+    toc: yes
+  word_document:
+    toc: yes
+---
+
+<!-- These two chunks should be added in the beginning of every .Rmd that you want to source an .R script -->
+<!--  The 1st mandatory chunck  -->
+<!--  Set the working directory to the repository's base directory -->
+```{r, echo=F, message=F} 
+#Don't combine this call with any other chunk 
+# cat("Working directory: ", getwd()) # check where you are
+  library(knitr)
+# Rmd is in "./reports/reportA/reportA.Rmd", but now the root is "./"
+  knitr::opts_knit$set(root.dir='../../') 
+```
+
+<!--  The 2nd mandatory chunck  -->
+<!-- Set the report-wide options, and point to the external code file. -->
+```{r set_options, echo=F}
+# set options shared by all chunks
+opts_chunk$set(
+  results='show', 
+  message = TRUE,
+  comment = NA, 
+  tidy = FALSE,
+  fig.height = 4, 
+  fig.width = 5.5, 
+  out.width = "550px",
+  fig.path = 'figure_rmd/',     
+  dev = "png",
+  dpi = 100
+  # fig.path = 'figure_pdf/',     
+  # dev = "pdf"#,
+  # dev.args=list(pdf = list(colormodel = 'cmyk'))
+)
+echoChunks <- FALSE
+options(width=120) #So the output is 50% wider than the default.
+# connect to the file with the underlying R script  
+read_chunk("./manipulation/map/2-estimate-gen2-b-mod-2.R") 
+```
+
+Estimation results of **Model B**, specified by the following input:
+```{r specify-model, echo=T, results='show', message=FALSE}
+```
+
+
+
+# Load environmet
+<!-- Load 'sourced' R files.  Suppress the output when loading packages. --> 
+```{r load-packages, echo=echoChunks, message=FALSE}
+```
+
+<!-- Load the sources.  Suppress the output when loading sources. --> 
+```{r load-sources, echo=echoChunks, message=FALSE}
+```
+
+
+<!-- Load any Global functions and variables declared in the R file.  Suppress the output. --> 
+```{r declare-globals, echo=F, results='show', message=FALSE}
+```
+
+# Load data
+<!-- Load the datasets.   -->
+```{r load-data, echo=echoChunks, results='hide', message=FALSE}
+```
+
+<!-- Inspect the datasets.   -->
+```{r inspect-data, echo=echoChunks, results='hide', message=FALSE}
+```
+
+
+```{r inspect-created-multistates, echo=echoChunks, results='show', message=FALSE}
+```
+
+# Remove cases
+```{r remove-invalid-cases, echo=T, results='show', message=FALSE}
+```
+
+# Categorize covariates
+```{r split-education, echo=echoChunks, results='show', message=FALSE}
+```
+
+```{r split-income, echo=echoChunks, results='show', message=FALSE}
+```
+
+
+# Age diagnostic
+```{r describe-age-composition, echo=echoChunks, results='show', message=FALSE, eval=T, out.width="900px", out.height="300px"}
+```
+
+# Estimation prep
+```{r prepare-for-estimation, echo=echoChunks, results='show', message=FALSE}
+```
+
+# Specifications
+
+## Fitting functions
+```{r define-estimation-function, echo=T, results='show', message=FALSE}
+```
+
+## Support functions
+```{r define-support-functions, echo=T, results='show', message=FALSE}
+```
+
+## Model
+```{r specify-model, echo=T, results='show', message=FALSE}
+```
+
+## `msm` options
+```{r specify-msm-options, echo=T, results='show', message=FALSE}
+```
+
+```{r estimate-msm-models, echo=T, results='show', message=FALSE}
+```
+
+```{r assemble-msm-models, echo=T, results='show', message=FALSE, eval=F}
+```
+
+<!-- ## `elect` options -->
+```{r specify-elect-options, echo=T, results='show', message=FALSE, eval=F}
+```
+
+```{r compute-life-expectancies, echo=T, results='show', message=FALSE, eval=F}
+```
+
+
+# Model results
+
+The model was fitted using the following specification of covariates:
+```
+# Forward transitions:
+  "1-2"       = "age + age_bl + male + edu_low_med + edu_low_high + sescat"
+  "2-3"       = "age + age_bl + male + edu_low_med + edu_low_high + sescat"
+# Backward transitions:
+  "2-1"       = "age + age_bl"
+# Death transitions: 
+  "1-4"       = "age + age_bl + male + edu_low_med + edu_low_high + sescat"
+  "2-4"       = "age + age_bl + male + edu_low_med + edu_low_high + sescat"
+  "3-4"       = "age + age_bl + male + edu_low_med + edu_low_high + sescat"
+```
+
+## summary
+```{r results-1-1, echo=echoChunks, results='show', message=FALSE, eval=T, warning = T, out.width = "900px"}
+models <- readRDS("./data/shared/derived/models/model-b-mod-2/models.rds")
+msm_model <- models$ses$msm
+le_model <- models$ses$LE
+```
+
+## details
+```{r results-1-2, echo=echoChunks, results='show', message=FALSE, eval=T}
+msm_details(msm_model)
+```
+
+## hazards
+```{r results-1-3, echo=echoChunks, results='show', message=FALSE, eval=T}
+print_hazards(msm_model)
+```
+
+## elect summary
+```{r results-1-4, echo=echoChunks, results='show', message=FALSE, eval=T}
+summary.elect(
+  le_model, # life expectancy estimated by elect()
+  probs = c(.025, .5, .975), # numeric vector of probabilities for quantiles
+  digits=2, # number of decimals places in output
+  print = TRUE # print toggle
+)
+```
+
+## elect plots
+```{r results-1-5, echo=echoChunks, results='show', message=FALSE, eval=T, out.width = "900px"}
+plot.elect(le_model)
+```
+
+
+# Session Info
+```{r}
+sessionInfo()
+
+```
+
+

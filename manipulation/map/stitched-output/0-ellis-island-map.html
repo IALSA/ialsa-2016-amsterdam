@@ -202,7 +202,7 @@ hr {
 
 <body>
 <p>This report was automatically generated with the R package <strong>knitr</strong>
-(version 1.13).</p>
+(version 1.14).</p>
 
 <pre><code class="r"># The purpose of this script is to create a data object (dto) which will hold all data and metadata.
 # Run the lines below to stitch a basic html output. 
@@ -233,773 +233,674 @@ library(ggplot2) # Graphs
 # Functions of these packages will need to be qualified when used
 # See more: http://r-pkgs.had.co.nz/namespace.html#search-path
 requireNamespace(&quot;tidyr&quot;) #  data manipulation
-</code></pre>
-
-<pre><code>## Loading required namespace: tidyr
-</code></pre>
-
-<pre><code class="r">requireNamespace(&quot;dplyr&quot;) # f() names conflict with other packages (esp. base, stats, and plyr).
-</code></pre>
-
-<pre><code>## Loading required namespace: dplyr
-</code></pre>
-
-<pre><code class="r">requireNamespace(&quot;testit&quot;) # for asserting conditions meet expected patterns.
-</code></pre>
-
-<pre><code>## Loading required namespace: testit
+requireNamespace(&quot;dplyr&quot;) # f() names conflict with other packages (esp. base, stats, and plyr).
+requireNamespace(&quot;testit&quot;) # for asserting conditions meet expected patterns.
 </code></pre>
 
 <pre><code class="r"># reach out to the curator for a dataset prepared for general consumption
-data_path_input  &lt;- &quot;../MAP/data-unshared/derived/ds0.rds&quot;
+data_path_input  &lt;- &quot;../MAP/data-unshared/derived/dto.rds&quot;
 # point to the local metadata to be used for this project (specific consumption)
-metadata_path_input &lt;- &quot;./data/shared/meta/map/meta-data-map.csv&quot; 
+# metadata_path_input &lt;- &quot;./data/shared/meta/map/meta-data-map.csv&quot; 
+metadata_path_input &lt;- &quot;./data/shared/meta/map/meta-data-map-2016-09-09.csv&quot; 
 </code></pre>
 
 <pre><code class="r"># load data objects
-unitData &lt;- readRDS(data_path_input) 
+dto      &lt;- readRDS(data_path_input)
+# dto already contains meta data, but you should load a local one for greater control
 metaData &lt;- read.csv(metadata_path_input, stringsAsFactors=F, header=T)
 </code></pre>
 
 <pre><code class="r"># inspect loaded data objects (using basic demographic variables )
-ds &lt;- unitData # assing alias
-length(unique(ds$id)) # there are this many of subjects
+ds &lt;- as.data.frame(dto$unitData) # assing alias
+length(unique(ds$id))  # sample size, number of respondents
 </code></pre>
 
-<pre><code>## [1] 1696
+<pre><code>## [1] 1853
 </code></pre>
 
-<pre><code class="r">t &lt;- table(ds[,&quot;fu_year&quot;], ds[,&quot;died&quot;]); t[t==0]&lt;-&quot;.&quot;;t
+<pre><code class="r">t &lt;- table(ds[,&quot;fu_year&quot;], ds[,&quot;died&quot;]); t[t==0]&lt;-&quot;.&quot;;t 
 </code></pre>
 
 <pre><code>##     
 ##      0    1  
-##   0  1014 681
-##   1  873  594
-##   2  739  527
-##   3  632  446
-##   4  539  369
-##   5  427  313
-##   6  407  259
-##   7  360  198
-##   8  327  139
-##   9  249  93 
-##   10 176  61 
-##   11 94   39 
-##   12 32   24 
-##   13 27   17 
-##   14 22   6  
-##   15 19   2  
-##   16 2    .
+##   0  1005 847
+##   1  861  752
+##   2  775  663
+##   3  686  578
+##   4  596  499
+##   5  486  422
+##   6  424  363
+##   7  350  294
+##   8  290  234
+##   9  265  174
+##   10 225  123
+##   11 200  90 
+##   12 137  63 
+##   13 94   36 
+##   14 42   10 
+##   15 23   10 
+##   16 17   2  
+##   17 15   2  
+##   18 15   4
 </code></pre>
 
-<pre><code class="r">t &lt;- table(ds[,&quot;msex&quot;], ds[,&quot;race&quot;], useNA = &quot;always&quot;); t[t==0]&lt;-&quot;.&quot;;t
+<pre><code class="r">t &lt;- table(ds[,&quot;msex&quot;], ds[,&quot;race&quot;], useNA = &quot;always&quot;); t[t==0]&lt;-&quot;.&quot;;t 
 </code></pre>
 
 <pre><code>##       
 ##        1    2   3  6  &lt;NA&gt;
-##   0    6796 443 13 34 .   
-##   1    2310 94  8  10 .   
-##   &lt;NA&gt; .    .   .  .  .
+##   0    8220 530 19 41 4   
+##   1    2733 104 11 10 .   
+##   &lt;NA&gt; .    .   .  .  1
 </code></pre>
 
-<pre><code class="r">t &lt;- table(ds[,&quot;educ&quot;], ds[,&quot;race&quot;]); t[t==0]&lt;-&quot;.&quot;;t
+<pre><code class="r">t &lt;- table(ds[,&quot;educ&quot;], ds[,&quot;race&quot;]); t[t==0]&lt;-&quot;.&quot;;t 
 </code></pre>
 
 <pre><code>##     
 ##      1    2   3  6 
 ##   0  4    .   .  . 
-##   2  8    .   .  . 
-##   3  7    .   2  . 
-##   4  16   1   .  . 
-##   5  17   4   .  . 
-##   6  42   3   .  . 
-##   7  26   .   .  . 
-##   8  141  25  .  . 
-##   9  63   8   .  . 
-##   10 134  22  .  5 
-##   11 186  23  .  . 
-##   12 2103 126 .  10
-##   13 727  79  .  6 
-##   14 1042 92  .  . 
-##   15 473  36  .  13
-##   16 1949 66  14 2 
-##   17 459  .   .  . 
-##   18 847  41  5  8 
-##   19 239  7   .  . 
-##   20 265  4   .  . 
-##   21 194  .   .  . 
-##   22 58   .   .  . 
-##   23 34   .   .  . 
-##   24 26   .   .  . 
-##   25 10   .   .  . 
-##   28 21   .   .  .
+##   2  9    .   .  . 
+##   3  8    .   2  . 
+##   4  23   1   .  . 
+##   5  23   4   .  . 
+##   6  49   6   .  . 
+##   7  29   .   .  . 
+##   8  164  26  .  . 
+##   9  72   9   .  . 
+##   10 158  24  .  5 
+##   11 201  26  .  . 
+##   12 2448 148 .  12
+##   13 870  89  1  6 
+##   14 1244 110 .  1 
+##   15 547  41  .  14
+##   16 2376 85  17 4 
+##   17 553  .   .  . 
+##   18 1093 49  5  9 
+##   19 317  10  2  . 
+##   20 337  6   .  . 
+##   21 237  .   .  . 
+##   22 75   .   .  . 
+##   23 40   .   .  . 
+##   24 32   .   .  . 
+##   25 18   .   3  . 
+##   28 25   .   .  .
 </code></pre>
 
-<pre><code class="r">dto &lt;- list()
+<pre><code class="r"># reconstruct the dto to be used in this project
+dto &lt;- list()
 # the first element of data transfer object contains unit data
-dto[[&quot;unitData&quot;]] &lt;- unitData
+dto[[&quot;unitData&quot;]] &lt;- ds
 # the second element of data transfer object contains meta data
-dto[[&quot;metaData&quot;]] &lt;-  metaData
+dto[[&quot;metaData&quot;]] &lt;-  metaData # new, local meta-data!!
 # verify and glimpse
 dto[[&quot;unitData&quot;]] %&gt;% dplyr::glimpse()
 </code></pre>
 
-<pre><code>## Observations: 9,708
-## Variables: 113
-## $ id                    &lt;int&gt; 9121, 9121, 9121, 9121, 9121, 33027, 330...
+<pre><code>## Observations: 11,673
+## Variables: 142
+## $ id                    &lt;int&gt; 9121, 9121, 9121, 9121, 9121, 9121, 9121...
 ## $ study                 &lt;chr&gt; &quot;MAP &quot;, &quot;MAP &quot;, &quot;MAP &quot;, &quot;MAP &quot;, &quot;MAP &quot;, ...
-## $ scaled_to.x           &lt;chr&gt; &quot;MAP &quot;, &quot;MAP &quot;, &quot;MAP &quot;, &quot;MAP &quot;, &quot;MAP &quot;, ...
-## $ agreeableness         &lt;int&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, ...
-## $ conscientiousness     &lt;int&gt; 35, 35, 35, 35, 35, NA, NA, NA, NA, NA, ...
-## $ extraversion          &lt;int&gt; 34, 34, 34, 34, 34, 30, 30, 32, 32, 32, ...
-## $ neo_altruism          &lt;int&gt; 27, 27, 27, 27, 27, NA, NA, NA, NA, NA, ...
-## $ neo_conscientiousness &lt;int&gt; 35, 35, 35, 35, 35, NA, NA, NA, NA, NA, ...
-## $ neo_trust             &lt;int&gt; 25, 25, 25, 25, 25, NA, NA, NA, NA, NA, ...
-## $ openness              &lt;int&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, ...
-## $ anxiety_10items       &lt;dbl&gt; 0, 0, 0, 0, 0, NA, NA, 0, 0, 0, 0, 0, 0,...
-## $ neuroticism_12        &lt;int&gt; 9, 9, 9, 9, 9, NA, NA, 16, 16, 16, 16, 1...
-## $ neuroticism_6         &lt;int&gt; 8, 8, 8, 8, 8, 1, 1, 14, 14, 14, 14, 14,...
+## $ scaled_to             &lt;chr&gt; &quot;MAP&quot;, &quot;MAP&quot;, &quot;MAP&quot;, &quot;MAP&quot;, &quot;MAP&quot;, &quot;MAP&quot;...
+## $ agreeableness         &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, ...
+## $ conscientiousness     &lt;int&gt; 35, 35, 35, 35, 35, 35, 35, NA, NA, NA, ...
+## $ neo_altruism          &lt;int&gt; 27, 27, 27, 27, 27, 27, 27, NA, NA, NA, ...
+## $ neo_conscientiousness &lt;int&gt; 35, 35, 35, 35, 35, 35, 35, NA, NA, NA, ...
+## $ neo_trust             &lt;int&gt; 25, 25, 25, 25, 25, 25, 25, NA, NA, NA, ...
+## $ neuroticism_12        &lt;int&gt; 9, 9, 9, 9, 9, 9, 9, NA, NA, 16, 16, 16,...
+## $ openness              &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, ...
+## $ anxiety_10items       &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, NA, NA, 0, 0, 0, 0,...
+## $ neuroticism_6         &lt;int&gt; 8, 8, 8, 8, 8, 8, 8, 1, 1, 14, 14, 14, 1...
+## $ cogdx                 &lt;int&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, ...
 ## $ age_bl                &lt;dbl&gt; 79.96988, 79.96988, 79.96988, 79.96988, ...
 ## $ age_death             &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, ...
-## $ died                  &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0...
-## $ educ                  &lt;int&gt; 12, 12, 12, 12, 12, 14, 14, 8, 8, 8, 8, ...
-## $ msex                  &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0...
+## $ educ                  &lt;int&gt; 12, 12, 12, 12, 12, 12, 12, 14, 14, 8, 8...
+## $ msex                  &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1...
 ## $ race                  &lt;int&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1...
-## $ spanish               &lt;int&gt; 2, 2, 2, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 2...
-## $ apoe_genotype         &lt;int&gt; 34, 34, 34, 34, 34, 33, 33, 33, 33, 33, ...
-## $ ldai_bl               &lt;dbl&gt; 0.2, 0.2, 0.2, 0.2, 0.2, 0.0, 0.0, 0.0, ...
-## $ q3smo_bl              &lt;int&gt; 20, 20, 20, 20, 20, NA, NA, NA, NA, NA, ...
-## $ q4smo_bl              &lt;int&gt; 31, 31, 31, 31, 31, NA, NA, NA, NA, NA, ...
-## $ smoke_bl              &lt;int&gt; 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0...
-## $ smoking               &lt;int&gt; 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0...
-## $ fu_year               &lt;int&gt; 0, 1, 2, 3, 4, 0, 1, 0, 2, 3, 4, 5, 6, 0...
-## $ scaled_to.y           &lt;chr&gt; &quot;RMM&quot;, &quot;RMM&quot;, &quot;RMM&quot;, &quot;RMM&quot;, &quot;RMM&quot;, &quot;RMM&quot;...
-## $ cesdsum               &lt;int&gt; 0, 0, 0, 0, 0, 1, 2, 6, 1, 3, 1, 0, 2, 1...
-## $ r_depres              &lt;int&gt; 4, 4, 4, 4, NA, 4, 4, 3, 4, 4, 4, 4, 4, ...
-## $ intrusion             &lt;dbl&gt; NA, NA, NA, 2.000000, NA, NA, NA, NA, NA...
-## $ neglifeevents         &lt;int&gt; NA, NA, NA, 4, NA, NA, NA, NA, NA, NA, N...
-## $ negsocexchange        &lt;dbl&gt; NA, NA, NA, 1.833333, NA, NA, NA, NA, NA...
-## $ nohelp                &lt;dbl&gt; NA, NA, NA, 1.666667, NA, NA, NA, NA, NA...
-## $ panas                 &lt;dbl&gt; NA, NA, NA, 1.1, NA, NA, NA, NA, NA, NA,...
-## $ perceivedstress       &lt;dbl&gt; NA, NA, NA, 2.5, NA, NA, NA, NA, NA, NA,...
-## $ rejection             &lt;dbl&gt; NA, NA, NA, 1.666667, NA, NA, NA, NA, NA...
-## $ unsympathetic         &lt;dbl&gt; NA, NA, NA, 2, NA, NA, NA, NA, NA, NA, N...
-## $ dcfdx                 &lt;int&gt; 1, 1, 1, 1, NA, 1, NA, 1, 2, 1, 1, 1, 1,...
-## $ dementia              &lt;int&gt; 0, 0, 0, 0, NA, 0, NA, 0, 0, 0, 0, 0, 0,...
-## $ r_stroke              &lt;int&gt; NA, NA, 4, 4, NA, 4, NA, 4, NA, 4, NA, N...
-## $ cogn_ep               &lt;dbl&gt; 0.073389978, -0.002270858, -0.533467384,...
-## $ cogn_global           &lt;dbl&gt; 0.25733204, 0.33752780, 0.06659408, 0.40...
-## $ cogn_po               &lt;dbl&gt; 0.299150420, 0.893261567, 0.893261567, 0...
-## $ cogn_ps               &lt;dbl&gt; 0.48563724, 0.88320592, 0.78368706, 0.59...
-## $ cogn_se               &lt;dbl&gt; 0.780455216, 0.938832669, 1.202795091, 1...
-## $ cogn_wo               &lt;dbl&gt; 0.157699036, -0.004753158, -0.319903508,...
-## $ cts_bname             &lt;int&gt; 15, 15, 15, 15, 15, 12, NA, 15, 15, 15, ...
-## $ cts_catflu            &lt;int&gt; 40, 43, 48, 49, 45, 20, NA, 31, 27, 26, ...
-## $ cts_db                &lt;int&gt; 6, 6, 4, 4, 4, 6, NA, 2, 4, 3, 5, 3, 4, ...
-## $ cts_delay             &lt;int&gt; 10, 7, 7, 10, 10, 4, NA, 14, 11, 11, 6, ...
-## $ cts_df                &lt;int&gt; 9, 8, 9, 9, 9, 8, NA, 6, 8, 9, 9, 10, 9,...
-## $ cts_doperf            &lt;int&gt; 7, 7, 6, 7, 8, 7, NA, 7, 4, 5, 5, 6, 6, ...
-## $ cts_ebdr              &lt;int&gt; 9, 9, 6, 8, 9, 10, NA, 8, 0, 8, 7, 10, 1...
-## $ cts_ebmt              &lt;int&gt; 7, 9, 6, 12, 9, 11, NA, 8, 10, 7, 9, 12,...
-## $ cts_idea              &lt;int&gt; 8, 8, 8, 8, 8, 8, NA, 7, 8, 8, 8, 8, 8, ...
-## $ cts_lopair            &lt;int&gt; 9, 14, 14, 15, 15, 5, NA, 10, 12, 8, 7, ...
-## $ cts_mmse30            &lt;dbl&gt; 29, 29, 30, 30, 29, 29, NA, 27, 25, 28, ...
-## $ cts_nccrtd            &lt;int&gt; 24, 34, 26, 27, 28, 19, NA, 16, 19, 13, ...
-## $ cts_pmat              &lt;int&gt; 13, 12, 12, 11, 11, 10, NA, 11, 7, 13, 1...
-## $ cts_read_nart         &lt;int&gt; 9, 8, 9, 8, 9, 10, NA, 5, 5, 3, 3, 3, 4,...
-## $ cts_read_wrat         &lt;int&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, ...
-## $ cts_sdmt              &lt;int&gt; 49, 43, 53, 47, 51, 39, NA, 24, 21, 30, ...
-## $ cts_story             &lt;int&gt; 10, 9, 7, 8, 11, 8, NA, 14, 14, 10, 9, 8...
-## $ cts_wli               &lt;int&gt; 19, 18, 17, 18, 16, 20, NA, 16, 13, 11, ...
-## $ cts_wlii              &lt;int&gt; 7, 6, 5, 6, 5, 5, NA, 5, 5, 3, 5, 5, 3, ...
-## $ cts_wliii             &lt;int&gt; 10, 10, 10, 10, 10, 10, NA, 10, 10, 10, ...
+## $ spanish               &lt;int&gt; 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 1, 1, 1...
+## $ apoe_genotype         &lt;int&gt; 34, 34, 34, 34, 34, 34, 34, 33, 33, 33, ...
+## $ alcohol_g_bl          &lt;dbl&gt; 4.10, 4.10, 4.10, 4.10, 4.10, 4.10, 4.10...
+## $ alco_life             &lt;dbl&gt; 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.0, ...
+## $ q3smo_bl              &lt;int&gt; 20, 20, 20, 20, 20, 20, 20, NA, NA, NA, ...
+## $ q4smo_bl              &lt;int&gt; 31, 31, 31, 31, 31, 31, 31, NA, NA, NA, ...
+## $ smoking               &lt;int&gt; 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0...
+## $ cogact_chd            &lt;dbl&gt; 3.888889, 3.888889, 3.888889, 3.888889, ...
+## $ cogact_midage         &lt;dbl&gt; 2.555556, 2.555556, 2.555556, 2.555556, ...
+## $ cogact_past           &lt;dbl&gt; 2.964286, 2.964286, 2.964286, 2.964286, ...
+## $ cogact_young          &lt;dbl&gt; 2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 2.9, ...
+## $ lostcons_ever         &lt;int&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, ...
+## $ ad_reagan             &lt;int&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, ...
+## $ braaksc               &lt;int&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, ...
+## $ ceradsc               &lt;int&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, ...
+## $ niareagansc           &lt;int&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, ...
+## $ income_40             &lt;int&gt; 6, 6, 6, 6, 6, 6, 6, 7, 7, 5, 5, 5, 5, 5...
+## $ fu_year               &lt;int&gt; 0, 1, 2, 3, 4, 5, 6, 0, 1, 0, 2, 3, 4, 5...
+## $ scaled_to.y           &lt;chr&gt; &quot;MAP&quot;, &quot;MAP&quot;, &quot;MAP&quot;, &quot;MAP&quot;, &quot;MAP&quot;, &quot;MAP&quot;...
+## $ cesdsum               &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 1, 2, 6, 1, 3, 1, 0...
+## $ r_depres              &lt;int&gt; 4, 4, 4, 4, 4, 4, 4, 4, 4, 3, 4, 4, 4, 4...
+## $ intrusion             &lt;dbl&gt; NA, NA, NA, 2.000000, 2.333333, 2.333333...
+## $ neglifeevents         &lt;int&gt; NA, NA, NA, 4, 2, 1, 2, NA, NA, NA, NA, ...
+## $ negsocexchange        &lt;dbl&gt; NA, NA, NA, 1.833333, 2.000000, 1.916667...
+## $ nohelp                &lt;dbl&gt; NA, NA, NA, 1.666667, 2.000000, 2.000000...
+## $ panas                 &lt;dbl&gt; NA, NA, NA, 1.1, 1.1, 1.0, 1.0, NA, NA, ...
+## $ perceivedstress       &lt;dbl&gt; NA, NA, NA, 2.50, 1.50, 2.25, 2.00, NA, ...
+## $ rejection             &lt;dbl&gt; NA, NA, NA, 1.666667, 2.000000, 2.000000...
+## $ unsympathetic         &lt;dbl&gt; NA, NA, NA, 2.000000, 1.666667, 1.333333...
+## $ dcfdx                 &lt;int&gt; 1, 1, 1, 1, 1, 1, 1, 1, NA, 1, 2, 1, 1, ...
+## $ dementia              &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, NA, 0, 0, 0, 0, ...
+## $ r_stroke              &lt;int&gt; NA, NA, 4, 4, 4, 4, 4, 4, NA, 4, NA, 4, ...
+## $ cogn_ep               &lt;dbl&gt; 0.12835551, 0.05407987, -0.45377854, 0.2...
+## $ cogn_po               &lt;dbl&gt; 0.144997854, 0.744225406, 0.744225406, 0...
+## $ cogn_ps               &lt;dbl&gt; 0.4618100, 0.4163097, 0.4394061, 0.45296...
+## $ cogn_se               &lt;dbl&gt; 0.66746102, 0.63381091, 0.93838810, 0.83...
+## $ cogn_wo               &lt;dbl&gt; 0.136495644, -0.023354383, -0.369043213,...
+## $ cogn_global           &lt;dbl&gt; 0.28671548, 0.28229571, 0.09356106, 0.37...
+## $ cts_animals           &lt;int&gt; 19, 20, 23, 21, 21, 24, 22, 9, NA, 15, 1...
+## $ cts_bname             &lt;int&gt; 15, 15, 15, 15, 15, 15, 15, 12, NA, 15, ...
+## $ catfluency            &lt;int&gt; 40, 43, 48, 49, 45, 47, 44, 20, NA, 31, ...
+## $ cts_db                &lt;int&gt; 6, 6, 4, 4, 4, 3, 4, 6, NA, 2, 4, 3, 5, ...
+## $ cts_delay             &lt;int&gt; 10, 7, 7, 10, 10, 10, 11, 4, NA, 14, 11,...
+## $ cts_df                &lt;int&gt; 9, 8, 9, 9, 9, 8, 9, 8, NA, 6, 8, 9, 9, ...
+## $ cts_doperf            &lt;int&gt; 7, 7, 6, 7, 8, 7, 6, 7, NA, 7, 4, 5, 5, ...
+## $ cts_ebdr              &lt;int&gt; 9, 9, 6, 8, 9, 8, 7, 10, NA, 8, 0, 8, 7,...
+## $ cts_ebmt              &lt;int&gt; 7, 9, 6, 12, 9, 6, 7, 11, NA, 8, 10, 7, ...
+## $ cts_fruits            &lt;int&gt; 21, 23, 25, 28, 24, 23, 22, 11, NA, 16, ...
+## $ cts_idea              &lt;int&gt; 8, 8, 8, 8, 8, 8, 8, 8, NA, 7, 8, 8, 8, ...
+## $ cts_lopair            &lt;int&gt; 9, 14, 14, 15, 15, 14, 14, 5, NA, 10, 12...
+## $ mmse                  &lt;dbl&gt; 29, 29, 30, 30, 29, 30, 29, 29, NA, 27, ...
+## $ cts_nccrtd            &lt;int&gt; 24, 34, 26, 27, 28, 27, 24, 19, NA, 16, ...
+## $ cts_pmat              &lt;int&gt; 13, 12, 12, 11, 11, 13, 14, 10, NA, 11, ...
+## $ cts_pmsub             &lt;int&gt; 8, 7, 8, 7, 8, 9, 9, 7, NA, 8, 5, 9, 8, ...
+## $ cts_read_nart         &lt;int&gt; 9, 8, 9, 8, 9, 9, 8, 10, NA, 5, 5, 3, 3,...
+## $ cts_read_wrat         &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, ...
+## $ cts_sdmt              &lt;int&gt; 49, 43, 53, 47, 51, 43, 44, 39, NA, 24, ...
+## $ cts_story             &lt;int&gt; 10, 9, 7, 8, 11, 9, 9, 8, NA, 14, 14, 10...
+## $ cts_stroop_cname      &lt;int&gt; 27, 16, 25, 25, 27, 26, 23, 19, NA, 18, ...
+## $ cts_stroop_wread      &lt;int&gt; 44, 50, 38, 44, 44, 42, 40, 59, NA, 29, ...
+## $ cts_wli               &lt;int&gt; 19, 18, 17, 18, 16, 18, 16, 20, NA, 16, ...
+## $ cts_wlii              &lt;int&gt; 7, 6, 5, 6, 5, 6, 6, 5, NA, 5, 5, 3, 5, ...
+## $ cts_wliii             &lt;int&gt; 10, 10, 10, 10, 10, 9, 10, 10, NA, 10, 1...
 ## $ age_at_visit          &lt;dbl&gt; 79.96988, 81.08145, 81.61259, 82.59548, ...
-## $ iadlsum               &lt;int&gt; 0, 0, 0, 0, 0, 5, 3, 0, 0, 0, 0, 0, 0, 1...
-## $ katzsum               &lt;int&gt; 6, 0, 0, 0, 0, 1, 2, 0, 0, 0, 0, 0, 0, 0...
-## $ rosbscl               &lt;int&gt; 1, 3, 3, 3, 3, 0, 0, 3, 3, 3, 3, 2, 3, 2...
-## $ rosbsum               &lt;int&gt; 2, 0, 0, 0, 0, 3, 3, 0, 0, 0, 0, 1, 0, 1...
-## $ vision                &lt;int&gt; 1, 1, 1, 2, 2, 1, 4, 1, 2, 1, NA, 2, 7, ...
-## $ visionlog             &lt;dbl&gt; 0.3, 0.3, 0.3, 0.4, 0.4, 0.3, 0.7, 0.3, ...
-## $ fev                   &lt;dbl&gt; 1.650, 1.280, 1.655, NA, 1.525, 1.110, N...
-## $ mep                   &lt;dbl&gt; 39.5, 33.5, 43.0, NA, 39.0, 84.0, NA, 95...
-## $ mip                   &lt;dbl&gt; 32.5, 36.5, 35.0, NA, 41.5, 73.5, NA, 82...
-## $ pvc                   &lt;dbl&gt; 2.285, 1.285, 1.690, NA, 1.940, 1.510, N...
-## $ bun                   &lt;int&gt; 13, NA, 13, 13, 14, 32, 35, 14, 12, 12, ...
-## $ ca                    &lt;dbl&gt; 9.5, NA, 9.4, 9.4, 9.2, 9.2, 8.8, 9.7, 9...
-## $ chlstrl               &lt;int&gt; 235, NA, 205, 230, 210, 201, 197, 134, 1...
-## $ cl                    &lt;int&gt; 96, NA, 102, 93, 99, 103, 103, 102, 104,...
-## $ co2                   &lt;int&gt; 24, NA, 24, 25, 25, 22, 25, 23, 20, 21, ...
-## $ crn                   &lt;dbl&gt; 0.85, NA, 0.98, 0.89, 0.82, 1.30, 2.00, ...
-## $ fasting               &lt;int&gt; 2, NA, 2, 2, 2, 3, 3, 3, 2, 1, NA, 3, 1,...
-## $ glucose               &lt;int&gt; 92, NA, 77, 85, 92, 180, 153, 170, 203, ...
-## $ hba1c                 &lt;dbl&gt; 5.6, NA, 5.5, 5.5, 6.1, NA, NA, NA, 7.0,...
-## $ hdlchlstrl            &lt;int&gt; 79, NA, 76, 79, 69, 50, 51, 30, 37, 40, ...
-## $ hdlratio              &lt;dbl&gt; 3.0, NA, 2.7, 2.9, 3.0, 4.0, 3.9, 4.5, 4...
-## $ k                     &lt;dbl&gt; 5.0, NA, 4.2, 4.3, 4.5, 4.8, 4.6, 4.2, 4...
-## $ ldlchlstrl            &lt;int&gt; 133, NA, 112, 134, 119, 107, 99, NA, 48,...
-## $ na                    &lt;int&gt; 136, NA, 139, 130, 136, 139, 140, 139, 1...
-## $ alcohol_g             &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, ...
+## $ iadlsum               &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 5, 3, 0, 0, 0, 0, 0...
+## $ katzsum               &lt;int&gt; 6, 0, 0, 0, 0, 0, 0, 1, 2, 0, 0, 0, 0, 0...
+## $ rosbscl               &lt;int&gt; 1, 3, 3, 3, 3, 3, 3, 0, 0, 3, 3, 3, 3, 2...
+## $ rosbsum               &lt;int&gt; 2, 0, 0, 0, 0, 0, 0, 3, 3, 0, 0, 0, 0, 1...
+## $ vision                &lt;int&gt; 1, 1, 1, 2, 2, 2, 1, 1, 4, 1, 2, 1, NA, ...
+## $ visionlog             &lt;dbl&gt; 0.3, 0.3, 0.3, 0.4, 0.4, 0.4, 0.3, 0.3, ...
+## $ bun                   &lt;int&gt; 13, NA, 13, 13, 14, 13, 14, 32, 35, 14, ...
+## $ ca                    &lt;dbl&gt; 9.5, NA, 9.4, 9.4, 9.2, 8.8, 9.1, 9.2, 8...
+## $ cholesterol           &lt;int&gt; 235, NA, 205, 230, 210, 201, 231, 201, 1...
+## $ cloride               &lt;int&gt; 96, NA, 102, 93, 99, 98, 98, 103, 103, 1...
+## $ co2                   &lt;int&gt; 24, NA, 24, 25, 25, 24, 23, 22, 25, 23, ...
+## $ crn                   &lt;dbl&gt; 0.85, NA, 0.98, 0.89, 0.82, 0.85, 0.85, ...
+## $ fasting               &lt;int&gt; 2, NA, 2, 2, 2, 2, 2, 3, 3, 3, 2, 1, NA,...
+## $ glucose               &lt;int&gt; 92, NA, 77, 85, 92, 85, 95, 180, 153, 17...
+## $ hba1c                 &lt;dbl&gt; 5.6, NA, 5.5, 5.5, 6.1, 5.9, 5.6, NA, NA...
+## $ hdlchlstrl            &lt;int&gt; 79, NA, 76, 79, 69, 71, 82, 50, 51, 30, ...
+## $ hdlratio              &lt;dbl&gt; 3.0, NA, 2.7, 2.9, 3.0, 2.8, 2.8, 4.0, 3...
+## $ k                     &lt;dbl&gt; 5.0, NA, 4.2, 4.3, 4.5, 4.0, 4.3, 4.8, 4...
+## $ ldlchlstrl            &lt;int&gt; 133, NA, 112, 134, 119, 116, 137, 107, 9...
+## $ na                    &lt;int&gt; 136, NA, 139, 130, 136, 132, 134, 139, 1...
+## $ cogact_old            &lt;dbl&gt; 2.142857, 1.714286, 1.714286, 1.714286, ...
 ## $ bmi                   &lt;dbl&gt; 26.83177, 27.61514, 26.97526, 26.40132, ...
 ## $ htm                   &lt;dbl&gt; 1.778004, 1.752604, 1.778004, 1.778004, ...
 ## $ phys5itemsum          &lt;dbl&gt; 1.7500000, 4.0416667, 0.6250000, 0.45833...
 ## $ wtkg                  &lt;dbl&gt; 84.8232, 84.8232, 85.2768, 83.4624, 84.3...
-## $ bp11                  &lt;chr&gt; &quot;159/090&quot;, &quot;145/090&quot;, &quot;160/095&quot;, &quot;147/09...
-## $ bp2                   &lt;chr&gt; &quot;159/090&quot;, &quot;150/084&quot;, &quot;160/088&quot;, &quot;149/09...
-## $ bp3                   &lt;int&gt; 1, 1, NA, 1, NA, 1, 1, 1, 1, 1, 1, 1, 1,...
-## $ bp31                  &lt;chr&gt; &quot;157/082&quot;, &quot;109/077&quot;, &quot;151/082&quot;, &quot;138/08...
-## $ hypertension_cum      &lt;int&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0...
-## $ dm_cum                &lt;int&gt; 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0...
+## $ socact_old            &lt;dbl&gt; 2.666667, 2.333333, 2.333333, 2.500000, ...
+## $ soc_net               &lt;int&gt; 6, 8, 8, 9, 6, 9, 8, 1, 4, 6, 3, 2, 3, 5...
+## $ social_isolation      &lt;dbl&gt; 2.2, 2.0, 2.0, 1.4, 1.8, 1.6, 1.4, 1.8, ...
+## $ bp_sit_1              &lt;chr&gt; &quot;159/090&quot;, &quot;145/090&quot;, &quot;160/095&quot;, &quot;147/09...
+## $ bp_sit_2              &lt;chr&gt; &quot;159/090&quot;, &quot;150/084&quot;, &quot;160/088&quot;, &quot;149/09...
+## $ bp_meds               &lt;int&gt; 1, 1, NA, 1, NA, NA, NA, 1, 1, 1, 1, 1, ...
+## $ bp_stand_3            &lt;chr&gt; &quot;157/082&quot;, &quot;109/077&quot;, &quot;151/082&quot;, &quot;138/08...
+## $ hypertension_cum      &lt;int&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1...
+## $ cancer_cum            &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0...
+## $ dm_cum                &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1...
+## $ headinjrloc_cum       &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0...
 ## $ thyroid_cum           &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0...
-## $ chf_cum               &lt;int&gt; 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0...
-## $ claudication_cum      &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0...
+## $ chf_cum               &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0...
+## $ claudication_cum      &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1...
 ## $ heart_cum             &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0...
 ## $ stroke_cum            &lt;int&gt; NA, NA, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,...
-## $ vasc_3dis_sum         &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0...
-## $ vasc_4dis_sum         &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0...
-## $ vasc_risks_sum        &lt;dbl&gt; 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0...
+## $ vasc_3dis_sum         &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1...
+## $ vasc_4dis_sum         &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1...
+## $ vasc_risks_sum        &lt;dbl&gt; 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2...
 ## $ gait_speed            &lt;dbl&gt; 0.4393514, NA, NA, 0.4876800, 0.3483429,...
-## $ gripavg               &lt;dbl&gt; 41.00, 41.00, 35.50, NA, 25.75, 59.00, N...
+## $ gripavg               &lt;dbl&gt; 41.00, 41.00, 35.50, NA, 25.75, 39.50, N...
+## $ total_smell_test      &lt;dbl&gt; 8, 9, 10, 8, 9, 9, 8, 8, NA, 8, NA, NA, ...
+## $ fev                   &lt;dbl&gt; 1.650, 1.280, 1.655, NA, 1.525, 1.820, N...
+## $ mep                   &lt;dbl&gt; 39.5, 33.5, 43.0, NA, 39.0, 42.0, NA, 84...
+## $ mip                   &lt;dbl&gt; 32.5, 36.5, 35.0, NA, 41.5, 32.0, NA, 73...
+## $ pvc                   &lt;dbl&gt; 2.285, 1.285, 1.690, NA, 1.940, 1.820, N...
+## $ firstobs              &lt;dbl&gt; 1, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0...
+## $ month                 &lt;chr&gt; &quot;6&quot;, &quot;6&quot;, &quot;6&quot;, &quot;6&quot;, &quot;6&quot;, &quot;6&quot;, &quot;6&quot;, &quot;7&quot;, ...
+## $ year                  &lt;chr&gt; &quot;2010&quot;, &quot;2010&quot;, &quot;2010&quot;, &quot;2010&quot;, &quot;2010&quot;, ...
+## $ date_at_bl            &lt;date&gt; 2010-06-01, 2010-06-01, 2010-06-01, 201...
+## $ age_at_bl             &lt;dbl&gt; 79.96988, 79.96988, 79.96988, 79.96988, ...
+## $ birth_date            &lt;date&gt; 1930-07-02, 1930-07-02, 1930-07-02, 193...
+## $ birth_year            &lt;dbl&gt; 1930, 1930, 1930, 1930, 1930, 1930, 1930...
+## $ date_at_visit         &lt;date&gt; 2010-06-01, 2011-07-12, 2012-01-22, 201...
+## $ died                  &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0...
 </code></pre>
 
 <pre><code class="r">dto[[&quot;metaData&quot;]] %&gt;% dplyr::glimpse()
 </code></pre>
 
-<pre><code>## Observations: 113
-## Variables: 9
-## $ name          &lt;chr&gt; &quot;id&quot;, &quot;study&quot;, &quot;scaled_to.x&quot;, &quot;agreeableness&quot;, &quot;...
-## $ label         &lt;chr&gt; NA, NA, NA, &quot;NEO agreeableness-ROS&quot;, &quot;Conscienti...
-## $ type          &lt;chr&gt; &quot;design&quot;, &quot;design&quot;, &quot;design&quot;, &quot;personality&quot;, &quot;pe...
-## $ name_new      &lt;chr&gt; &quot;id&quot;, &quot;study&quot;, &quot;scaled_to.x&quot;, &quot;agreeableness&quot;, &quot;...
-## $ construct     &lt;chr&gt; &quot;id&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;...
-## $ self_reported &lt;lgl&gt; FALSE, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N...
-## $ longitudinal  &lt;lgl&gt; FALSE, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N...
-## $ unit          &lt;chr&gt; &quot;person&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;...
-## $ include       &lt;lgl&gt; TRUE, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA...
+<pre><code>## Observations: 134
+## Variables: 11
+## $ name          &lt;chr&gt; &quot;ad_reagan&quot;, &quot;age_at_visit&quot;, &quot;age_bl&quot;, &quot;age_deat...
+## $ label         &lt;chr&gt; &quot;Dicotomized NIA-Reagan score&quot;, &quot;Age at cycle - ...
+## $ type          &lt;chr&gt; &quot;pathology&quot;, &quot;demographic&quot;, &quot;demographic&quot;, &quot;demo...
+## $ name_new      &lt;chr&gt; &quot;ad_reagan&quot;, &quot;age_at_visit&quot;, &quot;age_bl&quot;, &quot;age_deat...
+## $ construct     &lt;chr&gt; &quot;alzheimer&quot;, &quot;age&quot;, &quot;age&quot;, &quot;age&quot;, &quot;&quot;, &quot;alcohol&quot;,...
+## $ self_reported &lt;lgl&gt; FALSE, FALSE, FALSE, FALSE, TRUE, TRUE, NA, FALS...
+## $ longitudinal  &lt;lgl&gt; FALSE, TRUE, FALSE, FALSE, FALSE, FALSE, FALSE, ...
+## $ unit          &lt;chr&gt; &quot;category&quot;, &quot;year&quot;, &quot;year&quot;, &quot;year&quot;, &quot;scale&quot;, &quot;gr...
+## $ include       &lt;lgl&gt; NA, TRUE, TRUE, TRUE, NA, TRUE, NA, TRUE, TRUE, ...
+## $ url           &lt;chr&gt; &quot;https://www.radc.rush.edu/docs/var/detail.htm?c...
+## $ notes         &lt;chr&gt; &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, ...
 </code></pre>
 
 <pre><code class="r">meta_data &lt;- dto[[&quot;metaData&quot;]] %&gt;%
   dplyr::filter(include == TRUE) %&gt;%
   # dplyr::select(name, name_new, type, label, construct) %&gt;%
-  dplyr::arrange(type, construct, name)
+  dplyr::arrange(type, construct, name) %&gt;% 
+  dplyr::select(name, name_new, label, construct, longitudinal)
 knitr::kable(meta_data)
 </code></pre>
 
 <table><thead>
 <tr>
 <th align="left">name</th>
-<th align="left">label</th>
-<th align="left">type</th>
 <th align="left">name_new</th>
+<th align="left">label</th>
 <th align="left">construct</th>
-<th align="left">self_reported</th>
 <th align="left">longitudinal</th>
-<th align="left">unit</th>
-<th align="left">include</th>
 </tr>
 </thead><tbody>
 <tr>
 <td align="left">apoe_genotype</td>
-<td align="left">ApoE genotype</td>
-<td align="left">clinical</td>
 <td align="left">apoe_genotype</td>
+<td align="left">Apolipoprotein E genotype</td>
 <td align="left">apoe</td>
 <td align="left">FALSE</td>
-<td align="left">FALSE</td>
-<td align="left">scale</td>
-<td align="left">TRUE</td>
 </tr>
 <tr>
 <td align="left">chf_cum</td>
-<td align="left">Medical Conditions - congestive heart failure -</td>
-<td align="left"></td>
-<td align="left"></td>
-<td align="left"></td>
-<td align="left"></td>
-<td align="left"></td>
-<td align="left"></td>
-<td align="left"></td>
-</tr>
-<tr>
-<td align="left">cumulative</td>
-<td align="left">clinical</td>
 <td align="left">chf_cum</td>
+<td align="left">Medical Conditions - congestive heart failure -cumulative</td>
 <td align="left">cardio</td>
 <td align="left">TRUE</td>
-<td align="left">TRUE</td>
-<td align="left">category</td>
-<td align="left">TRUE</td>
-<td align="left"></td>
 </tr>
 <tr>
+<td align="left">dcfdx</td>
 <td align="left">dcfdx</td>
 <td align="left">Clinical dx summary</td>
-<td align="left">clinical</td>
-<td align="left">dcfdx</td>
 <td align="left">cognition</td>
-<td align="left">FALSE</td>
-<td align="left">TRUE</td>
-<td align="left">category</td>
 <td align="left">TRUE</td>
 </tr>
 <tr>
+<td align="left">r_stroke</td>
 <td align="left">r_stroke</td>
 <td align="left">Clinical stroke dx</td>
-<td align="left">clinical</td>
-<td align="left">r_stroke</td>
 <td align="left">stroke</td>
-<td align="left">FALSE</td>
-<td align="left">TRUE</td>
-<td align="left">category</td>
 <td align="left">TRUE</td>
 </tr>
 <tr>
-<td align="left">stroke_cum</td>
-<td align="left">Clinical Diagnoses - Stroke - cumulative</td>
-<td align="left">clinical</td>
-<td align="left">stroke_cum</td>
-<td align="left">stroke</td>
+<td align="left">cogdx</td>
+<td align="left">cogdx</td>
+<td align="left">Final consensus cognitive diagnosis</td>
+<td align="left">NA</td>
 <td align="left">FALSE</td>
-<td align="left">TRUE</td>
-<td align="left">category</td>
-<td align="left">TRUE</td>
 </tr>
 <tr>
 <td align="left">cts_mmse30</td>
-<td align="left">MMSE - 2014</td>
-<td align="left">cognitive</td>
 <td align="left">mmse</td>
+<td align="left">MMSE - 2014</td>
 <td align="left">dementia</td>
-<td align="left">TRUE</td>
-<td align="left">TRUE</td>
-<td align="left">0 to 30</td>
 <td align="left">TRUE</td>
 </tr>
 <tr>
+<td align="left">dementia</td>
 <td align="left">dementia</td>
 <td align="left">Dementia diagnosis</td>
-<td align="left">cognitive</td>
 <td align="left">dementia</td>
-<td align="left">dementia</td>
-<td align="left">FALSE</td>
-<td align="left">TRUE</td>
-<td align="left">0, 1</td>
 <td align="left">TRUE</td>
 </tr>
 <tr>
+<td align="left">cogn_ep</td>
 <td align="left">cogn_ep</td>
 <td align="left">Calculated domain score-episodic memory</td>
-<td align="left">cognitive</td>
-<td align="left">cogn_ep</td>
 <td align="left">episodic memory</td>
-<td align="left">FALSE</td>
-<td align="left">TRUE</td>
-<td align="left">composite</td>
 <td align="left">TRUE</td>
 </tr>
 <tr>
+<td align="left">cogn_global</td>
 <td align="left">cogn_global</td>
 <td align="left">Global cognitive score</td>
-<td align="left">cognitive</td>
-<td align="left">cogn_global</td>
 <td align="left">global cognition</td>
-<td align="left">FALSE</td>
-<td align="left">TRUE</td>
-<td align="left">composite</td>
 <td align="left">TRUE</td>
 </tr>
 <tr>
+<td align="left">cogn_po</td>
 <td align="left">cogn_po</td>
 <td align="left">Calculated domain score - perceptual orientation</td>
-<td align="left">cognitive</td>
-<td align="left">cogn_po</td>
 <td align="left">perceptual orientation</td>
-<td align="left">FALSE</td>
-<td align="left">TRUE</td>
-<td align="left">composite</td>
 <td align="left">TRUE</td>
 </tr>
 <tr>
+<td align="left">cogn_ps</td>
 <td align="left">cogn_ps</td>
 <td align="left">Calculated domain score - perceptual speed</td>
-<td align="left">cognitive</td>
-<td align="left">cogn_ps</td>
 <td align="left">perceptual speed</td>
-<td align="left">FALSE</td>
-<td align="left">TRUE</td>
-<td align="left">composite</td>
 <td align="left">TRUE</td>
 </tr>
 <tr>
+<td align="left">cogn_se</td>
 <td align="left">cogn_se</td>
 <td align="left">Calculated domain score - semantic memory</td>
-<td align="left">cognitive</td>
-<td align="left">cogn_se</td>
 <td align="left">semantic memory</td>
-<td align="left">FALSE</td>
-<td align="left">TRUE</td>
-<td align="left">composite</td>
 <td align="left">TRUE</td>
 </tr>
 <tr>
+<td align="left">cogn_wo</td>
 <td align="left">cogn_wo</td>
 <td align="left">Calculated domain score - working memory</td>
-<td align="left">cognitive</td>
-<td align="left">cogn_wo</td>
 <td align="left">working memory</td>
-<td align="left">FALSE</td>
-<td align="left">TRUE</td>
-<td align="left">composite</td>
 <td align="left">TRUE</td>
 </tr>
 <tr>
+<td align="left">chd_cogact_freq</td>
+<td align="left">cogact_chd</td>
+<td align="left">Cognitive actifity - child</td>
+<td align="left">NA</td>
+<td align="left">NA</td>
+</tr>
+<tr>
+<td align="left">ma_adult_cogact_freq</td>
+<td align="left">cogact_midage</td>
+<td align="left">Codnitive activity - middle age</td>
+<td align="left">NA</td>
+<td align="left">NA</td>
+</tr>
+<tr>
+<td align="left">past_cogact_freq</td>
+<td align="left">cogact_past</td>
+<td align="left">Cognitive actifity - past</td>
+<td align="left">NA</td>
+<td align="left">NA</td>
+</tr>
+<tr>
+<td align="left">age_at_visit</td>
+<td align="left">age_at_visit</td>
+<td align="left">Age at cycle - fractional</td>
+<td align="left">age</td>
+<td align="left">TRUE</td>
+</tr>
+<tr>
+<td align="left">age_bl</td>
 <td align="left">age_bl</td>
 <td align="left">Age at baseline</td>
-<td align="left">demographic</td>
-<td align="left">age_bl</td>
 <td align="left">age</td>
 <td align="left">FALSE</td>
-<td align="left">FALSE</td>
-<td align="left">year</td>
-<td align="left">TRUE</td>
 </tr>
 <tr>
+<td align="left">age_death</td>
 <td align="left">age_death</td>
 <td align="left">Age at death</td>
-<td align="left">demographic</td>
-<td align="left">age_death</td>
 <td align="left">age</td>
 <td align="left">FALSE</td>
-<td align="left">FALSE</td>
-<td align="left">year</td>
-<td align="left">TRUE</td>
 </tr>
 <tr>
-<td align="left">died</td>
-<td align="left">Indicator of death</td>
-<td align="left">demographic</td>
-<td align="left">died</td>
-<td align="left">age</td>
-<td align="left">FALSE</td>
-<td align="left">FALSE</td>
-<td align="left">category</td>
-<td align="left">TRUE</td>
-</tr>
-<tr>
+<td align="left">educ</td>
 <td align="left">educ</td>
 <td align="left">Years of education</td>
-<td align="left">demographic</td>
-<td align="left">educ</td>
 <td align="left">education</td>
-<td align="left">TRUE</td>
 <td align="left">FALSE</td>
-<td align="left">years</td>
-<td align="left">TRUE</td>
 </tr>
 <tr>
+<td align="left">race</td>
 <td align="left">race</td>
 <td align="left">Participant&#39;s race</td>
-<td align="left">demographic</td>
 <td align="left">race</td>
-<td align="left">race</td>
-<td align="left">TRUE</td>
 <td align="left">FALSE</td>
-<td align="left">category</td>
-<td align="left">TRUE</td>
 </tr>
 <tr>
-<td align="left">spanish</td>
-<td align="left">Spanish/Hispanic origin</td>
-<td align="left">demographic</td>
-<td align="left">spanish</td>
-<td align="left">race</td>
-<td align="left">TRUE</td>
-<td align="left">FALSE</td>
-<td align="left">category</td>
-<td align="left">TRUE</td>
-</tr>
-<tr>
+<td align="left">msex</td>
 <td align="left">msex</td>
 <td align="left">Gender</td>
-<td align="left">demographic</td>
-<td align="left">msex</td>
 <td align="left">sex</td>
 <td align="left">FALSE</td>
-<td align="left">FALSE</td>
-<td align="left">category</td>
-<td align="left">TRUE</td>
 </tr>
 <tr>
-<td align="left">id</td>
+<td align="left">q40inc</td>
+<td align="left">income_40</td>
+<td align="left">Income level at age 40</td>
 <td align="left">NA</td>
-<td align="left">design</td>
-<td align="left">id</td>
-<td align="left">id</td>
-<td align="left">FALSE</td>
-<td align="left">FALSE</td>
-<td align="left">person</td>
-<td align="left">TRUE</td>
+<td align="left">NA</td>
 </tr>
 <tr>
+<td align="left">cogdate</td>
+<td align="left">date_at_baseline</td>
+<td align="left">Date of the interview at baseline</td>
+<td align="left"></td>
+<td align="left">FALSE</td>
+</tr>
+<tr>
+<td align="left">fu_year</td>
 <td align="left">fu_year</td>
 <td align="left">Follow-up year</td>
-<td align="left">design</td>
-<td align="left">fu_year</td>
 <td align="left">time</td>
-<td align="left">FALSE</td>
-<td align="left">TRUE</td>
-<td align="left">time point</td>
 <td align="left">TRUE</td>
 </tr>
 <tr>
+<td align="left">projid</td>
+<td align="left">id</td>
+<td align="left">Subject identifier</td>
+<td align="left">NA</td>
+<td align="left">NA</td>
+</tr>
+<tr>
+<td align="left">late_life_cogact_freq</td>
+<td align="left">cogact_old</td>
+<td align="left">Codnitive activity - late life</td>
+<td align="left"></td>
+<td align="left">TRUE</td>
+</tr>
+<tr>
+<td align="left">late_life_soc_act</td>
+<td align="left">socact_old</td>
+<td align="left">Social activity - late life</td>
+<td align="left"></td>
+<td align="left">TRUE</td>
+</tr>
+<tr>
+<td align="left">soc_net</td>
+<td align="left">soc_net</td>
+<td align="left">Social network size</td>
+<td align="left">NA</td>
+<td align="left">NA</td>
+</tr>
+<tr>
+<td align="left">social_isolation</td>
+<td align="left">social_isolation</td>
+<td align="left">Percieved social isolation</td>
+<td align="left">NA</td>
+<td align="left">NA</td>
+</tr>
+<tr>
+<td align="left">iadlsum</td>
 <td align="left">iadlsum</td>
 <td align="left">Instrumental activities of daily liviing</td>
-<td align="left">physical</td>
-<td align="left">iadlsum</td>
 <td align="left">physact</td>
 <td align="left">TRUE</td>
-<td align="left">TRUE</td>
-<td align="left">scale</td>
+</tr>
+<tr>
+<td align="left">phys5itemsum</td>
+<td align="left">phys5itemsum</td>
+<td align="left">Physical activity (summary of 5 items)</td>
+<td align="left">physact</td>
 <td align="left">TRUE</td>
 </tr>
 <tr>
+<td align="left">fev</td>
 <td align="left">fev</td>
 <td align="left">forced expiratory volume</td>
-<td align="left">physical</td>
-<td align="left">fev</td>
 <td align="left">physcap</td>
-<td align="left">FALSE</td>
-<td align="left">TRUE</td>
-<td align="left">liters</td>
 <td align="left">TRUE</td>
 </tr>
 <tr>
+<td align="left">gait_speed</td>
 <td align="left">gait_speed</td>
 <td align="left">Gait Speed - MAP</td>
-<td align="left">physical</td>
-<td align="left">gait_speed</td>
 <td align="left">physcap</td>
-<td align="left">FALSE</td>
-<td align="left">TRUE</td>
-<td align="left">min/sec</td>
 <td align="left">TRUE</td>
 </tr>
 <tr>
+<td align="left">gripavg</td>
 <td align="left">gripavg</td>
 <td align="left">Extremity strength</td>
-<td align="left">physical</td>
-<td align="left">gripavg</td>
 <td align="left">physcap</td>
-<td align="left">FALSE</td>
-<td align="left">TRUE</td>
-<td align="left">lbs</td>
 <td align="left">TRUE</td>
 </tr>
 <tr>
+<td align="left">katzsum</td>
 <td align="left">katzsum</td>
 <td align="left">Katz measure of disability</td>
-<td align="left">physical</td>
-<td align="left">katzsum</td>
 <td align="left">physcap</td>
-<td align="left">TRUE</td>
-<td align="left">TRUE</td>
-<td align="left">scale</td>
 <td align="left">TRUE</td>
 </tr>
 <tr>
+<td align="left">mep</td>
 <td align="left">mep</td>
 <td align="left">maximal expiratory pressure</td>
-<td align="left">physical</td>
-<td align="left">mep</td>
 <td align="left">physcap</td>
-<td align="left">FALSE</td>
-<td align="left">TRUE</td>
-<td align="left">cm H20</td>
 <td align="left">TRUE</td>
 </tr>
 <tr>
+<td align="left">mip</td>
 <td align="left">mip</td>
 <td align="left">maximal inspiratory pressure</td>
-<td align="left">physical</td>
-<td align="left">mip</td>
 <td align="left">physcap</td>
-<td align="left">FALSE</td>
-<td align="left">TRUE</td>
-<td align="left">cm H20</td>
 <td align="left">TRUE</td>
 </tr>
 <tr>
+<td align="left">pvc</td>
 <td align="left">pvc</td>
 <td align="left">pulmonary vital capacity</td>
-<td align="left">physical</td>
-<td align="left">pvc</td>
 <td align="left">physcap</td>
-<td align="left">FALSE</td>
-<td align="left">TRUE</td>
-<td align="left">liters</td>
 <td align="left">TRUE</td>
 </tr>
 <tr>
 <td align="left">rosbscl</td>
-<td align="left">Rosow-Breslau scale</td>
-<td align="left">physical</td>
 <td align="left">rosbscl</td>
+<td align="left">Rosow-Breslau scale</td>
 <td align="left">physcap</td>
-<td align="left">TRUE</td>
-<td align="left">TRUE</td>
-<td align="left">scale</td>
 <td align="left">TRUE</td>
 </tr>
 <tr>
+<td align="left">rosbsum</td>
 <td align="left">rosbsum</td>
 <td align="left">Rosow-Breslau scale</td>
-<td align="left">physical</td>
-<td align="left">rosbsum</td>
 <td align="left">physcap</td>
-<td align="left">TRUE</td>
-<td align="left">TRUE</td>
-<td align="left">scale</td>
 <td align="left">TRUE</td>
 </tr>
 <tr>
-<td align="left">vision</td>
-<td align="left">Vision acuity</td>
-<td align="left">physical</td>
-<td align="left">vision</td>
-<td align="left">physcap</td>
-<td align="left">FALSE</td>
-<td align="left">TRUE</td>
-<td align="left">scale</td>
-<td align="left">TRUE</td>
-</tr>
-<tr>
-<td align="left">visionlog</td>
-<td align="left">Visual acuity</td>
-<td align="left">physical</td>
-<td align="left">visionlog</td>
-<td align="left">physcap</td>
-<td align="left">FALSE</td>
-<td align="left">TRUE</td>
-<td align="left">scale</td>
-<td align="left">TRUE</td>
-</tr>
-<tr>
+<td align="left">bmi</td>
 <td align="left">bmi</td>
 <td align="left">Body mass index</td>
-<td align="left">physical</td>
-<td align="left">bmi</td>
 <td align="left">physique</td>
-<td align="left">FALSE</td>
-<td align="left">TRUE</td>
-<td align="left">kg/msq</td>
 <td align="left">TRUE</td>
 </tr>
 <tr>
+<td align="left">htm</td>
 <td align="left">htm</td>
 <td align="left">Height(meters)</td>
-<td align="left">physical</td>
-<td align="left">htm</td>
 <td align="left">physique</td>
-<td align="left">FALSE</td>
-<td align="left">TRUE</td>
-<td align="left">meters</td>
 <td align="left">TRUE</td>
 </tr>
 <tr>
+<td align="left">wtkg</td>
 <td align="left">wtkg</td>
 <td align="left">Weight (kg)</td>
-<td align="left">physical</td>
-<td align="left">wtkg</td>
 <td align="left">physique</td>
-<td align="left">FALSE</td>
-<td align="left">TRUE</td>
-<td align="left">kilos</td>
 <td align="left">TRUE</td>
 </tr>
 <tr>
-<td align="left">alcohol_g</td>
-<td align="left">Grams of alcohol per day</td>
-<td align="left">substance</td>
-<td align="left">alcohol_g</td>
+<td align="left">cesdsum</td>
+<td align="left">cesdsum</td>
+<td align="left">Measure of depressive symptoms (Modified CESD)</td>
+<td align="left">depression</td>
+<td align="left">TRUE</td>
+</tr>
+<tr>
+<td align="left">negsocexchange</td>
+<td align="left">negsocexchange</td>
+<td align="left">Negative social exchange</td>
+<td align="left">NA</td>
+<td align="left">NA</td>
+</tr>
+<tr>
+<td align="left">rejection</td>
+<td align="left">rejection</td>
+<td align="left">Negative social exchange - rejection-MAP</td>
+<td align="left">NA</td>
+<td align="left">NA</td>
+</tr>
+<tr>
+<td align="left">alcohol_g_bl</td>
+<td align="left">alcohol_g_bl</td>
+<td align="left">Grams of alcohol used per day at baseline</td>
 <td align="left">alcohol</td>
-<td align="left">TRUE</td>
 <td align="left">FALSE</td>
-<td align="left">grams</td>
-<td align="left">TRUE</td>
 </tr>
 <tr>
 <td align="left">ldai_bl</td>
-<td align="left">Lifetime daily alcohol intake -baseline</td>
-<td align="left">substance</td>
 <td align="left">alco_life</td>
+<td align="left">Lifetime daily alcohol intake -baseline</td>
 <td align="left">alcohol</td>
-<td align="left">TRUE</td>
 <td align="left">FALSE</td>
-<td align="left">drinks/day</td>
-<td align="left">TRUE</td>
 </tr>
 <tr>
+<td align="left">q3smo_bl</td>
 <td align="left">q3smo_bl</td>
 <td align="left">Smoking quantity-baseline</td>
-<td align="left">substance</td>
-<td align="left">q3smo_bl</td>
 <td align="left">smoking</td>
-<td align="left">TRUE</td>
 <td align="left">FALSE</td>
-<td align="left">cigarettes / day</td>
-<td align="left">TRUE</td>
 </tr>
 <tr>
+<td align="left">q4smo_bl</td>
 <td align="left">q4smo_bl</td>
 <td align="left">Smoking duration-baseline</td>
-<td align="left">substance</td>
-<td align="left">q4smo_bl</td>
 <td align="left">smoking</td>
-<td align="left">TRUE</td>
 <td align="left">FALSE</td>
-<td align="left">years</td>
-<td align="left">TRUE</td>
 </tr>
 <tr>
-<td align="left">smoke_bl</td>
-<td align="left">Smoking at baseline</td>
-<td align="left">substance</td>
-<td align="left">smoke_bl</td>
 <td align="left">smoking</td>
-<td align="left">TRUE</td>
-<td align="left">FALSE</td>
-<td align="left">category</td>
-<td align="left">TRUE</td>
-</tr>
-<tr>
 <td align="left">smoking</td>
 <td align="left">Smoking</td>
-<td align="left">substance</td>
 <td align="left">smoking</td>
-<td align="left">smoking</td>
-<td align="left">TRUE</td>
 <td align="left">FALSE</td>
-<td align="left">category</td>
-<td align="left">TRUE</td>
+</tr>
+<tr>
+<td align="left">ya_adult_cogact_freq</td>
+<td align="left">cogact_young</td>
+<td align="left">Cognitive actifity - young adult</td>
+<td align="left">NA</td>
+<td align="left">NA</td>
 </tr>
 </tbody></table>
 
-<pre><code class="r"># rename variables
-d_rules &lt;- dto[[&quot;metaData&quot;]] %&gt;%
-  dplyr::filter(name %in% names(ds)) %&gt;% 
-  dplyr::select(name, name_new ) # leave only collumn, which values you wish to append
-names(ds) &lt;- d_rules[,&quot;name_new&quot;]
-# transfer changes to dto
-ds &lt;- ds %&gt;% dplyr::filter(study == &quot;MAP &quot;)
-table(ds$study)
-</code></pre>
-
-<pre><code>## 
-## MAP  
-## 9708
-</code></pre>
-
-<pre><code class="r">dto[[&quot;unitData&quot;]] &lt;- ds 
+<pre><code class="r"># # ----- apply-meta-data-1 -------------------------------------
+# # rename variables
+# d_rules &lt;- dto[[&quot;metaData&quot;]] %&gt;%
+#   dplyr::filter(name %in% names(ds)) %&gt;% 
+#   dplyr::select(name, name_new ) # leave only collumn, which values you wish to append
+# names(ds) &lt;- d_rules[,&quot;name_new&quot;]
+# # transfer changes to dto
+# ds &lt;- ds %&gt;% dplyr::filter(study == &quot;MAP &quot;)
+# table(ds$study)
+# dto[[&quot;unitData&quot;]] &lt;- ds 
 </code></pre>
 
 <pre><code class="r"># Save as a compressed, binary R dataset.  
@@ -1021,71 +922,376 @@ names(dto[[&quot;unitData&quot;]])
 </code></pre>
 
 <pre><code>##   [1] &quot;id&quot;                    &quot;study&quot;                
-##   [3] &quot;scaled_to.x&quot;           &quot;agreeableness&quot;        
-##   [5] &quot;conscientiousness&quot;     &quot;extraversion&quot;         
-##   [7] &quot;neo_altruism&quot;          &quot;neo_conscientiousness&quot;
-##   [9] &quot;neo_trust&quot;             &quot;openness&quot;             
-##  [11] &quot;anxiety_10items&quot;       &quot;neuroticism_12&quot;       
-##  [13] &quot;neuroticism_6&quot;         &quot;age_bl&quot;               
-##  [15] &quot;age_death&quot;             &quot;died&quot;                 
-##  [17] &quot;educ&quot;                  &quot;msex&quot;                 
-##  [19] &quot;race&quot;                  &quot;spanish&quot;              
-##  [21] &quot;apoe_genotype&quot;         &quot;alco_life&quot;            
+##   [3] &quot;scaled_to&quot;             &quot;agreeableness&quot;        
+##   [5] &quot;conscientiousness&quot;     &quot;neo_altruism&quot;         
+##   [7] &quot;neo_conscientiousness&quot; &quot;neo_trust&quot;            
+##   [9] &quot;neuroticism_12&quot;        &quot;openness&quot;             
+##  [11] &quot;anxiety_10items&quot;       &quot;neuroticism_6&quot;        
+##  [13] &quot;cogdx&quot;                 &quot;age_bl&quot;               
+##  [15] &quot;age_death&quot;             &quot;educ&quot;                 
+##  [17] &quot;msex&quot;                  &quot;race&quot;                 
+##  [19] &quot;spanish&quot;               &quot;apoe_genotype&quot;        
+##  [21] &quot;alcohol_g_bl&quot;          &quot;alco_life&quot;            
 ##  [23] &quot;q3smo_bl&quot;              &quot;q4smo_bl&quot;             
-##  [25] &quot;smoke_bl&quot;              &quot;smoking&quot;              
-##  [27] &quot;fu_year&quot;               &quot;scaled_to.y&quot;          
-##  [29] &quot;cesdsum&quot;               &quot;r_depres&quot;             
-##  [31] &quot;intrusion&quot;             &quot;neglifeevents&quot;        
-##  [33] &quot;negsocexchange&quot;        &quot;nohelp&quot;               
-##  [35] &quot;panas&quot;                 &quot;perceivedstress&quot;      
-##  [37] &quot;rejection&quot;             &quot;unsympathetic&quot;        
-##  [39] &quot;dcfdx&quot;                 &quot;dementia&quot;             
-##  [41] &quot;r_stroke&quot;              &quot;cogn_ep&quot;              
-##  [43] &quot;cogn_global&quot;           &quot;cogn_po&quot;              
-##  [45] &quot;cogn_ps&quot;               &quot;cogn_se&quot;              
-##  [47] &quot;cogn_wo&quot;               &quot;cts_bname&quot;            
-##  [49] &quot;catfluency&quot;            &quot;cts_db&quot;               
-##  [51] &quot;cts_delay&quot;             &quot;cts_df&quot;               
-##  [53] &quot;cts_doperf&quot;            &quot;cts_ebdr&quot;             
-##  [55] &quot;cts_ebmt&quot;              &quot;cts_idea&quot;             
-##  [57] &quot;cts_lopair&quot;            &quot;mmse&quot;                 
-##  [59] &quot;cts_nccrtd&quot;            &quot;cts_pmat&quot;             
-##  [61] &quot;cts_read_nart&quot;         &quot;cts_read_wrat&quot;        
-##  [63] &quot;cts_sdmt&quot;              &quot;cts_story&quot;            
-##  [65] &quot;cts_wli&quot;               &quot;cts_wlii&quot;             
-##  [67] &quot;cts_wliii&quot;             &quot;age_at_visit&quot;         
-##  [69] &quot;iadlsum&quot;               &quot;katzsum&quot;              
-##  [71] &quot;rosbscl&quot;               &quot;rosbsum&quot;              
-##  [73] &quot;vision&quot;                &quot;visionlog&quot;            
-##  [75] &quot;fev&quot;                   &quot;mep&quot;                  
-##  [77] &quot;mip&quot;                   &quot;pvc&quot;                  
-##  [79] &quot;bun&quot;                   &quot;ca&quot;                   
-##  [81] &quot;chlstrl&quot;               &quot;cl&quot;                   
-##  [83] &quot;co2&quot;                   &quot;crn&quot;                  
-##  [85] &quot;fasting&quot;               &quot;glucose&quot;              
-##  [87] &quot;hba1c&quot;                 &quot;hdlchlstrl&quot;           
-##  [89] &quot;hdlratio&quot;              &quot;k&quot;                    
-##  [91] &quot;ldlchlstrl&quot;            &quot;na&quot;                   
-##  [93] &quot;alcohol_g&quot;             &quot;bmi&quot;                  
-##  [95] &quot;htm&quot;                   &quot;phys5itemsum&quot;         
-##  [97] &quot;wtkg&quot;                  &quot;bp11&quot;                 
-##  [99] &quot;bp2&quot;                   &quot;bp3&quot;                  
-## [101] &quot;bp31&quot;                  &quot;hypertension_cum&quot;     
-## [103] &quot;dm_cum&quot;                &quot;thyroid_cum&quot;          
-## [105] &quot;chf_cum&quot;               &quot;claudication_cum&quot;     
-## [107] &quot;heart_cum&quot;             &quot;stroke_cum&quot;           
-## [109] &quot;vasc_3dis_sum&quot;         &quot;vasc_4dis_sum&quot;        
-## [111] &quot;vasc_risks_sum&quot;        &quot;gait_speed&quot;           
-## [113] &quot;gripavg&quot;
+##  [25] &quot;smoking&quot;               &quot;cogact_chd&quot;           
+##  [27] &quot;cogact_midage&quot;         &quot;cogact_past&quot;          
+##  [29] &quot;cogact_young&quot;          &quot;lostcons_ever&quot;        
+##  [31] &quot;ad_reagan&quot;             &quot;braaksc&quot;              
+##  [33] &quot;ceradsc&quot;               &quot;niareagansc&quot;          
+##  [35] &quot;income_40&quot;             &quot;fu_year&quot;              
+##  [37] &quot;scaled_to.y&quot;           &quot;cesdsum&quot;              
+##  [39] &quot;r_depres&quot;              &quot;intrusion&quot;            
+##  [41] &quot;neglifeevents&quot;         &quot;negsocexchange&quot;       
+##  [43] &quot;nohelp&quot;                &quot;panas&quot;                
+##  [45] &quot;perceivedstress&quot;       &quot;rejection&quot;            
+##  [47] &quot;unsympathetic&quot;         &quot;dcfdx&quot;                
+##  [49] &quot;dementia&quot;              &quot;r_stroke&quot;             
+##  [51] &quot;cogn_ep&quot;               &quot;cogn_po&quot;              
+##  [53] &quot;cogn_ps&quot;               &quot;cogn_se&quot;              
+##  [55] &quot;cogn_wo&quot;               &quot;cogn_global&quot;          
+##  [57] &quot;cts_animals&quot;           &quot;cts_bname&quot;            
+##  [59] &quot;catfluency&quot;            &quot;cts_db&quot;               
+##  [61] &quot;cts_delay&quot;             &quot;cts_df&quot;               
+##  [63] &quot;cts_doperf&quot;            &quot;cts_ebdr&quot;             
+##  [65] &quot;cts_ebmt&quot;              &quot;cts_fruits&quot;           
+##  [67] &quot;cts_idea&quot;              &quot;cts_lopair&quot;           
+##  [69] &quot;mmse&quot;                  &quot;cts_nccrtd&quot;           
+##  [71] &quot;cts_pmat&quot;              &quot;cts_pmsub&quot;            
+##  [73] &quot;cts_read_nart&quot;         &quot;cts_read_wrat&quot;        
+##  [75] &quot;cts_sdmt&quot;              &quot;cts_story&quot;            
+##  [77] &quot;cts_stroop_cname&quot;      &quot;cts_stroop_wread&quot;     
+##  [79] &quot;cts_wli&quot;               &quot;cts_wlii&quot;             
+##  [81] &quot;cts_wliii&quot;             &quot;age_at_visit&quot;         
+##  [83] &quot;iadlsum&quot;               &quot;katzsum&quot;              
+##  [85] &quot;rosbscl&quot;               &quot;rosbsum&quot;              
+##  [87] &quot;vision&quot;                &quot;visionlog&quot;            
+##  [89] &quot;bun&quot;                   &quot;ca&quot;                   
+##  [91] &quot;cholesterol&quot;           &quot;cloride&quot;              
+##  [93] &quot;co2&quot;                   &quot;crn&quot;                  
+##  [95] &quot;fasting&quot;               &quot;glucose&quot;              
+##  [97] &quot;hba1c&quot;                 &quot;hdlchlstrl&quot;           
+##  [99] &quot;hdlratio&quot;              &quot;k&quot;                    
+## [101] &quot;ldlchlstrl&quot;            &quot;na&quot;                   
+## [103] &quot;cogact_old&quot;            &quot;bmi&quot;                  
+## [105] &quot;htm&quot;                   &quot;phys5itemsum&quot;         
+## [107] &quot;wtkg&quot;                  &quot;socact_old&quot;           
+## [109] &quot;soc_net&quot;               &quot;social_isolation&quot;     
+## [111] &quot;bp_sit_1&quot;              &quot;bp_sit_2&quot;             
+## [113] &quot;bp_meds&quot;               &quot;bp_stand_3&quot;           
+## [115] &quot;hypertension_cum&quot;      &quot;cancer_cum&quot;           
+## [117] &quot;dm_cum&quot;                &quot;headinjrloc_cum&quot;      
+## [119] &quot;thyroid_cum&quot;           &quot;chf_cum&quot;              
+## [121] &quot;claudication_cum&quot;      &quot;heart_cum&quot;            
+## [123] &quot;stroke_cum&quot;            &quot;vasc_3dis_sum&quot;        
+## [125] &quot;vasc_4dis_sum&quot;         &quot;vasc_risks_sum&quot;       
+## [127] &quot;gait_speed&quot;            &quot;gripavg&quot;              
+## [129] &quot;total_smell_test&quot;      &quot;fev&quot;                  
+## [131] &quot;mep&quot;                   &quot;mip&quot;                  
+## [133] &quot;pvc&quot;                   &quot;firstobs&quot;             
+## [135] &quot;month&quot;                 &quot;year&quot;                 
+## [137] &quot;date_at_bl&quot;            &quot;age_at_bl&quot;            
+## [139] &quot;birth_date&quot;            &quot;birth_year&quot;           
+## [141] &quot;date_at_visit&quot;         &quot;died&quot;
 </code></pre>
 
 <pre><code class="r"># 2nd element - meta data, info about variables
 names(dto[[&quot;metaData&quot;]])
 </code></pre>
 
-<pre><code>## [1] &quot;name&quot;          &quot;label&quot;         &quot;type&quot;          &quot;name_new&quot;     
-## [5] &quot;construct&quot;     &quot;self_reported&quot; &quot;longitudinal&quot;  &quot;unit&quot;         
-## [9] &quot;include&quot;
+<pre><code>##  [1] &quot;name&quot;          &quot;label&quot;         &quot;type&quot;          &quot;name_new&quot;     
+##  [5] &quot;construct&quot;     &quot;self_reported&quot; &quot;longitudinal&quot;  &quot;unit&quot;         
+##  [9] &quot;include&quot;       &quot;url&quot;           &quot;notes&quot;
+</code></pre>
+
+<pre><code class="r">names_labels(dto$unitData)
+</code></pre>
+
+<pre><code>##                      name
+## 1                      id
+## 2                   study
+## 3               scaled_to
+## 4           agreeableness
+## 5       conscientiousness
+## 6            neo_altruism
+## 7   neo_conscientiousness
+## 8               neo_trust
+## 9          neuroticism_12
+## 10               openness
+## 11        anxiety_10items
+## 12          neuroticism_6
+## 13                  cogdx
+## 14                 age_bl
+## 15              age_death
+## 16                   educ
+## 17                   msex
+## 18                   race
+## 19                spanish
+## 20          apoe_genotype
+## 21           alcohol_g_bl
+## 22              alco_life
+## 23               q3smo_bl
+## 24               q4smo_bl
+## 25                smoking
+## 26             cogact_chd
+## 27          cogact_midage
+## 28            cogact_past
+## 29           cogact_young
+## 30          lostcons_ever
+## 31              ad_reagan
+## 32                braaksc
+## 33                ceradsc
+## 34            niareagansc
+## 35              income_40
+## 36                fu_year
+## 37            scaled_to.y
+## 38                cesdsum
+## 39               r_depres
+## 40              intrusion
+## 41          neglifeevents
+## 42         negsocexchange
+## 43                 nohelp
+## 44                  panas
+## 45        perceivedstress
+## 46              rejection
+## 47          unsympathetic
+## 48                  dcfdx
+## 49               dementia
+## 50               r_stroke
+## 51                cogn_ep
+## 52                cogn_po
+## 53                cogn_ps
+## 54                cogn_se
+## 55                cogn_wo
+## 56            cogn_global
+## 57            cts_animals
+## 58              cts_bname
+## 59             catfluency
+## 60                 cts_db
+## 61              cts_delay
+## 62                 cts_df
+## 63             cts_doperf
+## 64               cts_ebdr
+## 65               cts_ebmt
+## 66             cts_fruits
+## 67               cts_idea
+## 68             cts_lopair
+## 69                   mmse
+## 70             cts_nccrtd
+## 71               cts_pmat
+## 72              cts_pmsub
+## 73          cts_read_nart
+## 74          cts_read_wrat
+## 75               cts_sdmt
+## 76              cts_story
+## 77       cts_stroop_cname
+## 78       cts_stroop_wread
+## 79                cts_wli
+## 80               cts_wlii
+## 81              cts_wliii
+## 82           age_at_visit
+## 83                iadlsum
+## 84                katzsum
+## 85                rosbscl
+## 86                rosbsum
+## 87                 vision
+## 88              visionlog
+## 89                    bun
+## 90                     ca
+## 91            cholesterol
+## 92                cloride
+## 93                    co2
+## 94                    crn
+## 95                fasting
+## 96                glucose
+## 97                  hba1c
+## 98             hdlchlstrl
+## 99               hdlratio
+## 100                     k
+## 101            ldlchlstrl
+## 102                    na
+## 103            cogact_old
+## 104                   bmi
+## 105                   htm
+## 106          phys5itemsum
+## 107                  wtkg
+## 108            socact_old
+## 109               soc_net
+## 110      social_isolation
+## 111              bp_sit_1
+## 112              bp_sit_2
+## 113               bp_meds
+## 114            bp_stand_3
+## 115      hypertension_cum
+## 116            cancer_cum
+## 117                dm_cum
+## 118       headinjrloc_cum
+## 119           thyroid_cum
+## 120               chf_cum
+## 121      claudication_cum
+## 122             heart_cum
+## 123            stroke_cum
+## 124         vasc_3dis_sum
+## 125         vasc_4dis_sum
+## 126        vasc_risks_sum
+## 127            gait_speed
+## 128               gripavg
+## 129      total_smell_test
+## 130                   fev
+## 131                   mep
+## 132                   mip
+## 133                   pvc
+## 134              firstobs
+## 135                 month
+## 136                  year
+## 137            date_at_bl
+## 138             age_at_bl
+## 139            birth_date
+## 140            birth_year
+## 141         date_at_visit
+## 142                  died
+##                                                          label
+## 1                                           Subject identifier
+## 2                      The particular RADC study (MAP/ROS/RMM)
+## 3                                             Scaled parameter
+## 4                                        NEO agreeableness-ROS
+## 5                                    Conscientiousness-ROS/MAP
+## 6                                       NEO altruism scale-MAP
+## 7                                    NEO conscientiousness-MAP
+## 8                                                NEO trust-MAP
+## 9                            Neuroticism - 12 item version-RMM
+## 10                                             NEO openess-ROS
+## 11                       Anxiety-10 item version - ROS and MAP
+## 12                          Neuroticism - 6 item version - RMM
+## 13                         Final consensus cognitive diagnosis
+## 14                                             Age at baseline
+## 15                                                Age at death
+## 16                                          Years of education
+## 17                                                      Gender
+## 18                                          Participant&#39;s race
+## 19                                     Spanish/Hispanic origin
+## 20                                   Apolipoprotein E genotype
+## 21                   Grams of alcohol used per day at baseline
+## 22                     Lifetime daily alcohol intake -baseline
+## 23                                   Smoking quantity-baseline
+## 24                                   Smoking duration-baseline
+## 25                                                     Smoking
+## 26                                  Cognitive actifity - child
+## 27                             Codnitive activity - middle age
+## 28                                   Cognitive actifity - past
+## 29                            Cognitive actifity - young adult
+## 30                                                        &lt;NA&gt;
+## 31                                Dicotomized NIA-Reagan score
+## 32         Semiquantitative measure of neurofibrillary tangles
+## 33                Semiquantitative measure of neuritic plaques
+## 34                                                        &lt;NA&gt;
+## 35                                      Income level at age 40
+## 36                                              Follow-up year
+## 37                                            Scaled parameter
+## 38              Measure of depressive symptoms (Modified CESD)
+## 39                           Major depression dx-clinic rating
+## 40                      Negative social exchange-intrusion-MAP
+## 41                                        Negative life events
+## 42                                    Negative social exchange
+## 43                           Negative social exchange-help-MAP
+## 44                                                 Panas score
+## 45                                            Perceived stress
+## 46                    Negative social exchange - rejection-MAP
+## 47                 Negative social exchange-unsymapathetic-MAP
+## 48                                         Clinical dx summary
+## 49                                          Dementia diagnosis
+## 50                                          Clinical stroke dx
+## 51                     Calculated domain score-episodic memory
+## 52            Calculated domain score - perceptual orientation
+## 53                  Calculated domain score - perceptual speed
+## 54                   Calculated domain score - semantic memory
+## 55                    Calculated domain score - working memory
+## 56                                      Global cognitive score
+## 57                                  Category fluence - Animals
+## 58                                        Boston naming - 2014
+## 59                                     Category fluency - 2014
+## 60                                     Digits backwards - 2014
+## 61                                   Logical memory IIa - 2014
+## 62                                      Digits forwards - 2014
+## 63                                       Digit ordering - 2014
+## 64                   East Boston story - delayed recall - 2014
+## 65                        East Boston story - immediate - 2014
+## 66                                   Category fluency - Fruits
+## 67                                        Complex ideas - 2014
+## 68                                     Line orientation - 2014
+## 69                                                 MMSE - 2014
+## 70                                    Number comparison - 2014
+## 71                                 Progressive Matrices - 2014
+## 72                                                        &lt;NA&gt;
+## 73                                      Reading test-NART-2014
+## 74                                  Reading test - WRAT - 2014
+## 75                            Symbol digit modalitities - 2014
+## 76                        Logical memory Ia - immediate - 2014
+## 77                                                        &lt;NA&gt;
+## 78                                                        &lt;NA&gt;
+## 79                                Word list I- immediate- 2014
+## 80                               Word list II - delayed - 2014
+## 81                          Word list III - recognition - 2014
+## 82                                   Age at cycle - fractional
+## 83                    Instrumental activities of daily liviing
+## 84                                  Katz measure of disability
+## 85                                         Rosow-Breslau scale
+## 86                                         Rosow-Breslau scale
+## 87                                               Vision acuity
+## 88                                               Visual acuity
+## 89                                         Blood urea nitrogen
+## 90                                                     Calcium
+## 91                                                 Cholesterol
+## 92                                                    Chloride
+## 93                                              Carbon Dioxide
+## 94                                                  Creatinine
+## 95          Whether blood was collected on fasting participant
+## 96                                                     Glucose
+## 97                                              Hemoglobin A1c
+## 98                                             HDL cholesterol
+## 99                                                   HDL ratio
+## 100                                                  Potassium
+## 101                                            LDL cholesterol
+## 102                                                     Sodium
+## 103                             Codnitive activity - late life
+## 104                                            Body mass index
+## 105                                             Height(meters)
+## 106                     Physical activity (summary of 5 items)
+## 107                                                Weight (kg)
+## 108                                Social activity - late life
+## 109                                        Social network size
+## 110                                 Percieved social isolation
+## 111              Blood pressure measurement- sitting - trial 1
+## 112              Blood pressure measurement- sitting - trial 2
+## 113                                         Hx of Meds for HTN
+## 114                       Blood pressure measurement- standing
+## 115             Medical conditions - hypertension - cumulative
+## 116                   Medical Conditions - cancer - cumulative
+## 117                    Medical history - diabetes - cumulative
+## 118                                                       &lt;NA&gt;
+## 119          Medical Conditions - thyroid disease - cumulative
+## 120  Medical Conditions - congestive heart failure -cumulative
+## 121              Medical conditions - claudication -cumulative
+## 122                    Medical Conditions - heart - cumulative
+## 123                   Clinical Diagnoses - Stroke - cumulative
+## 124 Vascular disease burden (3 items w/o chf)\r\r ROS/MAP/MARS
+## 125      Vascular disease burden (4 items) - MAP/MARS\r\r only
+## 126                              Vascular disease risk factors
+## 127                                           Gait Speed - MAP
+## 128                                         Extremity strength
+## 129                                                       &lt;NA&gt;
+## 130                                   forced expiratory volume
+## 131                                maximal expiratory pressure
+## 132                               maximal inspiratory pressure
+## 133                                   pulmonary vital capacity
+## 134                                                       &lt;NA&gt;
+## 135                          Date of the interview at baseline
+## 136                          Date of the interview at baseline
+## 137                                                       &lt;NA&gt;
+## 138                                                       &lt;NA&gt;
+## 139                                                       &lt;NA&gt;
+## 140                                                       &lt;NA&gt;
+## 141                                  Age at cycle - fractional
+## 142                                                       &lt;NA&gt;
 </code></pre>
 
 <p>The R session information (including the OS info, R version and all
@@ -1112,21 +1318,18 @@ packages used):</p>
 ## [1] ggplot2_2.1.0 magrittr_1.5 
 ## 
 ## loaded via a namespace (and not attached):
-##  [1] Rcpp_0.12.6        tidyr_0.5.1        dplyr_0.5.0       
-##  [4] assertthat_0.1     digest_0.6.10      R6_2.1.2          
-##  [7] grid_3.3.1         plyr_1.8.4         DBI_0.4-1         
-## [10] gtable_0.2.0       formatR_1.4        evaluate_0.9      
-## [13] scales_0.4.0       highr_0.6          stringi_1.1.1     
-## [16] lazyeval_0.2.0     testit_0.5         rmarkdown_0.9.6.14
-## [19] tools_3.3.1        stringr_1.0.0      munsell_0.4.3     
-## [22] colorspace_1.2-6   htmltools_0.3.5    knitr_1.13        
-## [25] tibble_1.1
+##  [1] Rcpp_0.12.7      tidyr_0.6.0      dplyr_0.5.0      assertthat_0.1  
+##  [5] R6_2.1.3         grid_3.3.1       plyr_1.8.4       DBI_0.5-1       
+##  [9] gtable_0.2.0     formatR_1.4      evaluate_0.9     scales_0.4.0    
+## [13] highr_0.6        stringi_1.1.1    lazyeval_0.2.0   testit_0.5      
+## [17] tools_3.3.1      stringr_1.1.0    markdown_0.7.7   munsell_0.4.3   
+## [21] rsconnect_0.4.3  colorspace_1.2-6 knitr_1.14       tibble_1.2
 </code></pre>
 
 <pre><code class="r">Sys.time()
 </code></pre>
 
-<pre><code>## [1] &quot;2016-08-08 07:25:23 PDT&quot;
+<pre><code>## [1] &quot;2016-10-10 16:31:43 EDT&quot;
 </code></pre>
 
 </body>
