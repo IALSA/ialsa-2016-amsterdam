@@ -10,14 +10,14 @@ requireNamespace("testit", quietly=TRUE)
 
 # ---- load-sources ------------------------------------------------------------
 # base::source("http://www.ucl.ac.uk/~ucakadl/ELECT/ELECT.r") # load  ELECT functions
-# base::source("./scripts/ELECT.r") # load  ELECT functions
-# base::source("./scripts/ELECT-utility-functions.R") # ELECT utility functions
+base::source("./scripts/ELECT.r") # load  ELECT functions
+base::source("./scripts/ELECT-utility-functions.R") # ELECT utility functions
+
 # ---- declare-globals ---------------------------------------------------------
-pathSaveFolder <- "./data/shared/derived/models/model-b-mod-2/"
+pathSaveFolder <- "./data/shared/derived/models/model-b/"
 digits = 2
 cat("\n Save fitted models here : \n")
 print(pathSaveFolder)
-
 
 # ---- load-data ---------------------------------------------------------------
 # first, the script `0-ellis-island.R` imports and cleans the raw data
@@ -32,6 +32,10 @@ names(dto[["metaData"]])       # 2nd element - meta data, info about variables
 names(dto[["ms_mmse"]])        # 3rd element - data for MMSE outcome
 ds_miss <- dto$ms_mmse$missing # data after encoding missing states (-1, -2)
 ds_ms <- dto$ms_mmse$multi     # data after encoding multistates (1,2,3,4)
+
+###############################################
+##  Part I: data preparation                ##
+###############################################
 
 # ---- inspect-created-multistates ----------------------------------
 # compare before and after ms encoding
@@ -98,9 +102,6 @@ ds_clean <- ds_clean %>%
 ds_clean %>% 
   dplyr::filter(firstobs == TRUE & state == -1) %>% 
   dplyr::select(id) %>% print()
-
-
-
 
 # ---- split-income ------------------------
 ds_clean %>% 
@@ -179,35 +180,32 @@ table(ds_clean$educat, ds_clean$edu_low_high)
 # save clean data object for records and faster access
 saveRDS(ds_clean, "./data/unshared/ds_clean.rds")
 
-
 # ---- describe-age-composition -----------
-# Time intervals in data:
-# the age difference between timepoint for each individual
-intervals <- matrix(NA,nrow(ds_clean),2)
-for(i in 2:nrow(ds_clean)){
-  if(ds_clean$id[i]==ds_clean$id[i-1]){
-    intervals[i,1] <- ds_clean$id[i]
-    intervals[i,2] <- ds_clean$age[i]-ds_clean$age[i-1]
-  }
-  intervals <- as.data.frame(intervals)
-  colnames(intervals) <- c("id", "interval")
-}
-cat("\n Minimum interval length : ",min(intervals[,2], na.rm=T)) 
-cat("\n Maximum interval length : ", max(intervals[,2], na.rm=T))
-# the age difference between timepoint for each individual
-intervals <- intervals[!is.na(intervals[,2]),] # Remove NAs:
-cat("\nTime intervals between observations within individuals:\n")
-print(round(quantile(intervals[,2]),digits))
-
-# Info on age and time between obser4vations:
-cat("\n Graphs of age distribution :\n")
-opar<-par(mfrow=c(1,3), mex=0.8,mar=c(5,5,3,1))
-hist(ds_clean$age[ds_clean$firstobs==1],col="red",xlab="Age at baseline in years",main="")
-hist(ds_clean$age,col="blue",xlab="Age in data in years",main="")
-hist(intervals[,2],col="green",xlab="Time intervals in data in years",main="")
-opar<-par(mfrow=c(1,1), mex=0.8,mar=c(5,5,2,1))
-
-
+# # Time intervals in data:
+# # the age difference between timepoint for each individual
+# intervals <- matrix(NA,nrow(ds_clean),2)
+# for(i in 2:nrow(ds_clean)){
+#   if(ds_clean$id[i]==ds_clean$id[i-1]){
+#     intervals[i,1] <- ds_clean$id[i]
+#     intervals[i,2] <- ds_clean$age[i]-ds_clean$age[i-1]
+#   }
+#   intervals <- as.data.frame(intervals)
+#   colnames(intervals) <- c("id", "interval")
+# }
+# cat("\n Minimum interval length : ",min(intervals[,2], na.rm=T)) 
+# cat("\n Maximum interval length : ", max(intervals[,2], na.rm=T))
+# # the age difference between timepoint for each individual
+# intervals <- intervals[!is.na(intervals[,2]),] # Remove NAs:
+# cat("\nTime intervals between observations within individuals:\n")
+# print(round(quantile(intervals[,2]),digits))
+# 
+# # Info on age and time between obser4vations:
+# cat("\n Graphs of age distribution :\n")
+# opar<-par(mfrow=c(1,3), mex=0.8,mar=c(5,5,3,1))
+# hist(ds_clean$age[ds_clean$firstobs==1],col="red",xlab="Age at baseline in years",main="")
+# hist(ds_clean$age,col="blue",xlab="Age in data in years",main="")
+# hist(intervals[,2],col="green",xlab="Time intervals in data in years",main="")
+# opar<-par(mfrow=c(1,1), mex=0.8,mar=c(5,5,2,1))
 
 # ---- keep-only-legal-states --------------------------------
 # list ids with intermidiate missing (im) or right censored (rc) states
@@ -222,7 +220,6 @@ cat("\n Number of subjects with both IMS and RC state(s) : ",length(ids_with_bot
 # subset a random sample of individuals if needed
 set.seed(42)
 ids <- sample(unique(ds_clean$id), 100)
-
 
 # ---- centering-decisions -----------------------
 # centering decisions
@@ -246,14 +243,14 @@ ds <- ds_clean %>%
     birth_year  = as.integer(birth_year - year_center) # centering (for numerical reasons)
 ) %>% 
   dplyr::select(
-     id            # 
+     id            # person identifier
     ,age_bl        # age at baseline     
     ,birth_year    # year of birth         
     ,male          # sex
     ,sescat        # income at age 40  
     ,edu           # years of education
-    ,educat        # years of education (categorical)      
-    ,educatF       # years of education (categorical, factor)              
+    ,educat        # education categorized: low, med, high
+    ,educatF       # education categorized: low, med, high (factor)             
     ,edu_low_med   # dummy, edu low as compared to edu medium           
     ,edu_low_high  # dummy, edu low as compared to edu high           
     ,fu_year       # follow-up year       
@@ -287,11 +284,14 @@ initial_probabilities <- c(initial_probabilities,0) # no death state at first ob
 cat('\n The inital values for estimation : ', paste0(initial_probabilities, collapse = ", "))
 
 
+###############################################
+## Part II : msm computations                ##
+###############################################
 
 # ----- define-estimation-function --------------------------
 estimate_multistate <- function(
-  model_name 
-  ,ds                   # data object 
+  model_name            # code name for the model to be estimated (e.g. mB_v1)
+  ,ds                   # data object, clean and ready for estimation
   ,Q                    # Q-matrix of transitions
   ,E                    # misspecification matrix
   ,qnames               # names of the rows in the Q matrix
@@ -336,7 +336,11 @@ estimate_multistate <- function(
 
   
 # ---- define-support-functions ----------------------
-get_crude_Q <- function(ds, Q, cov_names){
+get_crude_Q <- function(
+  ds
+  ,Q
+  ,cov_names
+){
   formula_ <- as.formula(paste0("state ~ ",cov_names))
   Q_crude <- crudeinits.msm(
     formula = formula_, 
@@ -349,7 +353,9 @@ get_crude_Q <- function(ds, Q, cov_names){
   return(Q_crude)
 }
 
-msm_summary <- function(model){
+msm_summary <- function(
+  model
+){
 cat("\n-2loglik =", model$minus2loglik,"\n")
 cat("Convergence code =", model$opt$convergence,"\n")
 p    <- model$opt$par
@@ -360,7 +366,9 @@ print(cbind(p=round(p,digits),
       quote=FALSE)
 }
 
-msm_details <- function(model){ 
+msm_details <- function(
+  model
+){ 
   # intensity matrix
   cat("\n Intensity matrix : \n")
   print(qmatrix.msm(model)) 
@@ -423,34 +431,234 @@ constraint_ = NULL    # additional model constraints
 fixedpars_ = NULL     # fixed parameters
 initprobs_ = initial_probabilities 
 
+(Q_crude <- get_crude_Q(ds, Q, "age")) # starting values for estimation
+
 # ---- estimate-msm-models ------------------------
 # turn this chunk OFF when printing the report
 # compile model objects with msm() call
 # each model will be saved in the specified folder, namely pathSaveFolder
-(Q_crude <- get_crude_Q(ds, Q, "age"))
-# estimate_multistate("mB_mod2_1", ds, Q_crude, E, qnames,
-#                     cf = "age + male + edu_low_med + edu_low_high",
+
+# model B version 1 : using categorized education
+# estimate_multistate("mB_v1", ds, Q_crude, E, qnames,
+#                     cf = "age + male  + educat + sescat",
 #                     cb = "age",
-#                     cd = "age + male")
-# 
-# estimate_multistate("mB_mod2_2", ds, Q_crude, E, qnames,
-#                     cf = "age + male + edu_low_med + edu_low_high",
-#                     cb = "age",
-#                     cd = "age + male + edu_low_med + edu_low_high")
-# 
-# estimate_multistate("mB_mod2_3", ds, Q_crude, E, qnames,
+#                     cd = "age + male  + educat ")
+
+# model B version 2 : used dummies for education
+# estimate_multistate("mB_v2", ds, Q_crude, E, qnames,
 #                     cf = "age + male  + edu_low_med + edu_low_high + sescat",
 #                     cb = "age",
-#                     cd = "age + male  + edu_low_med + edu_low_high ")
-# 
-# estimate_multistate("mB_mod2_4", ds, Q_crude, E, qnames,
-#                     cf = "age + male  + edu_low_med + edu_low_high + sescat",
-#                     cb = "age",
-#                     cd = "age  + male  + edu_low_med + edu_low_high + sescat")
+#                     cd = "age + male  + edu_low_med + edu_low_high")
 
 # ---- inspect-estimated-model -----------------------------
 # call in the model object for inspection
-msm_model <- readRDS(paste0(pathSaveFolder, "mB_mod2_2.rds"))
+msm_model <- readRDS(paste0(pathSaveFolder, "mB_v1.rds"))
 print_hazards(msm_model)
 msm_summary(msm_model)
 msm_details(msm_model)
+
+###############################################
+## Part III : ELECT computations             ##
+###############################################
+
+# ---- define-le-functions ---------------
+# wrapper function to compute a single conditional Life Expectancy
+compute_one_condition <- function(
+  msm_model
+  ,age_min
+  ,age_max
+  # ,ds_alive
+  ,ds_levels
+  ,condition_n
+){
+  # assemble the levels of the covariates
+  covar_list <- list(age    = age_min)
+  for(i in colnames(ds_levels)){
+    covar_list[[i]] = ds_levels[condition_n, i]
+  }
+  # estimate Life Expectancies
+  LE <- elect(
+    model          = msm_model, # fitted msm model
+    b.covariates   = covar_list, # list with specified covarites values
+    statedistdata  = ds_alive, # data for distribution of living states
+    time.scale.msm = time_scale, # time scale in multi-state model ("years", ...)
+    h              = grid_par, # grid parameter for integration
+    age.max        = age_max, # assumed maximum age in years
+    S              = replication_n # number of simulation cycles
+  )
+  return(LE)
+}
+
+# wrapper function to compute ALL conditional LEs for a given set of covariate conditions
+# uses compute_one_condition()
+# uses organize_sim_results()
+compute_conditional_les <- function(
+  folder,
+  model_name,
+  age_min,
+  age_max,
+  ds_levels,
+  condition_n = "all"
+){
+  (model_path_in  <- paste0(folder,model_name,   '.rds')) # msm object
+  (model_path_out <- paste0(folder,model_name,'_',age_min+age_center,'_',age_max+age_center,'.rds')) # msm + elect objects
+  model <- list() # initiate the list object
+  model[["msm"]] <- readRDS(model_path_in) # import msm model object
+  # store conditional levels of covariates for future reference
+  model[["levels"]] <- ds_levels
+  # loop through all conditional values of covariates
+  if(condition_n == "all"){
+    tested_conditions <- 1:nrow(ds_levels) 
+  }else{
+    tested_conditions <- condition_n
+  }
+  for(i in tested_conditions){  
+    (condition_number <- paste0(as.character(i)))
+    model[["le"]][[condition_number]] <- compute_one_condition(
+      msm_model   = model[["msm"]], 
+      age_min     = age_min, 
+      age_max     = age_max,
+      ds_levels   = ds_levels, 
+      condition_n = i
+    ) 
+  }
+  # return(model)
+  model <- organize_sim_results(model)
+  saveRDS(model,model_path_out)
+}
+
+# simplified verision of summary.elect()
+# this function only a temp hack before such functionality is added to summary.elect()
+describe_reps<- function(
+  LEs
+  ,probs = c(.025,0.5,.975)
+){
+  (pnt <- LEs$pnt)
+  (e_names <- attr(LEs$pnt, "names"))
+  sim <- LEs$sim
+  (mn <- apply(LEs$sim,2,mean))
+  (se <- apply(LEs$sim,2,sd))
+  (quants <- matrix(NA,ncol(LEs$sim),length(probs)))
+  for(i in 1:ncol(LEs$sim)){
+    for(j in 1:length(probs)){
+      quants[i,j] <- quantile(LEs$sim[,i],probs=probs[j])
+    }   
+  }     
+  out <- as.data.frame(cbind(pnt,mn,se,quantiles=quants))
+  for(j in 4:(3+length(probs))){
+    names(out)[j]<-paste(probs[j-3],"q",sep="")
+  }
+  return(out)
+}
+# describe_reps(model$le)
+
+# organize the results of replication
+# uses describe_reps()
+organize_sim_results <- function(
+  # model_path
+  model
+){
+  # model <- readRDS(model_path)
+  # lapply(model, names)
+  for(i in seq_along(model$le)){
+    
+    (d0 <- model$levels[i,])
+    (d1 <- describe_reps(model$le[[i]]))
+    (d2 <- cbind(d1,d0))
+    (d2$e_name <- attr(model$le[[i]]$pnt, "names") )
+    (d2$condition_n <- i)
+    model[["descriptives"]][[paste0(i)]] <- d2
+  }
+  # lapply(model, names) 
+  # model$descriptives$`1`
+  
+  d <- do.call("rbind", model$descriptives)
+  rownames(d) <- NULL
+  (covariate_names <- colnames(model$levels))
+  (stem_columns <- c("condition_n", "e_name", covariate_names))
+  (standard_columns <-c("pnt", "mn", "se", "`0.025q`", "`0.5q`","`0.975q`" ))
+  (ordered_columns <- c(stem_columns, standard_columns))
+  d <- d %>% 
+    dplyr::select_(.dots= ordered_columns) %>%
+    dplyr::mutate(
+      pnt      = sprintf("%0.2f", as.numeric(pnt)),
+      mn       = sprintf("%0.2f", as.numeric(mn)),
+      se       = sprintf("%0.2f", as.numeric(se)),
+      `0.025q` = sprintf("%0.2f", as.numeric(`0.025q` )),
+      `0.5q`   = sprintf("%0.2f", as.numeric(`0.5q` )),
+      `0.975q` = sprintf("%0.2f", as.numeric(`0.975q` ))
+      
+    )
+  model[["descriptives"]] <- d
+  # saveRDS(model, model_path)
+  return(model)
+}
+# organize_sim_results(
+# model_path = "./data/shared/derived/models/retired/model-b-mod-2/mB_mod2_3_80_110.rds"
+# )
+
+# ---- specify-elect-options --------------------------
+alive_states <- c(1,2,3)
+ds_alive <- ds[ds$state %in% alive_states,]
+
+grid_par <- .5
+time_scale <- "years"
+replication_n <- 10
+
+# ---- compute-life-expectancies-version-1 -------------------
+
+# assemble covariate levels
+ds_levels <- tidyr::crossing(
+   male   = c(0, 1)   
+  ,educat = c(-1, 0, 1)
+  ,sescat = c(-1, 0, 1)
+) %>% as.data.frame() 
+ds_levels %>% knitr::kable() %>% print()
+# conduct simulation
+for(i in c(-15,-10,-5,0,5,10)){ # centered at 75
+# for(i in c(-15)){ # centered at 75
+  compute_conditional_les(
+    folder      =  "./data/shared/derived/models/model-b/",
+    model_name  = "mB_v1",
+    age_min     = i, 
+    age_max     = 35,
+    ds_levels   = ds_levels,
+    condition_n = c(1,2)
+  )
+}
+
+# ---- compute-life-expectancies-version-2 -------------------
+
+# assemble covariate levels
+ds_levels <- tidyr::crossing(
+   male         = c(0, 1)   
+  ,edu_low_med  = c(0,1)
+  ,edu_low_high = c(0,1)
+  ,sescat       = c(-1,0,1)
+) %>% as.data.frame() 
+ds_levels %>% knitr::kable() %>% print()
+# conduct simulation 
+for(i in c(-15,-10,-5,0,5,10)){ # centered at 75
+  compute_conditional_les(
+    folder      =  "./data/shared/derived/models/model-b/",
+    model_name  = "mB_v2",
+    age_min     = i , # centered at 75
+    age_max     = 35 ,
+    ds_levels   = ds_levels ,
+    condition_n = c(1,2)
+  )
+}
+
+# ---- inspect-computed-le -----------------------
+model <- readRDS("./data/shared/derived/models/model-b/mB_v2_60_110.rds")
+lapply(model, names)
+model$levels
+
+le <- model$le[[1]]
+
+summary.elect(le)
+plot.elect(le)
+print_hazards(model$msm)
+
+
+
