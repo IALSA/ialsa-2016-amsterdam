@@ -65,8 +65,8 @@ msm_details <- function(model){
 
 # ----- -----------------
 
-model <- readRDS(paste0(pathSaveFolder,'mB_mod2_2.rds'))
-msm_summary(model)
+# model <- readRDS("./data/shared/derived/models/model-b-mod-2/mB_mod2_1.rds")
+# msm_summary(model)
 
 
 print_hazards <- function(model, dense=T){
@@ -90,8 +90,8 @@ print_hazards <- function(model, dense=T){
   }
   return(c)
 }
-hz <- print_hazards(model, dense=F) %>% print()
-hz <- print_hazards(model, dense=T) %>% print()
+# hz <- print_hazards(model, dense=F) %>% print()
+# hz <- print_hazards(model, dense=T) %>% print()
 
 
 
