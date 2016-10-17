@@ -52,30 +52,39 @@ ids <- c(33027) #,33027, 50101073, 6804844, 83001827 , 56751351, 13485298, 30597
 ds_long <- ds %>% 
   # dplyr::filter(id %in% ids) %>% # turn this off when using the entire sample
   dplyr::mutate(
-    age_bl    = as.numeric(age_bl),
-    age_death = as.numeric(age_death), 
+    age_at_bl    = as.numeric(age_bl),
+    age_at_death = as.numeric(age_death), 
     male      = as.logical(ifelse(!is.na(msex), msex=="1", NA_integer_)),
     edu       = as.numeric(educ)
   ) %>% 
   dplyr::select_(
     "id",
-    "fu_year",
-    "died",
-    "age_bl",
-    "male",
-    "edu",
-    "age_death",
-    "age_at_visit",
-    "birth_year",
-    "date_at_visit",
-    "mmse",
-    # new
-    "dementia",
-    "income_40", # income at age 40
-    "cogact_old", # cognitive activity in late life
-    "socact_old", # social activity in late life
-    "soc_net", # social network size
-    "social_isolation" # loneliness 
+    ,"died"
+    ,"age_death"
+    
+    ,"male"
+    ,"edu"
+    ,
+    
+    # ,"birth_date" # perturbed data of birth
+    ,"birth_year" # the year of birth
+    # ,"date_at_bl" # date at baseline 
+    ,"age_at_bl" # age at baseline 
+# time-invariant above
+    ,"fu_year" # Follow-up year ------------------------------------------------
+# time-variant below
+    ,"date_at_visit" # perturbed date of visit
+    ,"age_at_visit" #Age at cycle - fractional  
+    
+    
+    ,"mmse"
+    ,# new
+    # ,"dementia"
+    ,"income_40" # income at age 40
+    ,"cogact_old" # cognitive activity in late life
+    ,"socact_old" # social activity in late life
+    ,"soc_net", # social network size
+    ,"social_isolation" # loneliness 
     ) 
 # save to disk for direct examination
 # write.csv(d,"./data/shared/musti-state-dementia.csv")  

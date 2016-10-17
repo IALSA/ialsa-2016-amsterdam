@@ -16,7 +16,7 @@ pathSaveFolder <- "./data/shared/derived/models/model-b-mod-2/"
 digits = 2
 cat("\n Save fitted models here : \n")
 print(pathSaveFolder)
-
+list.files(pathSaveFolder)
 # ---- load-data ----------------------
 
 
@@ -90,9 +90,8 @@ print_hazards <- function(model, dense=T){
   }
   return(c)
 }
-# hz <- print_hazards(model, dense=F) %>% print()
-# hz <- print_hazards(model, dense=T) %>% print()
-
+hz <- print_hazards(model, dense=T) %>% print()
+hz <- print_hazards(model, dense=F) %>% print()
 
 
 
