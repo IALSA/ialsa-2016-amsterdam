@@ -38,48 +38,24 @@ ds0 <- dto[["unitData"]]
 ds <- ds0 # to leave a clean copy of the ds, before any manipulation takes place
 
 # ---- meta-table --------------------------------------------------------
-dto[["metaData"]] %>%  
-  dplyr::select(-url, -notes) %>% 
-  dplyr::mutate(type = ordered(type)) %>% 
-  DT::datatable(
-    class   = 'cell-border stripe',
-    caption = "This is a dynamic table of the metadata file. Edit at `./data/meta/map/meta-data-map.csv",
-    filter  = "top",
-    options = list(pageLength = 6, autoWidth = TRUE)
-  )
+# dto[["metaData"]] %>%  
+#   dplyr::select(-url, -notes) %>% 
+#   dplyr::mutate(type = ordered(type)) %>% 
+#   DT::datatable(
+#     class   = 'cell-border stripe',
+#     caption = "This is a dynamic table of the metadata file. Edit at `./data/meta/map/meta-data-map.csv",
+#     filter  = "top",
+#     options = list(pageLength = 6, autoWidth = TRUE)
+#   )
 
 
 # ---- inspect-data -------------------------------------------------------------
 
 # ---- tweak-data --------------------------------------------------------------
-
-# ---- basic-table --------------------------------------------------------------
-
-# ---- basic-graphs --------------------------------------------------------------
-# this is how we can interact with the `dto` to call and graph data and metadata
-dto[["metaData"]] %>% 
-  dplyr::filter(type=="demographic") %>% 
-  dplyr::select(name,name_new,label)
-
-dto[["unitData"]]%>%
-  histogram_continuous("age_death", bin_width=1)
-
-dto[["unitData"]] %>%
-  histogram_discrete("msex")
-
-
-set.seed(1)
-ids <- sample(ds$id,100)
-d <- dto[["unitData"]] %>% dplyr::filter(id %in% ids)
-g <- basic_line(d, "cogn_global", "fu_year", "salmon", .9, .1, T)
-g
-
-# raw_smooth_lines(d, "cogn_global")
-
-
-# ---- testing --------------------------
+names(d)
 
 d <- ds %>%
+# d <- dto$ms_mmse$multi %>%
   # dplyr::filter(id %in% ids) %>% # turn this off when using the entire sample
   dplyr::mutate(
     age_bl    = as.numeric(age_bl),
@@ -94,11 +70,12 @@ d <- ds %>%
     "age_bl",
     "male",
     "edu",
-    "age_death",
+    # "age_death",
     "age_at_visit",
     "birth_year",
     "date_at_visit",
     "mmse",
+    "cogn_global", # global cognitive score
     # new
     "dementia",
     "income_40", # income at age 40
@@ -108,8 +85,61 @@ d <- ds %>%
     "social_isolation" # loneliness
   )
 head(d)
-library(dplyr)
-library(ggplot2)
+# ---- basic-table --------------------------------------------------------------
+
+# ---- basic-graphs --------------------------------------------------------------
+
+# raw_smooth_lines(d, "cogn_global")
+
+
+# ---- testing --------------------------
+raw_smooth_lines_v2(d,"cogn_global")
+raw_smooth_lines_v2(d,"mmse")
+
+
+
+line_alpha=1
+line_size =.5 
+d_observed <- d
+variable_name <- "cogn_global"
+time_metric <- "date_at_visit"
+time_metric <- "date_at_visit"
+color_name="black"
+
+g <- ggplot(d, aes_string(x="date_at_visit", y = "mmse"))
+# g <- ggplot(d, aes_string(x="age_at_visit", y = "cogn_global"))
+# g <- ggplot(d, aes_string(x="fu_year", y = "cogn_global"))
+g <- g + geom_line(aes_string(group="id"), size=line_size, na.rm=T)
+# g <- g + geom_smooth(aes_string(group="id"),size=line_size,  method="lm", na.rm=T, se=F )
+# g <- g + geom_smooth(method="loess", color="blue", size=1, fill="gray80", alpha=.3, na.rm=T)
+g <- g + geom_point(shape=21,aes(size=(fu_year), fill=age_at_visit))
+g <- g + main_theme 
+g 
+
+
+
+  
+g <- ggplot(d, aes(x=date_at_visit)) +
+  geom_line(aes(group="id",))
+  
+g
+
+
+
+
+
+g11 <- basic_line_v2(d, variable_name, "date_at_visit", "black", line_alpha, line_size, F)
+g21 <- basic_line(d, variable_name, "age_at_visit", "salmon", line_alpha, line_size, T)
+g12 <- basic_line(d, variable_name, "fu_year", "black", line_alpha, line_size, F)
+g22 <- basic_line(d, variable_name, "fu_year", "salmon", line_alpha, line_size, T)
+
+
+
+
+
+
+
+
 ids <- d$id %>%  unique() %>% sample(1)
 d %>% 
   dplyr::filter(id %in% ids) %>% 
