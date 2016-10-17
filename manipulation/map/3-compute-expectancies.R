@@ -5,6 +5,7 @@ rm(list=ls(all=TRUE))  #Clear the variables from previous runs.
 # base::source("http://www.ucl.ac.uk/~ucakadl/ELECT/ELECT.r") # load  ELECT functions
 base::source("./scripts/ELECT.r") # load  ELECT functions
 base::source("./scripts/ELECT-utility-functions.R") # ELECT utility functions
+
 # ---- load-packages -----------------------------------------------------------
 library(magrittr) #Pipes
 library(msm)
@@ -18,28 +19,12 @@ digits = 2
 cat("\n Save fitted models here : \n")
 print(pathSaveFolder)
 
-
 # ---- load-data ---------------------------------------------------------------
 ds_clean <- readRDS("./data/unshared/ds_clean.rds")
 ds <- readRDS("./data/unshared/ds_estimation.rds") # same ids but fewer variables
 
 # assemble the list object with the results of msm estimation
 pathSaveFolder <- "./data/shared/derived/models/model-b-mod-2/"
-# models <- list()
-# assing each model a code name, limit to a few models, see specs in 2-estimate-models.R
-# models[["m1"]][["msm"]] <- readRDS(paste0(pathSaveFolder,'mB_mod2_1.rds'))
-# models[["m2"]][["msm"]] <- readRDS(paste0(pathSaveFolder,'mB_mod2_2.rds'))
-# models[["m3"]][["msm"]] <- readRDS(paste0(pathSaveFolder,'mB_mod2_3.rds'))
-# models[["m4"]][["msm"]] <- readRDS(paste0(pathSaveFolder,'mB_mod2_4.rds'))
-
-# model <- models[["educat"]][["msm"]]
-# model <- models[["m3"]][["msm"]]
-
-# for use with a single model:
-# model_name <- "mB_mod2_3"
-# model <- list()
-# model[["msm"]] <- readRDS(paste0(pathSaveFolder,model_name,'.rds'))
-
 
 # ---- inspect-data -------------------------------------------------------------
 
@@ -85,9 +70,15 @@ msm_details <- function(model){
 }
 
 # ---- define-le-functions ---------------
-
 # wrapper function to compute a single conditional Life Expectancy
-compute_one_condition <- function(msm_model, age_min, age_max,ds_, alive,  ds_levels, condition_n){
+compute_one_condition <- function(
+   msm_model
+  ,age_min
+  ,age_max
+  # ,ds_alive
+  ,ds_levels
+  ,condition_n
+){
   # assemble the levels of the covariates
   covar_list <- list(
     age    = age_min
@@ -119,7 +110,7 @@ compute_conditional_les <- function(
   condition_n = "all"
 ){
   model_path_in  <- paste0(folder,model_name,   '.rds') # msm object
-  model_path_out <- paste0(folder,model_name,'_le.rds') # msm + elect objects
+  model_path_out <- paste0(folder,model_name,'_',age_min+75,'_',age_max+75,'.rds') # msm + elect objects
   model <- list() # initiate the list object
   model[["msm"]] <- readRDS(model_path_in) # import msm model object
   # store conditional levels of covariates for future reference
@@ -144,6 +135,70 @@ compute_conditional_les <- function(
   saveRDS(model,model_path_out)
 }
 
+# simplified verision of summary.elect()
+# this function only a temp hack before such functionality is added to summary.elect()
+describe_reps<- function(
+   LEs
+  ,probs = c(.025,0.5,.975)
+){
+  (pnt <- LEs$pnt)
+  (e_names <- attr(LEs$pnt, "names"))
+  sim <- LEs$sim
+  (mn <- apply(LEs$sim,2,mean))
+  (se <- apply(LEs$sim,2,sd))
+  (quants <- matrix(NA,ncol(LEs$sim),length(probs)))
+  for(i in 1:ncol(LEs$sim)){
+    for(j in 1:length(probs)){
+      quants[i,j] <- quantile(LEs$sim[,i],probs=probs[j])
+    }   
+  }     
+  out <- as.data.frame(cbind(pnt,mn,se,quantiles=quants))
+  for(j in 4:(3+length(probs))){
+    names(out)[j]<-paste(probs[j-3],"q",sep="")
+  }
+  return(out)
+}
+# describe_reps(model$le)
+
+# organize the results of replication
+organize_sim_results <- function(
+  model_path
+){
+  model <- readRDS(model_path)
+  lapply(model, names)
+  for(i in seq_along(model$le)){
+    
+    (d0 <- model$levels[i,])
+    (d1 <- describe_reps(model$le[[i]]))
+    (d2 <- cbind(d1,d0))
+    (d2$e_name <- attr(model$le[[i]]$pnt, "names") )
+    (d2$condition_n <- i)
+    model[["descriptives"]][[paste0(i)]] <- d2
+  }
+  lapply(model, names) 
+  model$descriptives$`1`
+  
+  d <- do.call("rbind", model$descriptives)
+  rownames(d) <- NULL
+  d <- d %>% 
+    dplyr::select(condition_n, e_name, male, educat, sescat, dplyr::everything()) %>% 
+    dplyr::mutate(
+      pnt      = sprintf("%0.2f", as.numeric(pnt)),
+      mn       = sprintf("%0.2f", as.numeric(mn)),
+      se       = sprintf("%0.2f", as.numeric(se)),
+      `0.025q` = sprintf("%0.2f", as.numeric(`0.025q` )),
+      `0.5q`   = sprintf("%0.2f", as.numeric(`0.5q` )),
+      `0.975q` = sprintf("%0.2f", as.numeric(`0.975q` ))
+      
+    )
+  model[["descriptives"]] <- d
+  saveRDS(model, model_path)
+  # return(model)
+}
+# organize_sim_results(
+# model_path = "./data/shared/derived/models/model-b-mod-2/mB_mod2_3_80_110.rds"
+# )
+
 # ---- assemble-covariate-levels ----------------------
 # age_bl_possible <- seq(from=-10, to=10, by=10) 
 male_possible <- c(0, 1)
@@ -157,7 +212,7 @@ ds_levels <- tidyr::crossing(
   ,sescat = sescat_possible
 ) %>% as.data.frame() 
 
-ds_levels %>% print()
+ds_levels %>% knitr::kable() %>% print()
 
 # ---- specify-elect-options --------------------------
 alive_states <- c(1,2,3)
@@ -168,17 +223,27 @@ time_scale <- "years"
 replication_n <- 1000
 
 # ---- compute-life-expectancies -------------------
-compute_conditional_les(
-  folder =  "./data/shared/derived/models/model-b-mod-2/",
-  model_name = "mB_mod2_3",
-  age_min = 0,
-  age_max = 35,
-  ds_levels = ds_levels,
-  condition_n = "all"
-)
+# compute_conditional_les(
+#   folder =  "./data/shared/derived/models/model-b-mod-2/",
+#   model_name = "mB_mod2_3",
+#   age_min = 5, # centered at 75
+#   age_max = 35,
+#   ds_levels = ds_levels,
+#   condition_n = "all"
+# )
+# 
+# compute_conditional_les(
+#   folder =  "./data/shared/derived/models/model-b-mod-2/",
+#   model_name = "mB_mod2_3",
+#   age_min = 10, # centered at 75
+#   age_max = 35,
+#   ds_levels = ds_levels,
+#   condition_n = "all"
+# )
+
 
 # ---- inspect-computed-le -----------------------
-model <- readRDS("./data/shared/derived/models/model-b-mod-2/mB_mod2_3_le.rds")
+model <- readRDS("./data/shared/derived/models/model-b-mod-2/mB_mod2_3_80_110.rds")
 lapply(model, names)
 model$levels
 
@@ -187,6 +252,45 @@ le <- model$le[[1]]
 summary.elect(le)
 plot.elect(le)
 print_hazards(model$msm)
+
+
+# ---- define-extraction-function ------------
+
+# descriptives <- describe_reps(le)
+# lapply(model, names)
+
+# ---- organize-simulation-results -----------
+# organize_sim_results(
+#   model_path = "./data/shared/derived/models/model-b-mod-2/mB_mod2_3_80_110.rds"
+# )
+# 
+# organize_sim_results(
+#   model_path = "./data/shared/derived/models/model-b-mod-2/mB_mod2_3_85_110.rds"
+# )
+
+
+
+# ---- print-results-1-1 -----------------
+model <- readRDS("./data/shared/derived/models/model-b-mod-2/mB_mod2_3_85_110.rds")
+print_hazards(model$msm) 
+msm_summary(model$msm)
+msm_details(model$msm)
+
+
+# ---- print-results-1-2 -----------------
+for(i in 1:nrow(model$levels)){
+# for(i in 1:3){
+  cat("\n### ",i,"\n")
+  ds <- model$descriptives
+  ds %>% 
+    dplyr::filter(condition_n == as.integer(i)) %>% 
+    knitr::kable() %>% print() 
+  cat("\n")
+  plot.elect(model$le[[i]])
+  cat("\n")
+  
+}
+
 
 ############# code for testing and re-learning below ------------
 # ---- simple-le-review ---------------

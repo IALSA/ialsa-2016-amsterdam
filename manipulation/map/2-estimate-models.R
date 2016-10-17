@@ -603,7 +603,7 @@ ds_alive <- ds[ds$state %in% alive_states,]
 
 grid_par <- .5
 time_scale <- "years"
-replication_n <- 10
+replication_n <- 500
 
 # ---- compute-life-expectancies-version-1 -------------------
 
@@ -616,14 +616,13 @@ ds_levels <- tidyr::crossing(
 ds_levels %>% knitr::kable() %>% print()
 # conduct simulation
 for(i in c(-15,-10,-5,0,5,10)){ # centered at 75
-# for(i in c(-15)){ # centered at 75
   compute_conditional_les(
     folder      =  "./data/shared/derived/models/model-b/",
     model_name  = "mB_v1",
     age_min     = i, 
     age_max     = 35,
     ds_levels   = ds_levels,
-    condition_n = c(1,2)
+    condition_n = "all"
   )
 }
 
@@ -645,7 +644,7 @@ for(i in c(-15,-10,-5,0,5,10)){ # centered at 75
     age_min     = i , # centered at 75
     age_max     = 35 ,
     ds_levels   = ds_levels ,
-    condition_n = c(1,2)
+    condition_n = "all"
   )
 }
 
