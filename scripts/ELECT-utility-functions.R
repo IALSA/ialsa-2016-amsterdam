@@ -116,6 +116,30 @@ examine_multistate_simple <- function(model, digits=3){
   return(model_results)
 }
 
+# ---- print-hazards ------------------------
+print_hazards <- function(model, dense=T){
+  hz <- hazard.msm(model)
+  a <- plyr::ldply(hz, .id = "predictor") 
+  b <- a %>% 
+    dplyr::mutate(
+      transition = rep(rownames(hz[[1]]), length(hz)),
+      hr    = sprintf("%0.2f", HR),
+      lo    = sprintf("%0.2f", L),
+      hi    = sprintf("%0.2f", U),
+      dense = sprintf("%4s (%4s,%5s)", hr, lo, hi)
+    )
+  if(dense){
+    c <- b %>% 
+      dplyr::select(transition, predictor, dense)
+  }
+  if(!dense){
+    c <- b %>% 
+      dplyr::select(transition, predictor, HR, L, U)
+  }
+  return(c)
+}
+# hz <- print_hazards(model, dense=F) %>% print()
+
 
 # ----- print-LE ---------------------
 print_LE_results <- function(models, covar){
