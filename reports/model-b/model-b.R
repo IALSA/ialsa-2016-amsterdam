@@ -31,7 +31,7 @@ print(path_folder)
 # ds <- readRDS("./data/unshared/ds_estimation.rds") # same ids but fewer variables
 
 # import simulation objects
-(path_files <- list.files(file.path(path_folder),full.names=T, pattern="mB_v2_"))
+(path_files <- list.files(file.path(path_folder),full.names=T, pattern="mB_v1_"))
 models <- list()
 for(i in seq_along(path_files)){
   (min_age <- strsplit(path_files[i], split = "_")[[1]][3])
@@ -79,7 +79,7 @@ unique(results$e_name)
 table(results$e_name)
 ds <- results %>% 
    dplyr::filter(
-     e_name == "e.3"
+     e_name == "e12"
      # , condition_n == 1
     ) 
 temp <- ds
@@ -90,8 +90,8 @@ g <- ggplot2::ggplot(data=ds,aes(x = min_age, y=pnt, color=male) ) +
   # geom_point(aes(y=mn), color = "red") +
   # geom_point(aes(y=q_5), color = "blue")
   # facet_grid(sescat ~ educat)+
-  facet_grid(edu_low_med ~ edu_low_high)+
-  # facet_grid(. ~ educat)+
+  # facet_grid(edu_low_med ~ edu_low_high)+
+  facet_grid(. ~ educat)+
   # scale_y_continuous(limits = c(0,25), breaks = seq(0,25,by=5)) +
   main_theme
 g
