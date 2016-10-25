@@ -1,5 +1,5 @@
 ---
-title: 'Synthesis: model B'
+title: 'Estimation: model B'
 output:
   html_document:
     css: ~/GitHub/ialsa-2016-amsterdam/libs/css/sidebar.css
@@ -46,66 +46,136 @@ opts_chunk$set(
 echoChunks <- FALSE
 options(width=120) #So the output is 50% wider than the default.
 # connect to the file with the underlying R script  
-read_chunk("./manipulation/map/3-compute-expectancies.R") 
+read_chunk("./manipulation/map/2-estimate-models.R") 
 ```
-This report describes the 
-
-
-Estimation results of **Model XXX**, specified by the following input:
+This report describes the estimation of **Model B **, specified by the following input:
 ```{r specify-model, echo=T, results='show', message=FALSE}
 ```
 
-# Load environmet
+# I. Exposition
+
+## Environment 
 <!-- Load 'sourced' R files.  Suppress the output when loading packages. --> 
-```{r load-packages, echo=echoChunks, message=FALSE}
+```{r load-packages, echo=T, message=FALSE}
 ```
 
 <!-- Load the sources.  Suppress the output when loading sources. --> 
-```{r load-sources, echo=echoChunks, message=FALSE}
+```{r load-sources, echo=T, message=FALSE}
 ```
-
 
 <!-- Load any Global functions and variables declared in the R file.  Suppress the output. --> 
 ```{r declare-globals, echo=F, results='show', message=FALSE}
 ```
 
-# Load data
+## Data 
+
 <!-- Load the datasets.   -->
-```{r load-data, echo=echoChunks, results='hide', message=FALSE}
+```{r load-data, echo=T, results='show', message=FALSE}
 ```
 
-# Functions used
+### Encoding
+```{r inspect-created-multistates, echo=echoChunks, results='show', message=FALSE}
+```
+
+### Cleaning cases
+```{r remove-invalid-cases, echo=T, results='show', message=FALSE}
+```
+### Income
+```{r split-income-1, echo=T, results='show', message=FALSE}
+```
+
+```{r split-income-2, echo=echoChunks, results='hide', message=FALSE}
+```
+
+### Education
+```{r split-education-1, echo=T, results='show', message=FALSE}
+```
+
+```{r split-education-2, echo=echoChunks, results='hide', message=FALSE}
+```
+
+```{r keep-only-legal-states, echo=echoChunks, results='hide', message=FALSE}
+```
+
+### Centering
+```{r centering-decisions, echo=T, results='show', message=FALSE}
+```
+
+### Clean data
+```{r prepare-for-estimation, echo=T, results='show', message=FALSE}
+```
+
+### Age diagnostic
+```{r describe-age-composition, echo=echoChunks, results='show', message=FALSE, eval=T, out.width="900px", out.height="300px"}
+```
+### Before estimation
+```{r inspect-before-estimation, echo=F, results='show', message=FALSE}
+```
+
+# II. `msm` estimation
+
+## Functions
+
+The reports used a number of custom function to control the flow of estimation and manipulation
+
+### Fitting 
+
+```{r define-estimation-function, echo=T, results='show', message=FALSE}
+```
+
+### Support 
+
 ```{r define-support-functions, echo=T, results='show', message=FALSE}
 ```
 
+## Specifications
+
+### Model 
+```{r specify-model, echo=T, results='show', message=FALSE}
+```
+
+### Options
+```{r specify-msm-options, echo=T, results='show', message=FALSE}
+```
+
+## `msm` call
+```{r estimate-msm-models, echo=T, results='show', message=FALSE}
+```
+
+# III. `ELECT` simulation
+
+## Functions
 ```{r define-le-functions, echo=T, results='show', message=FALSE}
 ```
 
-```{r assemble-covariate-levels, echo=T, results='show', message=FALSE}
-```
-
+## Options
 ```{r specify-elect-options, echo=T, results='show', message=FALSE}
 ```
 
-```{r compute-life-expectancies, echo=T, results='show', message=FALSE}
+## `ELECT` calls
+### Version 1
+```{r compute-life-expectancies-version-1, echo=T, results='show', message=FALSE}
+```
+### Version 2
+```{r compute-life-expectancies-version-2, echo=T, results='show', message=FALSE}
 ```
 
-```{r compute-life-expectancies, echo=T, results='show', message=FALSE}
+
+# IV. Recapitulation
+
+The estimation routines described above resulted in a series of objects storing information about fitted models
+```{r recap-1, echo=T, results='show', message=FALSE}
 ```
 
-# Results
-## msm
-```{r print-results-1-1, echo=F, results='show', message=FALSE}
+Two version of model B either use a single variable for `education` with values `-1`, `0` and `-1` (`mB_v1`) or two dummy variables `edu_low_med` and `edu_low_high` (`mB_v2`), the definition of which is demonstrated in the exposition. 
+
+The `ELECT` runs simulation for all possible levels in respective `ds_levels` across `min_age` and `max_age` conditions, which are recorded in the suffixes that follow the model code name. To illustrate,
+the object `mB_v1_60_110.rds` contains the result of `ELECT` calls for conditional age of `60` with assumed maximum age of `110`.
+
+The structure and interrogation of the objects is demonstrated below
+```{r recap-2, echo=T, results='show', message=FALSE}
 ```
 
-## Conditions
-```{r print-conditions, echo=F, results='show', message=FALSE}
-ds_levels %>% print()
-```
-
-## elect
-```{r print-results-1-2, echo=T, results='asis', message=FALSE}
-```
 
 # Session Info
 ```{r}

@@ -2,11 +2,11 @@
 rm(list=ls(all=TRUE))  #Clear the variables from previous runs.
 
 # ---- load-packages -----------------------------------------------------------
-library(magrittr) #Pipes
-library(msm)
-requireNamespace("ggplot2", quietly=TRUE)
-requireNamespace("dplyr", quietly=TRUE) 
-requireNamespace("testit", quietly=TRUE)
+library(magrittr)                         # Pipes
+library(msm)                              # multi-state modeling
+requireNamespace("ggplot2", quietly=TRUE) # graphing
+requireNamespace("dplyr", quietly=TRUE)   # data manipulation
+requireNamespace("testit", quietly=TRUE)  # condition testing
 
 # ---- load-sources ------------------------------------------------------------
 # base::source("http://www.ucl.ac.uk/~ucakadl/ELECT/ELECT.r") # load  ELECT functions
@@ -14,16 +14,20 @@ base::source("./scripts/ELECT.r") # load  ELECT functions
 base::source("./scripts/ELECT-utility-functions.R") # ELECT utility functions
 
 # ---- declare-globals ---------------------------------------------------------
-pathSaveFolder <- "./data/shared/derived/models/model-b/"
+path_folder <- "./data/shared/derived/models/model-b/"
 digits = 2
-cat("\n Save fitted models here : \n")
-print(pathSaveFolder)
+cat("\n Objected with fitted models will be saved in the folder : \n")
+cat("`",path_folder,"`")
 
 # ---- load-data ---------------------------------------------------------------
 # first, the script `0-ellis-island.R` imports and cleans the raw data
 # second, the script `1-encode-multistate.R` augments the data with multi-states
 # load this data transfer object (dto)
 dto <- readRDS("./data/unshared/derived/dto.rds")
+names(dto)
+names(dto$ms_mmse) 
+ds_miss <- dto$ms_mmse$missing # data after encoding missing states (-1, -2)
+ds_ms <- dto$ms_mmse$multi     # data after encoding multistates (1,2,3,4)
 
 # ---- inspect-data -------------------------------------------------------------
 names(dto)
@@ -48,10 +52,17 @@ view_id <- function(ds1,ds2,id){
 ids <- sample(unique(ds_miss$id),1) # view a random person for sporadic inspections
 # 50402431 , 37125649, 50101073, 6804844, 83001827 , 56751351, 13485298, 56751351, 75507759)
 ids <- c(50402431) #96351191
-view_id(ds_miss, ds_ms, ids)
+
+var_miss <- c("id", "fu_year","age_at_visit","age_death", "mmse" )
+var_ms   <- c("id", "fu_year","age", "mmse","state" )
+cat("\n Demonstrate the mechanics of encoding states: \n")
+view_id(  
+  ds_miss %>% dplyr::select_(.dots=var_miss), 
+  ds_ms%>% dplyr::select_(.dots=var_ms),  
+  ids) 
 
 # ---- remove-invalid-cases --------------------------------------------------------------
-#### 1) Remove observations with missing age
+####### 1) Remove observations with missing age
 # Initial number of observations with missing age : 
 sum(is.na(ds_ms$age))
 ds_clean <- ds_ms %>% 
@@ -60,7 +71,7 @@ ds_clean <- ds_ms %>%
 sum(is.na(ds_clean$age))
 
 
-#### 3) Remove subjects with only ONE observed data point
+####### 2) Remove subjects with only ONE observed data point
 # Initial number of subjects who have *n* observed data points
 ds_clean %>% 
   dplyr::group_by(id) %>% 
@@ -89,7 +100,7 @@ ds_clean %>%
   print()
 
 
-#### 3) Remove subjects with IMS at the first observation
+####### 3) Remove subjects with IMS at the first observation
 # Initial view of subjects with intermediate missing state at first observation:
 ids_firstobs_ims <- ds_clean %>% 
   dplyr::filter(firstobs == TRUE & state == -1) %>% 
@@ -103,19 +114,23 @@ ds_clean %>%
   dplyr::filter(firstobs == TRUE & state == -1) %>% 
   dplyr::select(id) %>% print()
 
-# ---- split-income ------------------------
+# ---- split-income-1 ------------------------
+# Initial frequencies
 ds_clean %>% 
   dplyr::group_by(income_40) %>%
   dplyr::summarize(n=n()) %>% print(n=50)
-
-ds_clean$sescat <- car::Recode(ds_clean$income_40,
-                                  " 1:3 = '-1'; 
-                                   4:7  = '0';
-                                   8:10 = '1';
+# Defining categorical variable
+ds_clean$sescat <- car::Recode(ds_clean$income_40,"
+                                   1:3  = '-1'; 
+                                   4:7  =  '0';
+                                   8:10 =  '1';
                                   ")
+table(ds_clean$sescat, useNA = "always")
+
+# ---- split-income-2 ------------------------
 ds_clean$sescatF <- factor(
   ds_clean$sescat, 
-  levels = c(-1,             0,             1), 
+  levels = c( -1,      0,       1), 
   labels = c("Low", "Medium", "High"))
 cat("\n How income at age 40 was categorized: \n")
 ds_clean %>% 
@@ -137,21 +152,41 @@ ds_clean <- ds_clean %>%
 table(ds_clean$sescat, ds_clean$ses_low_med)
 table(ds_clean$sescat, ds_clean$ses_low_high)
 
-# ---- split-education ----------------------
+# ---- split-education-1 ----------------------
+# Initial frequencies
 ds_clean %>% 
   dplyr::group_by(edu) %>%
   dplyr::summarize(n=n()) %>% print(n=50)
-  
-ds_clean$educat <- car::Recode(ds_clean$edu,
-                               " 0:9   = '-1'; 
-                               10:11 = '0';
-                               12:30 = '1';
+
+# Defining categorical variable
+ds_clean$educat <- car::Recode(ds_clean$edu,"
+                                0:9  = '-1'; 
+                               10:11 =  '0';
+                               12:30 =  '1';
                                ")
+table(ds_clean$educat, useNA = "always")
+
+# Defining dummy variables
+# educat   low_med  low_high
+#  -1          0        0
+#   0          1        0
+#   1          0        1
+ds_clean <- ds_clean %>% 
+  dplyr::mutate(
+    edu_low_med  = ifelse(educat == 0, 1, 0 ), 
+    edu_low_high = ifelse(educat == 1, 1, 0 ) 
+  )
+# Verify how `Low vs Med` was encoded:
+table(ds_clean$educat, ds_clean$edu_low_med)
+# Verify how `Low vs High` was encoded:
+table(ds_clean$educat, ds_clean$edu_low_high)
+
+# ---- split-education-2 ----------------------
+# additional tranformations 
 ds_clean$educatF <- factor(
   ds_clean$educat, 
   levels = c(-1,             0,             1), 
   labels = c("0-9 years", "10-11 years", ">11 years"))
-cat("\n How education was categorized: \n")
 ds_clean %>% 
   dplyr::group_by(educatF, edu) %>% 
   dplyr::summarize(n = n()) %>% 
@@ -162,20 +197,22 @@ ds_clean %>%
   dplyr::group_by(educatF) %>% 
   dplyr::summarize(n = n())
 
-cat("\n Create dummy variables for testing effects of education: \n")
-table(ds_clean$educat, useNA = "always")
 
-# ref  D1  D2
-#  -1  0   04
-#  0   1   0
-#  1   0   1
-ds_clean <- ds_clean %>% 
-  dplyr::mutate(
-    edu_low_med  = ifelse(educat == 0, 1, 0 ), 
-    edu_low_high = ifelse(educat == 1, 1, 0 ) 
-  )
-table(ds_clean$educat, ds_clean$edu_low_med)
-table(ds_clean$educat, ds_clean$edu_low_high)
+
+# ---- keep-only-legal-states --------------------------------
+# list ids with intermidiate missing (im) or right censored (rc) states
+ids_with_im    <- unique(ds_clean[ds_clean$state == -1, "id"]) 
+cat("\n Number of subjects with intermediate missing state (-1) : ",length(ids_with_im) )
+ids_with_rc     <- unique(ds_clean[ds_clean$state == -2, "id"])
+cat("\n Number of subjects with right censored state (-2) : ",length(ids_with_rc) )
+ids_with_either <- unique(c(ids_with_im, ids_with_rc))
+cat("\n Number of subjects with either IMS or RC state(s) : ",length(ids_with_either) )
+ids_with_both   <- dplyr::intersect(ids_with_im, ids_with_rc)
+cat("\n Number of subjects with both IMS and RC state(s) : ",length(ids_with_both) )
+# subset a random sample of individuals if needed
+set.seed(42)
+ids <- sample(unique(ds_clean$id), 100)
+
 
 # save clean data object for records and faster access
 saveRDS(ds_clean, "./data/unshared/ds_clean.rds")
@@ -207,25 +244,11 @@ saveRDS(ds_clean, "./data/unshared/ds_clean.rds")
 # hist(intervals[,2],col="green",xlab="Time intervals in data in years",main="")
 # opar<-par(mfrow=c(1,1), mex=0.8,mar=c(5,5,2,1))
 
-# ---- keep-only-legal-states --------------------------------
-# list ids with intermidiate missing (im) or right censored (rc) states
-ids_with_im    <- unique(ds_clean[ds_clean$state == -1, "id"]) 
-cat("\n Number of subjects with intermediate missing state (-1) : ",length(ids_with_im) )
-ids_with_rc     <- unique(ds_clean[ds_clean$state == -2, "id"])
-cat("\n Number of subjects with right censored state (-2) : ",length(ids_with_rc) )
-ids_with_either <- unique(c(ids_with_im, ids_with_rc))
-cat("\n Number of subjects with either IMS or RC state(s) : ",length(ids_with_either) )
-ids_with_both   <- dplyr::intersect(ids_with_im, ids_with_rc)
-cat("\n Number of subjects with both IMS and RC state(s) : ",length(ids_with_both) )
-# subset a random sample of individuals if needed
-set.seed(42)
-ids <- sample(unique(ds_clean$id), 100)
+
 
 # ---- centering-decisions -----------------------
 # centering decisions
-cat("\n Centering decisions :")
-age_center = 75
-age_bl_center = 75
+age_center = 75;
 year_center = 1900
 
 # ---- prepare-for-estimation --------------------
@@ -239,18 +262,18 @@ ds <- ds_clean %>%
   dplyr::mutate(
     male = as.numeric(male), 
     age    = (age - age_center), # centering
-    age_bl = (age_bl - age_bl_center), # centering
+    # age_bl = (age_bl - age_bl_center), # centering
     birth_year  = as.integer(birth_year - year_center) # centering (for numerical reasons)
 ) %>% 
   dplyr::select(
      id            # person identifier
-    ,age_bl        # age at baseline     
+    # ,age_bl        # age at baseline     
     ,birth_year    # year of birth         
     ,male          # sex
     ,sescat        # income at age 40  
     ,edu           # years of education
     ,educat        # education categorized: low, med, high
-    ,educatF       # education categorized: low, med, high (factor)             
+    # ,educatF       # education categorized: low, med, high (factor)             
     ,edu_low_med   # dummy, edu low as compared to edu medium           
     ,edu_low_high  # dummy, edu low as compared to edu high           
     ,fu_year       # follow-up year       
@@ -261,13 +284,13 @@ ds <- ds_clean %>%
 # save the object to be used during estimation
 saveRDS(ds, "./data/unshared/ds_estimation.rds")
 
-# --- inspect-before-estimation --------------------
+# ---- inspect-before-estimation --------------------
 ds <- readRDS("./data/unshared/ds_estimation.rds")
 # view data object to be passed to the estimation call
 cat("\n\n The following dataset will be passed to msm call (view for one person): \n")
-set.seed(42)
+set.seed(44)
 ids <- sample(unique(ds$id), 1)
-ds %>% dplyr::filter(id %in% ids)
+ds %>% dplyr::filter(id %in% ids) %>% knitr::kable()
 cat("\n Subject count : ",length(unique(ds$id)),"\n")
 cat("\n Frequency of states at baseline\n")
 sf <- ds %>% 
@@ -330,7 +353,7 @@ estimate_multistate <- function(
     control       = list(trace=0,REPORT=1,maxit=1000,fnscale=10000)
   )
   # model <- paste0("test", covariates_)
-  saveRDS(model, paste0(pathSaveFolder,model_name,".rds"))
+  saveRDS(model, paste0(path_folder,model_name,".rds"))
   return(model)
 } 
 
@@ -436,7 +459,7 @@ initprobs_ = initial_probabilities
 # ---- estimate-msm-models ------------------------
 # turn this chunk OFF when printing the report
 # compile model objects with msm() call
-# each model will be saved in the specified folder, namely pathSaveFolder
+# each model will be saved in the specified folder, namely path_folder
 
 # model B version 1 : using categorized education
 # estimate_multistate("mB_v1", ds, Q_crude, E, qnames,
@@ -452,7 +475,8 @@ initprobs_ = initial_probabilities
 
 # ---- inspect-estimated-model -----------------------------
 # call in the model object for inspection
-msm_model <- readRDS(paste0(pathSaveFolder, "mB_v1.rds"))
+# msm_model <- readRDS(paste0(path_folder, "mB_v1.rds")) # educat
+msm_model <- readRDS(paste0(path_folder, "mB_v2.rds"))# edu_low_med, edu_low_high
 print_hazards(msm_model)
 msm_summary(msm_model)
 msm_details(msm_model)
@@ -467,7 +491,6 @@ compute_one_condition <- function(
   msm_model
   ,age_min
   ,age_max
-  # ,ds_alive
   ,ds_levels
   ,condition_n
 ){
@@ -478,12 +501,12 @@ compute_one_condition <- function(
   }
   # estimate Life Expectancies
   LE <- elect(
-    model          = msm_model, # fitted msm model
-    b.covariates   = covar_list, # list with specified covarites values
-    statedistdata  = ds_alive, # data for distribution of living states
-    time.scale.msm = time_scale, # time scale in multi-state model ("years", ...)
-    h              = grid_par, # grid parameter for integration
-    age.max        = age_max, # assumed maximum age in years
+    model          = msm_model,    # fitted msm model
+    b.covariates   = covar_list,   # list with specified covarites values
+    statedistdata  = ds_alive,     # data for distribution of living states
+    time.scale.msm = time_scale,   # time scale in multi-state model ("years", ...)
+    h              = grid_par,     # grid parameter for integration
+    age.max        = age_max,      # assumed maximum age in years
     S              = replication_n # number of simulation cycles
   )
   return(LE)
@@ -613,51 +636,57 @@ ds_levels <- tidyr::crossing(
   ,educat = c(-1, 0, 1)
   ,sescat = c(-1, 0, 1)
 ) %>% as.data.frame() 
-ds_levels %>% knitr::kable() %>% print()
-# conduct simulation
-for(i in c(-15,-10,-5,0,5,10)){ # centered at 75
-  compute_conditional_les(
-    folder      =  "./data/shared/derived/models/model-b/",
-    model_name  = "mB_v1",
-    age_min     = i, 
-    age_max     = 35,
-    ds_levels   = ds_levels,
-    condition_n = "all"
-  )
-}
+ds_levels %>% print()
+# conduct simulation - turn off when printing report
+# for(i in c(-15,-10,-5,0,5,10)){ # centered at 75
+#   compute_conditional_les(
+#     folder      =  "./data/shared/derived/models/model-b/",
+#     model_name  = "mB_v1",
+#     age_min     = i, 
+#     age_max     = 35,
+#     ds_levels   = ds_levels,
+#     condition_n = "all"
+#   )
+# }
 
 # ---- compute-life-expectancies-version-2 -------------------
 
 # assemble covariate levels
 ds_levels <- tidyr::crossing(
    male         = c(0, 1)   
-  ,edu_low_med  = c(0,1)
   ,edu_low_high = c(0,1)
+  ,edu_low_med  = c(0,1)
   ,sescat       = c(-1,0,1)
-) %>% as.data.frame() 
-ds_levels %>% knitr::kable() %>% print()
-# conduct simulation 
-for(i in c(-15,-10,-5,0,5,10)){ # centered at 75
-  compute_conditional_les(
-    folder      =  "./data/shared/derived/models/model-b/",
-    model_name  = "mB_v2",
-    age_min     = i , # centered at 75
-    age_max     = 35 ,
-    ds_levels   = ds_levels ,
-    condition_n = "all"
-  )
-}
+) %>% 
+  dplyr::filter(!(edu_low_med==1 & edu_low_high==1)) %>% # exclude impossible levels
+  as.data.frame() 
+ds_levels %>% print()
+# conduct simulation - turn off when printing report
+# for(i in c(-15,-10,-5,0,5,10)){ # centered at 75
+#   compute_conditional_les(
+#     folder      =  "./data/shared/derived/models/model-b/",
+#     model_name  = "mB_v2",
+#     age_min     = i , # centered at 75
+#     age_max     = 35 ,
+#     ds_levels   = ds_levels ,
+#     condition_n = "all"
+#   )
+# }
 
-# ---- inspect-computed-le -----------------------
-model <- readRDS("./data/shared/derived/models/model-b/mB_v2_60_110.rds")
+# ---- recap-1 -----------------
+list.files(file.path(path_folder),full.names=T) %>% as.data.frame() %>% format(justify="left")
+
+# ---- recap-2 ------------------
+model_path = "./data/shared/derived/models/model-b/mB_v1_60_110.rds"
+model <- readRDS(model_path)
 lapply(model, names)
 model$levels
-
-le <- model$le[[1]]
-
+print_hazards(model$msm)
+condition_n = 1
+le <- model$le[[condition_n]]
 summary.elect(le)
 plot.elect(le)
-print_hazards(model$msm)
+
 
 
 
