@@ -29,9 +29,9 @@ dto <- readRDS(path_input)
 # ---- inspect-data -------------------------------------------------------------
 names(dto)
 # 1st element - unit(person) level data
-dplyr::tbl_df(dto[["unitData"]])
+# dplyr::tbl_df(dto[["unitData"]])
 # 2nd element - meta data, info about variables
-dto[["metaData"]]
+# dto[["metaData"]]
 
 
 # ---- tweak-data --------------------------------------------------------------
@@ -58,14 +58,11 @@ ds_long <- ds %>%
     edu       = as.numeric(educ)
   ) %>% 
   dplyr::select_(
-    "id",
-    ,"died"
-    ,"age_death"
-    
+    "id"
+    ,"died"  
+    ,"age_at_death"
     ,"male"
     ,"edu"
-    ,
-    
     # ,"birth_date" # perturbed data of birth
     ,"birth_year" # the year of birth
     # ,"date_at_bl" # date at baseline 
@@ -75,16 +72,12 @@ ds_long <- ds %>%
 # time-variant below
     ,"date_at_visit" # perturbed date of visit
     ,"age_at_visit" #Age at cycle - fractional  
-    
-    
     ,"mmse"
-    ,# new
-    # ,"dementia"
     ,"income_40" # income at age 40
     ,"cogact_old" # cognitive activity in late life
     ,"socact_old" # social activity in late life
-    ,"soc_net", # social network size
-    ,"social_isolation" # loneliness 
+    ,"soc_net" # social network size
+    ,"social_isolation" # loneliness   
     ) 
 # save to disk for direct examination
 # write.csv(d,"./data/shared/musti-state-dementia.csv")  
@@ -110,7 +103,7 @@ determine_censor <- function(x, is_right_censored){
   )
 }
 (N <- length(unique(ds_long$id))) # sample size
-(subjects <- as.numeric(unique(ds_long$id))) # list the ids
+subjects <- as.numeric(unique(ds_long$id)) # list the ids
 # ds_long_temp <- ds_long
 # i <- 5; 
 for(i in 1:N){
@@ -123,7 +116,8 @@ for(i in 1:N){
   # (dta.i <- ds_long[ds_long$id==6804844,]) # select a single individual # use this line for testing
   (dta.i <- as.data.frame(dta.i %>% dplyr::arrange(-age_at_visit))) # enforce sorting
   (dta.i$missed_last_wave <- (cumsum(!is.na(dta.i$mmse))==0L)) # is the last obs missing?
-  (dta.i$presumed_alive   =  is.na(any(dta.i$age_death))) # can we presume subject alive?
+  (dta.i$presumed_alive   =  is.na(any(dta.i$age_at_death))) # can we presume subject alive?
+  # (dta.i$presumed_alive   =  is.na(any(dta.i$age_death))) # can we presume subject alive?
   (dta.i$right_censored   = dta.i$missed_last_wave & dta.i$presumed_alive) # right-censored?
   # dta.i$mmse_recoded     = determine_censor(dta.i$mmse, dta.i$right_censored) # use when tracing
   (dta.i$mmse     <- determine_censor(dta.i$mmse, dta.i$right_censored)) # replace in reality
@@ -278,11 +272,11 @@ saveRDS(dto, file="./data/unshared/derived/dto.rds", compress="xz")
 dto <- readRDS("./data/unshared/derived/dto.rds")
 names(dto)
 # 1st element - unit(person) level data
-dplyr::tbl_df(dto[["unitData"]])
+# dplyr::tbl_df(dto[["unitData"]])
 # 2nd element - meta data, info about variables
-dto[["metaData"]]
+# dto[["metaData"]]
 # 3rd element - data for MMSE outcome
-names(dto[["ms_mmse"]])
+# names(dto[["ms_mmse"]])
 ds_miss <- dto$ms_mmse$missing
 ds_ms <- dto$ms_mmse$multi
 

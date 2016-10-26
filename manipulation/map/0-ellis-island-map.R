@@ -46,9 +46,9 @@ metaData <- read.csv(metadata_path_input, stringsAsFactors=F, header=T)
 # inspect loaded data objects (using basic demographic variables )
 ds <- as.data.frame(dto$unitData) # assing alias
 length(unique(ds$id))  # sample size, number of respondents
-t <- table(ds[,"fu_year"], ds[,"died"]); t[t==0]<-".";t 
-t <- table(ds[,"msex"], ds[,"race"], useNA = "always"); t[t==0]<-".";t 
-t <- table(ds[,"educ"], ds[,"race"]); t[t==0]<-".";t 
+# t <- table(ds[,"fu_year"], ds[,"died"]); t[t==0]<-".";t 
+# t <- table(ds[,"msex"], ds[,"race"], useNA = "always"); t[t==0]<-".";t 
+# t <- table(ds[,"educ"], ds[,"race"]); t[t==0]<-".";t 
 
 # ---- assemble-data-object-dto-1 --------------------------------------
 # reconstruct the dto to be used in this project
@@ -58,8 +58,8 @@ dto[["unitData"]] <- ds
 # the second element of data transfer object contains meta data
 dto[["metaData"]] <-  metaData # new, local meta-data!!
 # verify and glimpse
-dto[["unitData"]] %>% dplyr::glimpse()
-dto[["metaData"]] %>% dplyr::glimpse()
+# dto[["unitData"]] %>% dplyr::glimpse()
+# dto[["metaData"]] %>% dplyr::glimpse()
 
 
 # ----- view-metadata-1 ---------------------------------------------
@@ -93,10 +93,8 @@ saveRDS(dto, file="./data/unshared/derived/dto.rds", compress="xz")
 dto <- readRDS("./data/unshared/derived/dto.rds")
 names(dto)
 # 1st element - unit(person) level data
-names(dto[["unitData"]])
 # 2nd element - meta data, info about variables
-names(dto[["metaData"]])
-names_labels(dto$unitData)
+knitr::kable(names_labels(dto$unitData))
 
 
 
