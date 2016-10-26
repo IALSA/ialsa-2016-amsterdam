@@ -48,7 +48,10 @@ estimate_multistate <- function(
 # )
 
 # ---- msm-examination ----------------------
-examine_multistate <- function(model, digits=3){
+examine_multistate <- function(
+  model, 
+  digits=3
+){
   # Generate output:
   cat("---------------------------------------")
   cat("\nModel","---"," with covariates: "); print(model$covariates, showEnv=F)
@@ -84,7 +87,10 @@ examine_multistate <- function(model, digits=3){
 }
 # (a <- examine_multistate(m1))
 
-examine_multistate_simple <- function(model, digits=3){
+examine_multistate_simple <- function(
+  model, 
+  digits=3
+){
   # Generate output:
   cat("---------------------------------------")
   cat("\nModel","---"," with covariates: "); print(model$covariates, showEnv=F)
@@ -117,7 +123,10 @@ examine_multistate_simple <- function(model, digits=3){
 }
 
 # ---- print-hazards ------------------------
-print_hazards <- function(model, dense=T){
+print_hazards <- function(
+  model, 
+  dense=T
+){
   hz <- hazard.msm(model)
   a <- plyr::ldply(hz, .id = "predictor") 
   b <- a %>% 
@@ -142,7 +151,10 @@ print_hazards <- function(model, dense=T){
 
 
 # ----- print-LE ---------------------
-print_LE_results <- function(models, covar){
+print_LE_results <- function(
+  models, 
+  covar
+){
   model <- models[[covar]]
   # examine 
   examine_multistate(model$msm)
@@ -163,3 +175,50 @@ print_LE_results <- function(models, covar){
   )
   
 }
+
+msm_summary <- function(
+  model
+){
+  cat("\n-2loglik =", model$minus2loglik,"\n")
+  cat("Convergence code =", model$opt$convergence,"\n")
+  p    <- model$opt$par
+  p.se <- sqrt(diag(solve(1/2*model$opt$hessian)))
+  print(cbind(p=round(p,digits),
+              se=round(p.se,digits),"Wald ChiSq"=round((p/p.se)^2,digits),
+              "Pr>ChiSq"=round(1-pchisq((p/p.se)^2,df=1),digits)),
+        quote=FALSE)
+}
+
+msm_details <- function(
+  model
+){ 
+  # intensity matrix
+  cat("\n Intensity matrix : \n")
+  print(qmatrix.msm(model)) 
+  # qmatrix.msm(model, covariates = list(male = 0))
+  # transition probability matrix
+  t_ <- 2
+  cat("\n Transition probability matrix for t = ", t_," : \n")
+  print(pmatrix.msm(model, t = t_)) # t = time, in original metric
+  # misclassification matrix
+  cat("\n Misclassification matrix : \n")
+  suppressWarnings(print(ematrix.msm(model), warnings=F))
+  # hazard ratios
+  # cat("\n Hazard ratios : \n")
+  # print(hazard.msm(model))
+  # mean sojourn times
+  cat("\n Mean sojourn times : \n")
+  print(sojourn.msm(model))
+  # probability that each state is next
+  cat("\n Probability that each state is next : \n")
+  suppressWarnings(print(pnext.msm(model)))
+  # total length of stay
+  cat("\n  Total length of stay : \n")
+  print(totlos.msm(model))
+  # expected number of visits to the state
+  cat("\n Expected number of visits to the state : \n")
+  suppressWarnings(print(envisits.msm(model)))
+  # ratio of transition intensities
+  # qratio.msm(model,ind1 = c(2,1), ind2 = c(1,2))
+}
+
