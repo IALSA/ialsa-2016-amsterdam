@@ -9,36 +9,9 @@ knitr::stitch_rmd(
 )
 # look into knitr::spin() http://www.r-bloggers.com/knitrs-best-hidden-gem-spin/
 
-# Exposition: Initial reivew of variables
-rmarkdown::render(
-  input = "./reports/review-variables/map/review-variables-map.Rmd" ,
-  output_format="html_document",
-  clean=TRUE
-)
-
 # Development : Encoding of the multi-state (ms) measure(s)
 knitr::stitch_rmd(
   script="./manipulation/map/1-encode-multistate-mmse.R",
   output="./manipulation/map/stitched-output/1-encode-multistate-mmse.md"
 )
  
-# Modeling : estimating models
-
-# Assembly : 
-
-## Reproducible Reports
-
-# Domonstration and annotation of how multistate variable has been computed
-rmarkdown::render(
-  input = "./reports/encode-multistate/encode-multistate.Rmd",
-  output_format="html_document", 
-  clean=TRUE
-)
-
-
-# conduct estimation
-
-# base::source("./manipulation/map/2-estimate-model-a.R")
-# base::source("./manipulation/map/2-estimate-model-b.R")
-base::source("./manipulation/map/2-estimate-model-c.R")
-base::source("./manipulation/map/2-estimate-model-d.R")
