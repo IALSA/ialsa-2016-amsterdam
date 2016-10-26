@@ -19,6 +19,17 @@ data/unshared/*/*/*
 /data_unshared/*
 /data-unshared/*
 
+/reports/model-b/*/*.png
+/reports/model-b/*/*/*.png
+/reports/model-b/*/*/*/*.png
+
+
+/data/derived/models/retired/*.rds
+/data/shared/derived/models/model-b/*.rds
+/reports/analysis-model-b/figure_rmd/*.png
+
+/reports/model-b/figure_rmd/*.png 
+
 /data/unshared/raw/MSM - Gothenburg, Oct 2015/*
 
 # Unnecessary files for knitr reports

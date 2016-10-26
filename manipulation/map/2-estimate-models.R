@@ -662,16 +662,16 @@ ds_levels <- tidyr::crossing(
   as.data.frame() 
 ds_levels %>% print()
 # conduct simulation - turn off when printing report
-# for(i in c(-15,-10,-5,0,5,10)){ # centered at 75
-#   compute_conditional_les(
-#     folder      =  "./data/shared/derived/models/model-b/",
-#     model_name  = "mB_v2",
-#     age_min     = i , # centered at 75
-#     age_max     = 35 ,
-#     ds_levels   = ds_levels ,
-#     condition_n = "all"
-#   )
-# }
+for(i in c(-15,-10,-5,0,5,10)){ # centered at 75
+  compute_conditional_les(
+    folder      =  "./data/shared/derived/models/model-b/",
+    model_name  = "mB_v2",
+    age_min     = i , # centered at 75
+    age_max     = 35 ,
+    ds_levels   = ds_levels ,
+    condition_n = "all"
+  )
+}
 
 # ---- recap-1 -----------------
 list.files(file.path(path_folder),full.names=T) %>% as.data.frame() %>% format(justify="left")
