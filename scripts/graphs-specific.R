@@ -1,3 +1,173 @@
+# ---- plotting-odds ------------------
+plot_odds <- function(
+  x,
+  yaxis,
+  limit1, 
+  limit2
+){
+  # x <- ds_odds
+  # study_ = levels_studies["octo"]
+  # predictor_ = levels_predictors["age"]
+  if(yaxis =="trans"){
+    d <- x %>%
+      dplyr::filter(study == limit1) %>% 
+      dplyr::filter(predictor==limit2)
+  }
+  if(yaxis =="study"){
+    d <- x %>%
+      dplyr::filter(trans == limit1) %>% 
+      dplyr::filter(predictor==limit2)
+  }
+  if(yaxis =="predictor"){
+    d <- x %>%
+      dplyr::filter(study == limit1) %>% 
+      dplyr::filter(trans == limit2) 
+  }
+  
+  g <-  ggplot2::ggplot(d,aes_string(y     = yaxis 
+                                     ,x     = "est"
+                                     # ,color = "sign"
+                                     # ,fill  = "sign"
+                                     # ,shape = "model_number"
+  ))  
+  g <- g + geom_vline(xintercept = 1, 
+                      color      = "gray50",  
+                      linetype   = "dotted", 
+                      size       = 1)   
+  g <- g + geom_errorbarh(aes_string(xmin = "low", xmax = "high"),
+                          color    = "gray25", 
+                          height   = 0, 
+                          linetype = "solid", 
+                          size     = 0.5) 
+  g <- g + geom_point(size = 3, color="black") 
+  # g <- g + facet_grid(predictor~study)
+  g <- g + main_theme
+  g
+  # g <- g + scale_shape_manual(values = c("TRUE"=21,"FALSE"=42))
+  # g <- g + scale_shape_manual(values = c("Linear"=24,"Quadratic"=22))
+  # g <- g + scale_color_manual(values = c("TRUE"="black","FALSE"=NA))
+  # g <- g + scale_fill_manual(values = c("TRUE"="black","FALSE"="white"))
+  # g <- g + main_theme
+  # g <- g + labs(shape = "", color="p < .05", fill = "p < .05")
+  # g <- g + theme(axis.text.y = element_text(size=baseSize))
+  # if(label_=="(R)-Error"){
+  #   g + guides(fill=FALSE, color=FALSE)
+  # }else{
+  #   g + guides(fill=FALSE, color=FALSE, shape=FALSE)
+  #   
+  # }
+  
+}   
+# trans - study - predictor
+# study - trans - predictor
+# predictor - study - trans
+# ds_odds %>% plot_odds("trans", "octo", "age")
+# ds_odds %>% plot_odds("study", "1-->4","age")
+# ds_odds %>% plot_odds("predictor", "octo","1-->4")
+# ---- matrix-of-odds ----------------------------
+matrix_odds <- function(
+  x,
+  yaxis,
+  mat_cols,
+  mat_row
+){
+  lst <- list()
+  for(i in seq_along(mat_cols)){
+    lst[[i]] <- x %>% plot_odds(yaxis, mat_cols[i], mat_row )
+  }
+  pm <- GGally::ggmatrix(
+    lst,
+    nrow = 1, ncol = length(mat_cols),
+    # title = "MMSE",
+    xAxisLabels = names(mat_cols),
+    yAxisLabels = mat_row
+    # legend = 1
+  ) + theme(
+    legend.position = "right",
+    strip.text.x = element_text(size=baseSize+3)
+  )
+  pm
+  
+} 
+# matrix_odds(ds_odds,"predictor",lvl_studies,"1-->2")
+# matrix_odds(ds_odds,"predictor",lvl_studies,"1-->4")
+# matrix_odds(ds_odds,"predictor",lvl_studies,"2-->1")
+# matrix_odds(ds_odds,"predictor",lvl_studies,"2-->3")
+# matrix_odds(ds_odds,"predictor",lvl_studies,"2-->4")
+# matrix_odds(ds_odds,"predictor",lvl_studies,"3-->4")
+# 
+# matrix_odds(ds_odds,"trans",lvl_studies,"age")
+# matrix_odds(ds_odds,"trans",lvl_studies,"sex")
+# matrix_odds(ds_odds,"trans",lvl_studies,"edu_med_low")
+# matrix_odds(ds_odds,"trans",lvl_studies,"edu_high_low")
+# matrix_odds(ds_odds,"trans",lvl_studies,"ses")
+# 
+# matrix_odds(ds_odds,"study",lvl_transitions,"age")
+# matrix_odds(ds_odds,"study",lvl_transitions,"sex")
+# matrix_odds(ds_odds,"study",lvl_transitions,"edu_med_low")
+# matrix_odds(ds_odds,"study",lvl_transitions,"edu_high_low")
+# matrix_odds(ds_odds,"study",lvl_transitions,"ses")
+
+# ---- supermatrix-odds -------------------------
+supermatrix_odds <- function(
+  ls_graphs, 
+  folder_name,
+  plot_name,
+  main_title,
+  width, height,res
+){
+  
+  lst <- ls_graphs
+  # folder_name = "./reports/model-summaries/graphs/"
+  # plot_name = "transition-by-predictor"
+  # main_title = "Hazard ratios and 95% confidence intervals"
+  # width = 1200
+  # height= 1200
+  # res = 120
+  
+  (n_g <- length(lst))
+  (height_unit <- .95/n_g)
+  (heights <- c(.05,rep(height_unit,n_g) ) )
+  (unit_nulls <- rep("null",n_g))
+  (path_save = paste0(folder_name,plot_name,".png"))
+  # open device
+  png(
+    filename = path_save, 
+    width    = width, 
+    height   = height,
+    res      = res
+  )
+  # 
+  vpLayout <- function(rowIndex, columnIndex){ 
+    return( viewport(layout.pos.row=rowIndex, layout.pos.col=columnIndex) ) 
+  }
+  grid::grid.newpage()
+  #Defnie the relative proportions among the panels in the mosaic.
+  layout <- grid::grid.layout(
+    nrow    = n_g+1, 
+    ncol    = 1,
+    widths  = grid::unit(1 ,"null"),
+    heights = grid::unit(heights, unit_nulls)
+  )
+  grid::pushViewport(grid::viewport(layout=layout))
+  # print the main title
+  grid::grid.text(
+    main_title, 
+    vp = grid::viewport(layout.pos.row = 1, layout.pos.col = 1),
+    just = "left"
+  )
+  # print graphs
+  for(i in seq_along(lst)){
+    # i <- 1
+    cstring <- paste0("print(lst[[",i,"]], vp=grid::viewport(layout.pos.row=",i+1, ", layout.pos.col=1))")
+    eval(parse(text=cstring)) # evaluates the content of the command string
+  }
+  dev.off() # close device
+  # return(grid::popViewport(0))
+}
+
+# ---- raw_smooth_lines --------------------
+
 raw_smooth_lines <- function(
   ds, 
   variable_name,
