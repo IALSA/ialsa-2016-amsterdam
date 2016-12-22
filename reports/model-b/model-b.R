@@ -274,7 +274,22 @@ for(i in level_conditions){
 
 
 
+# ---- export-selected-le-into-common-table -----------
 
+dt <- results %>% 
+  dplyr::filter(min_age %in% c(80,85), e_name %in% c("e","e.1")) %>% 
+  dplyr::select(min_age, e_name, male, educat, sescat, pnt, q_025, q_975) %>% 
+  dplyr::mutate(
+    dense = sprintf("%0.2f(%.2f,%.2f)", pnt, q_025, q_975)
+  ) %>% 
+  dplyr::arrange(e_name,min_age, desc(male), desc(educat) ) %>% 
+  dplyr::filter(
+    educat == "< 10 years" & sescat == "Low" |
+    educat == "10-11 years" & sescat == "Med" |
+    educat == "12+ years" & sescat == "High" 
+  )  
+dt  
+readr::write_csv(dt,"./reports/model-b/common-table.csv")
 
 
 
