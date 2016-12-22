@@ -1,5 +1,5 @@
 ---
-title: 'BISR: pulmonary'
+title: 'Hazard Ratios and 95% CI'
 output:
   word_document:
     toc: no
@@ -60,7 +60,7 @@ read_chunk("./reports/model-summaries/tables-from-models.R") #This allows knitr 
 ```
 
 <!-- Tweak the datasets.   -->
-```{r tweak-data, echo=echoChunks, results='show', message=FALSE}
+```{r tweak-data, echo=echoChunks, results='hide', message=FALSE}
 ```
 
 

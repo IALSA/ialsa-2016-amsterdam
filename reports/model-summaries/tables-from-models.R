@@ -79,11 +79,16 @@ ds_long <- ds_odds %>%
 # spread into a wide format
 ds_wide <- ds_long %>% 
   tidyr::spread(key = study, value = dense) %>% 
+  dplyr::mutate(
+    predictor = factor(predictor, 
+                       levels = c("age","male","edu_med_low","edu_high_low", "ses"),
+                       labels = c("Age","Sex","Med vs Low Education","High vs Low Education", "SES"))
+  ) %>% 
   dplyr::arrange(predictor, transition)
 
 # ---- print-table-2 --------------------------
 ds_wide %>% 
-  knitr::kable()
+  knitr::kable(col.names = c("Transition", "Predictor","LASA","LBC1921", "MAP", "Whitehall"))
 
 
 # ----- publisher --------------------
@@ -93,6 +98,7 @@ rmarkdown::render(
   output_format=c(
     "html_document" 
     ,"word_document"
+    # ,"pdf_document"
   ),
   clean=TRUE
 )
