@@ -32,7 +32,7 @@ opts_chunk$set(
 
 echoChunks <- FALSE
 options(width=120) #So the output is 50% wider than the default.
-read_chunk("./reports/model-summaries/tables-from-models.R") #This allows knitr to call chunks tagged in the underlying *.R file.
+read_chunk("./reports/model-summaries/model-summaries.R") #This allows knitr to call chunks tagged in the underlying *.R file.
 ```
 
 <!-- Load the sources.  Suppress the output when loading sources. --> 
@@ -63,8 +63,13 @@ read_chunk("./reports/model-summaries/tables-from-models.R") #This allows knitr 
 ```{r tweak-data, echo=echoChunks, results='hide', message=FALSE}
 ```
 
+```{r prepare-odds-table, echo=echoChunks, results='hide', message=FALSE}
+```
 
-```{r print-table-2, echo=echoChunks, message=TRUE, results='asis'}
+```{r print-dynamic-table-2, echo=echoChunks, message=TRUE, results='asis', eval=F}
+```
+
+```{r print-static-table-2, echo=echoChunks, message=TRUE, results='asis'}
 ```
 
 
